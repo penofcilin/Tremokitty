@@ -26,13 +26,17 @@ public:
 
 private:
     juce::Slider tremRateSlider;
+    juce::Label tremRateLabel;
     juce::Slider tremDepthSlider;
+    juce::Label TremDepthLabel;
     juce::Slider gainSlider;
+    juce::Label gainLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 
     void createSlider(juce::Slider& slider);
+    void createLabel(const juce::String& name, juce::Label& label);
 
 
     // This reference is provided as a quick way for your editor to

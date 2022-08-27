@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "LFOGenerator.h"
 
 //==============================================================================
 /**
@@ -60,7 +61,8 @@ public:
 
 private:
 
-
+    viator_dsp::LFOGenerator ViatorLFO;
+    
     static constexpr size_t lfoUpdateRate = 100;
     size_t lfoUpdateCounter = lfoUpdateRate;
     juce::dsp::Oscillator<float> lfo;

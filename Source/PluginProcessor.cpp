@@ -22,12 +22,13 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
                        ), apvts(*this, nullptr, "apvts", createParameters())
 #endif
 {
+    lfo.initialise([](float x) {return std::sin(x); }, 128);
+    lfo.setFrequency(3.0f);
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
 {
-    lfo.initialise([](float x) {return std::sin(x); }, 128);
-    lfo.setFrequency(3.0f);
+    
 }
 
 //==============================================================================
@@ -102,6 +103,8 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
     tremOsc.prepare(spec);
     gainModule.prepare(spec);
+
+    //ViatorLFO.prepare(spec);
 
 
 }
