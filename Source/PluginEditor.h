@@ -29,14 +29,17 @@ private:
     juce::Label tremRateLabel;
     juce::Slider tremDepthSlider;
     juce::Label TremDepthLabel;
+    juce::ComboBox tremWaveChoice;
     juce::Slider gainSlider;
     juce::Label gainLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> tremWaveAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 
     void createSlider(juce::Slider& slider);
     void createLabel(const juce::String& name, juce::Label& label);
+    void changeTremWave();
 
 
     // This reference is provided as a quick way for your editor to

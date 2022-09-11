@@ -18,12 +18,25 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     tremRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMRATE", tremRateSlider);
     createLabel("tremrate", tremRateLabel);
 
+
+    tremWaveChoice.addItem("Sine", 1);
+    tremWaveChoice.addItem("Saw", 2);
+    tremWaveChoice.addItem("Square", 3);
+    tremWaveChoice.onChange = [&] {changeTremWave(); };
+    addAndMakeVisible(tremWaveChoice);
+    tremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
+
     createSlider(tremDepthSlider);
     tremDepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMDEPTH", tremDepthSlider);
     createLabel("tremdepth", TremDepthLabel);
     
 
     setSize (400, 300);
+}
+
+void TremoKittyAudioProcessorEditor::changeTremWave()
+{
+    audioProcessor.changeTremWave(tremWaveChoice.getSelectedItemIndex());
 }
 
 void TremoKittyAudioProcessorEditor::createLabel(const juce::String& name, juce::Label& label)
@@ -61,4 +74,5 @@ void TremoKittyAudioProcessorEditor::resized()
     tremRateLabel.setBounds(100, 125, 50, 50);
     tremDepthSlider.setBounds(175, 175, 50, 50);
     TremDepthLabel.setBounds(175, 200, 75, 50);
+    tremWaveChoice.setBounds(250, 200, 75, 25);
 }

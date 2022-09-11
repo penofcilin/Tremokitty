@@ -24,7 +24,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
 {
     lfo.initialise([](float x) {return std::sin(x); }, 128);
     lfo.setFrequency(3.0f);
-    ViatorLFO.initialise([](float x) {return std::sin(x); }, 10);
+    ViatorLFO.initialise([](float x) {return std::sin(x); }, 256);
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
@@ -172,8 +172,8 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     
     float newGain = ViatorLFO.processSample(apvts.getRawParameterValue("GAIN")->load());
     gainModule.setGainLinear(newGain*tremDepth);
-    juce::String gainstring = std::to_string(apvts.getRawParameterValue("GAIN")->load());
-    DBG(gainstring);
+
+    
 
     float newSample = ViatorLFO.processSample(1.f);
     
@@ -226,6 +226,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", 0.f, 20.f, 5.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
     layout.add(std::make_unique<juce::AudioParameterBool>("TREMBYPASS", "Tremolo Bypass", false));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", 0.f, 20.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERDEPTH", "Filter Depth", 0.f, 1.f, 0.f));
@@ -238,6 +239,28 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
 
     return layout;
+}
+
+void TremoKittyAudioProcessor::changeTremWave(int index)
+{
+    DBG("Switching to value" + std::to_string(index));
+    switch (index)
+    {
+    case 0:
+        ViatorLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
+        apvts.getParameter("TREMWAVE")->setValue(0);
+        break;
+    case 1:
+        ViatorLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSaw);
+        apvts.getParameter("TREMWAVE")->setValue(1);
+        break;
+    case 2:
+        ViatorLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSquare);
+        apvts.getParameter("TREMWAVE")->setValue(2);
+        break;
+    default:
+        DBG("There was an issue with reassigning wavetype");
+    }
 }
 
 void TremoKittyAudioProcessor::prepare(const juce::dsp::ProcessSpec& spec)
