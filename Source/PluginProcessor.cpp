@@ -24,6 +24,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
 {
     lfo.initialise([](float x) {return std::sin(x); }, 128);
     lfo.setFrequency(3.0f);
+    ViatorLFO.initialise([](float x) {return std::sin(x); }, 10);
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
@@ -103,6 +104,7 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
     tremOsc.prepare(spec);
     gainModule.prepare(spec);
+    ViatorLFO.prepare(spec);
 
     //ViatorLFO.prepare(spec);
 
@@ -147,12 +149,6 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    playHead = this->getPlayHead();
-    if (playHead != nullptr)
-    {
-        
-    }
-
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
@@ -171,13 +167,16 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
     juce::dsp::AudioBlock<float> block(buffer);
     float tremDepth = apvts.getRawParameterValue("TREMDEPTH")->load();
-    tremOsc.setFrequency(apvts.getRawParameterValue("TREMRATE")->load());
-    gainModule.setGainLinear(*apvts.getRawParameterValue("GAIN"));
+    float tremRate = apvts.getRawParameterValue("TREMRATE")->load();
+    ViatorLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, tremRate*100);
+    
+    float newGain = ViatorLFO.processSample(apvts.getRawParameterValue("GAIN")->load());
+    gainModule.setGainLinear(newGain*tremDepth);
+    juce::String gainstring = std::to_string(apvts.getRawParameterValue("GAIN")->load());
+    DBG(gainstring);
 
-
-
-    gainModule.setGainLinear(tremOsc.processSample(*apvts.getRawParameterValue("TREMDEPTH")));
-    DBG(gainModule.getGainLinear());
+    float newSample = ViatorLFO.processSample(1.f);
+    
     gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
     
 
@@ -222,7 +221,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", 0.f, 1.f, 0.75f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", 0.f, 1.f, 1.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", 0.f, 20.f, 5.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));

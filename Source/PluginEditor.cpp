@@ -19,10 +19,9 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     createLabel("tremrate", tremRateLabel);
 
     createSlider(tremDepthSlider);
-    tremRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMDEPTH", tremDepthSlider);
-
-    createSlider(gainSlider);
-    gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "GAIN", gainSlider);
+    tremDepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMDEPTH", tremDepthSlider);
+    createLabel("tremdepth", TremDepthLabel);
+    
 
     setSize (400, 300);
 }
@@ -52,14 +51,14 @@ TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
 void TremoKittyAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(juce::Colours::white);
+    g.fillAll(juce::Colours::beige);
     getTopLevelComponent()->setName("TremoKitty!");
 }
 
 void TremoKittyAudioProcessorEditor::resized()
 {
     tremRateSlider.setBounds(100, 100, 50, 50);
-    tremRateLabel.setBounds(100, 125, 25, 25);
+    tremRateLabel.setBounds(100, 125, 50, 50);
     tremDepthSlider.setBounds(175, 175, 50, 50);
-    gainSlider.setBounds(200, 200, 50, 50);
+    TremDepthLabel.setBounds(175, 200, 75, 50);
 }
