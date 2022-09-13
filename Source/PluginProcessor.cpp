@@ -228,14 +228,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterBool>("TREMBYPASS", "Tremolo Bypass", false));
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 
+
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", 0.f, 20.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERDEPTH", "Filter Depth", 0.f, 1.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 20.f, 20000.f, 20000.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBYPASS", "Filter Bypass", true));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", 0.f, 20.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANDEPTH", "Pan Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterBool>("PANBYPASS", "Pan Bypass", true));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 
 
     return layout;

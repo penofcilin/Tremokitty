@@ -25,13 +25,23 @@ public:
     void resized() override;
 
 private:
+    juce::TextButton header;
+    //Tremolo Section
     juce::Slider tremRateSlider;
     juce::Label tremRateLabel;
     juce::Slider tremDepthSlider;
     juce::Label TremDepthLabel;
     juce::ComboBox tremWaveChoice;
-    juce::Slider gainSlider;
-    juce::Label gainLabel;
+
+    //Panning Section
+    juce::Slider PanRateSlider;
+    juce::Label PanRateLabel;
+    juce::Slider PanDepthSlider;
+    juce::Label PanDepthLabel;
+    juce::ComboBox PanWaveChoice;
+
+    //Filter Section
+
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> tremWaveAttachment;
@@ -39,6 +49,7 @@ private:
 
     void createSlider(juce::Slider& slider);
     void createLabel(const juce::String& name, juce::Label& label);
+
     void changeTremWave();
 
 

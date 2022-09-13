@@ -13,6 +13,10 @@
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
+    header.setColour(0, juce::Colours::chartreuse);
+    header.setButtonText("TremoKitty!");
+    addAndMakeVisible(header);
+
     createSlider(tremRateSlider);
     tremRateSlider.setRange(0.f, 20.f, 10.f);
     tremRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMRATE", tremRateSlider);
@@ -31,7 +35,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     createLabel("tremdepth", TremDepthLabel);
     
 
-    setSize (400, 300);
+    setSize (500, 500);
 }
 
 void TremoKittyAudioProcessorEditor::changeTremWave()
@@ -70,9 +74,41 @@ void TremoKittyAudioProcessorEditor::paint (juce::Graphics& g)
 
 void TremoKittyAudioProcessorEditor::resized()
 {
-    tremRateSlider.setBounds(100, 100, 50, 50);
-    tremRateLabel.setBounds(100, 125, 50, 50);
-    tremDepthSlider.setBounds(175, 175, 50, 50);
-    TremDepthLabel.setBounds(175, 200, 75, 50);
-    tremWaveChoice.setBounds(250, 200, 75, 25);
+
+    juce::FlexBox Tremfb;
+    Tremfb.flexDirection = juce::FlexBox::Direction::column;
+    Tremfb.flexWrap = juce::FlexBox::Wrap::wrap;
+    Tremfb.alignContent = juce::FlexBox::AlignContent::stretch;
+
+    Tremfb.items.add(juce::FlexItem(50, 100, tremRateSlider));
+    Tremfb.items.add(juce::FlexItem(50, 100, tremRateLabel));
+    Tremfb.items.add(juce::FlexItem(50, 100, tremWaveChoice));
+    Tremfb.items.add(juce::FlexItem(50, 100, tremDepthSlider));
+    Tremfb.items.add(juce::FlexItem(50, 100, TremDepthLabel));
+
+
+    Tremfb.items.add(juce::FlexItem(50, 100, header));
+
+
+    auto area = getLocalBounds();
+    auto headerHeight = 36;
+    auto sliderWidth = 45;
+    //header.setBounds(area.removeFromTop(headerHeight));
+
+
+    //TremRate Stuff
+    //tremRateSlider.setBounds(area.removeFromLeft(sliderWidth));
+    //tremRateLabel.setBounds(area.removeFromLeft(sliderWidth));
+    juce::Rectangle<int> RBounds = tremRateLabel.getBounds();
+    //tremRateLabel.setBounds(RBounds.getX(), RBounds.getY() + 25, RBounds.getWidth() + 30, RBounds.getHeight());
+    
+
+    //TremDepth Stuff
+    //tremDepthSlider.setBounds(area.removeFromRight(sliderWidth));
+
+    //TremDepthLabel.setBounds(area.removeFromRight(sliderWidth));
+    juce::Rectangle<int> TBounds = TremDepthLabel.getBounds();
+    //TremDepthLabel.setBounds(TBounds.getX(), TBounds.getY() + 25, TBounds.getWidth()+30, TBounds.getHeight());
+    //tremWaveChoice.setBounds(area.removeFromBottom(headerHeight));
+    Tremfb.performLayout(area.removeFromLeft(250));
 }
