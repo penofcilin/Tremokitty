@@ -76,6 +76,9 @@ void TremoKittyAudioProcessorEditor::resized()
 {
 
     juce::FlexBox Tremfb;
+    juce::FlexBox Panfb;
+    juce::FlexBox Filterfb;
+
     Tremfb.flexDirection = juce::FlexBox::Direction::column;
     Tremfb.flexWrap = juce::FlexBox::Wrap::wrap;
     Tremfb.alignContent = juce::FlexBox::AlignContent::stretch;
@@ -91,6 +94,9 @@ void TremoKittyAudioProcessorEditor::resized()
 
 
     auto area = getLocalBounds();
+    auto TremArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.75);
+    auto PanArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.75);
+
     auto headerHeight = 36;
     auto sliderWidth = 45;
     //header.setBounds(area.removeFromTop(headerHeight));
