@@ -53,23 +53,26 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    void changeTremWave(int index);
+    enum class waveForms { sine, saw, square };
+    enum class modules { tremolo, pan, filter };
+
+
+    void changeWave(int index, modules module);
 
     juce::AudioProcessorValueTreeState apvts;
-    juce::dsp::Oscillator<float> tremOsc{ [](float x) {return std::sin(x); } };
     juce::dsp::Gain<float> gainModule;
 
+    
     
 
 private:
 
-    enum class waveForms {sine, saw, square};
-
-    viator_dsp::LFOGenerator ViatorLFO;
     
-    static constexpr size_t lfoUpdateRate = 100;
-    size_t lfoUpdateCounter = lfoUpdateRate;
-    juce::dsp::Oscillator<float> lfo;
+
+    viator_dsp::LFOGenerator tremLFO;
+    viator_dsp::LFOGenerator panLFO;
+    viator_dsp::LFOGenerator filterLFO;
+    
 
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();

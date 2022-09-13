@@ -22,9 +22,10 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
                        ), apvts(*this, nullptr, "apvts", createParameters())
 #endif
 {
-    lfo.initialise([](float x) {return std::sin(x); }, 128);
-    lfo.setFrequency(3.0f);
-    ViatorLFO.initialise([](float x) {return std::sin(x); }, 256);
+
+    tremLFO.initialise([](float x) {return std::sin(x); }, 256);
+    panLFO.initialise([](float x) {return std::sin(x); }, 256);
+    filterLFO.initialise([](float x) {return std::sin(x); }, 256);
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
@@ -102,11 +103,12 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
 
-    tremOsc.prepare(spec);
-    gainModule.prepare(spec);
-    ViatorLFO.prepare(spec);
 
-    //ViatorLFO.prepare(spec);
+    gainModule.prepare(spec);
+    tremLFO.prepare(spec);
+    filterLFO.prepare(spec);
+    panLFO.prepare(spec);
+
 
 
 }
@@ -165,19 +167,28 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         
     }
 
+
+    //My Stuff
     juce::dsp::AudioBlock<float> block(buffer);
+
+    //Tremolo Section
+    //Loading the tremolo rate and depth parameters
     float tremDepth = apvts.getRawParameterValue("TREMDEPTH")->load();
     float tremRate = apvts.getRawParameterValue("TREMRATE")->load();
-    ViatorLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, tremRate*100);
-    
-    float newGain = ViatorLFO.processSample(apvts.getRawParameterValue("GAIN")->load());
+    //setting the parameters in the tremolo LFO to match the correct ones
+    tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, tremRate*50);
+    //Having the LFO process the gain sample, then setting the gainmodules gain to the new value given by the LFO,
+    //then processing with the gain mod
+    float newGain = tremLFO.processSample(apvts.getRawParameterValue("GAIN")->load());
     gainModule.setGainLinear(newGain*tremDepth);
-
-    
-
-    float newSample = ViatorLFO.processSample(1.f);
-    
     gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
+
+
+    //Panning section
+    float panDepth = apvts.getRawParameterValue("PANDEPTH")->load();
+    float panRate = apvts.getRawParameterValue("PANRATE")->load();
+    panLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, panRate * 50);
+    //Add panning functionality
     
 
 
@@ -244,26 +255,69 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     return layout;
 }
 
-void TremoKittyAudioProcessor::changeTremWave(int index)
+
+void TremoKittyAudioProcessor::changeWave(int index, modules module)
 {
-    DBG("Switching to value" + std::to_string(index));
-    switch (index)
+    switch (module)
     {
-    case 0:
-        ViatorLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
-        apvts.getParameter("TREMWAVE")->setValue(0);
-        break;
-    case 1:
-        ViatorLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSaw);
-        apvts.getParameter("TREMWAVE")->setValue(1);
-        break;
-    case 2:
-        ViatorLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSquare);
-        apvts.getParameter("TREMWAVE")->setValue(2);
-        break;
-    default:
-        DBG("There was an issue with reassigning wavetype");
+    case(modules::tremolo):
+        switch (index)
+        {
+        case 0:
+            tremLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
+            apvts.getParameter("TREMWAVE")->setValue(0);
+            break;
+        case 1:
+            tremLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSaw);
+            apvts.getParameter("TREMWAVE")->setValue(1);
+            break;
+        case 2:
+            tremLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSquare);
+            apvts.getParameter("TREMWAVE")->setValue(2);
+            break;
+        default:
+            DBG("There was an issue with reassigning wavetype");
+        }
+    case(modules::pan):
+        switch (index)
+        {
+        case 0:
+            panLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
+            apvts.getParameter("PANWAVE")->setValue(0);
+            break;
+        case 1:
+            panLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSaw);
+            apvts.getParameter("PANWAVE")->setValue(1);
+            break;
+        case 2:
+            panLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSquare);
+            apvts.getParameter("PANWAVE")->setValue(2);
+            break;
+        default:
+            DBG("There was an issue with reassigning wavetype");
+        }
+    case(modules::filter):
+        switch (index)
+        {
+        case 0:
+            filterLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
+            apvts.getParameter("FILTERWAVE")->setValue(0);
+            break;
+        case 1:
+            filterLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSaw);
+            apvts.getParameter("FILTERWAVE")->setValue(1);
+            break;
+        case 2:
+            filterLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSquare);
+            apvts.getParameter("FILTERWAVE")->setValue(2);
+            break;
+        default:
+            DBG("There was an issue with reassigning wavetype");
+        }
     }
+
+
+    
 }
 
 void TremoKittyAudioProcessor::prepare(const juce::dsp::ProcessSpec& spec)

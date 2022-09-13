@@ -9,38 +9,89 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
+
 //==============================================================================
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    header.setColour(0, juce::Colours::chartreuse);
+    //Header
+    header.setColour(1, juce::Colours::chartreuse);
     header.setButtonText("TremoKitty!");
     addAndMakeVisible(header);
 
+    /*Tremolo start*/
+    //Trem Rate
     createSlider(tremRateSlider);
     tremRateSlider.setRange(0.f, 20.f, 10.f);
     tremRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMRATE", tremRateSlider);
     createLabel("tremrate", tremRateLabel);
 
-
-    tremWaveChoice.addItem("Sine", 1);
-    tremWaveChoice.addItem("Saw", 2);
-    tremWaveChoice.addItem("Square", 3);
-    tremWaveChoice.onChange = [&] {changeTremWave(); };
-    addAndMakeVisible(tremWaveChoice);
-    tremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
-
+    //Trem Depth
     createSlider(tremDepthSlider);
     tremDepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMDEPTH", tremDepthSlider);
     createLabel("tremdepth", TremDepthLabel);
+
+    //Trem Wave Combobox
+    tremWaveChoice.addItem("Sine", 1);
+    tremWaveChoice.addItem("Saw", 2);
+    tremWaveChoice.addItem("Square", 3);
+    tremWaveChoice.onChange = [&] {changeWave(modules::tremolo); };
+    addAndMakeVisible(tremWaveChoice);
+    tremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
+
+
+    /*Tremolo end*/
+
+    /*Panning starts*/
+    createSlider(PanRateSlider);
+    PanRateSlider.setRange(0.f, 20.f, 10.f);
+    panRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "PANRATE", PanRateSlider);
+    createLabel("Pan Rate", PanRateLabel);
+
+    createSlider(PanDepthSlider);
+    panDepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "PANDEPTH", PanDepthSlider);
+    createLabel("Pan Depth", PanDepthLabel);
+
+    //pan wave combobox
+    PanWaveChoice.addItem("Sine", 1);
+    PanWaveChoice.addItem("Saw", 2);
+    PanWaveChoice.addItem("square", 3);
+    PanWaveChoice.onChange = [&] {changeWave(modules::pan); };
+    addAndMakeVisible(PanWaveChoice);
+
+    /*Panning ends*/
+
+    /*Filter starts*/
+    createSlider(FilterModRate);
+    FilterModRate.setRange(0.f, 20.f, 10.f);
+    
+
+
+
+
     
 
     setSize (500, 500);
 }
 
-void TremoKittyAudioProcessorEditor::changeTremWave()
+void TremoKittyAudioProcessorEditor::changeWave(modules m)
 {
-    audioProcessor.changeTremWave(tremWaveChoice.getSelectedItemIndex());
+    switch (m)
+    {
+    case(modules::tremolo):
+        audioProcessor.changeWave(tremWaveChoice.getSelectedItemIndex(), modules::tremolo);
+        break;
+    case(modules::pan):
+        audioProcessor.changeWave(PanWaveChoice.getSelectedItemIndex(), modules::pan);
+        break;
+    case(modules::filter):
+        audioProcessor.changeWave(FilterWaveChoice.getSelectedItemIndex(), modules::filter);
+        break;
+    default:
+        DBG("Failed to send change wave command to processor");
+    }
+
 }
 
 void TremoKittyAudioProcessorEditor::createLabel(const juce::String& name, juce::Label& label)
@@ -52,7 +103,7 @@ void TremoKittyAudioProcessorEditor::createLabel(const juce::String& name, juce:
 
 void TremoKittyAudioProcessorEditor::createSlider(juce::Slider& slider)
 {
-    slider.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     slider.setDoubleClickReturnValue(true, 0.5);
     slider.setRange(0.f, 1.f, 0.01f);
@@ -74,47 +125,53 @@ void TremoKittyAudioProcessorEditor::paint (juce::Graphics& g)
 
 void TremoKittyAudioProcessorEditor::resized()
 {
-
+    juce::FlexBox ArchFB;
     juce::FlexBox Tremfb;
     juce::FlexBox Panfb;
     juce::FlexBox Filterfb;
 
-    Tremfb.flexDirection = juce::FlexBox::Direction::column;
-    Tremfb.flexWrap = juce::FlexBox::Wrap::wrap;
-    Tremfb.alignContent = juce::FlexBox::AlignContent::stretch;
-
-    Tremfb.items.add(juce::FlexItem(50, 100, tremRateSlider));
-    Tremfb.items.add(juce::FlexItem(50, 100, tremRateLabel));
-    Tremfb.items.add(juce::FlexItem(50, 100, tremWaveChoice));
-    Tremfb.items.add(juce::FlexItem(50, 100, tremDepthSlider));
-    Tremfb.items.add(juce::FlexItem(50, 100, TremDepthLabel));
-
-
-    Tremfb.items.add(juce::FlexItem(50, 100, header));
-
-
     auto area = getLocalBounds();
-    auto TremArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.75);
-    auto PanArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.75);
+    auto TremArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.63);
+    auto PanArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.63);
+    auto FilterArea = juce::Rectangle<int>(area.getX(), area.getY() * 0.33);
 
     auto headerHeight = 36;
     auto sliderWidth = 45;
-    //header.setBounds(area.removeFromTop(headerHeight));
 
+    //Misc
+    ArchFB.flexDirection = juce::FlexBox::Direction::column;
+    ArchFB.flexWrap = juce::FlexBox::Wrap::wrap;
+    ArchFB.alignContent = juce::FlexBox::AlignContent::stretch;
 
-    //TremRate Stuff
-    //tremRateSlider.setBounds(area.removeFromLeft(sliderWidth));
-    //tremRateLabel.setBounds(area.removeFromLeft(sliderWidth));
-    juce::Rectangle<int> RBounds = tremRateLabel.getBounds();
-    //tremRateLabel.setBounds(RBounds.getX(), RBounds.getY() + 25, RBounds.getWidth() + 30, RBounds.getHeight());
-    
+    ArchFB.items.add(juce::FlexItem(100, 35, header));
 
-    //TremDepth Stuff
-    //tremDepthSlider.setBounds(area.removeFromRight(sliderWidth));
+    //Tremolo
+    Tremfb.flexDirection = juce::FlexBox::Direction::column;
+    Tremfb.flexWrap = juce::FlexBox::Wrap::wrap;
+    Tremfb.alignContent = juce::FlexBox::AlignContent::stretch;
+    Tremfb.justifyContent = juce::FlexBox::JustifyContent::center;
 
-    //TremDepthLabel.setBounds(area.removeFromRight(sliderWidth));
-    juce::Rectangle<int> TBounds = TremDepthLabel.getBounds();
-    //TremDepthLabel.setBounds(TBounds.getX(), TBounds.getY() + 25, TBounds.getWidth()+30, TBounds.getHeight());
-    //tremWaveChoice.setBounds(area.removeFromBottom(headerHeight));
-    Tremfb.performLayout(area.removeFromLeft(250));
+    Tremfb.items.add(juce::FlexItem(50, 100, tremRateSlider));
+    Tremfb.items.add(juce::FlexItem(50, 100, tremRateLabel));
+    Tremfb.items.add(juce::FlexItem(50, 100, tremDepthSlider));
+    Tremfb.items.add(juce::FlexItem(50, 100, TremDepthLabel));
+    Tremfb.items.add(juce::FlexItem(50, 100, tremWaveChoice));
+
+    //Pan Section
+    Panfb.flexDirection = juce::FlexBox::Direction::column;
+    Panfb.flexWrap = juce::FlexBox::Wrap::wrap;
+    Panfb.alignContent = juce::FlexBox::AlignContent::stretch;
+    Panfb.justifyContent = juce::FlexBox::JustifyContent::center;
+
+    Panfb.items.add(juce::FlexItem(50, 100, PanRateSlider));
+    Panfb.items.add(juce::FlexItem(50, 100, PanRateLabel));
+    Panfb.items.add(juce::FlexItem(50, 100, PanDepthSlider));
+    Panfb.items.add(juce::FlexItem(50, 100, PanDepthLabel));
+    Panfb.items.add(juce::FlexItem(50, 100, PanWaveChoice));
+
+    //Filter Section
+
+    Tremfb.performLayout(area.removeFromLeft(TremArea.getX()));
+    Panfb.performLayout(area.removeFromRight(area.getX()+50));
+    ArchFB.performLayout(area.removeFromTop(35));
 }
