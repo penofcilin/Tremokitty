@@ -207,6 +207,8 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
     filter.setCutoffFrequency(filterCutoff);
     //filter.setResonance(filterResonance);
+
+    filter.process(juce::dsp::ProcessContextReplacing<float>(block));
     
 
 
@@ -260,7 +262,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", 0.f, 20.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 20.f, 20000.f, 20000.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 20.f, 20000.f, 18000.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBYPASS", "Filter Bypass", true));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
@@ -336,6 +338,25 @@ void TremoKittyAudioProcessor::changeWave(int index, modules module)
     }
 
 
+    
+}
+
+void TremoKittyAudioProcessor::changeFilterType(int index)
+{
+    switch (index)
+    {
+    case(1):
+        filter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+        break;
+    case(2):
+        filter.setType(juce::dsp::StateVariableTPTFilterType::highpass);
+        break;
+    case(3):
+        filter.setType(juce::dsp::StateVariableTPTFilterType::bandpass);
+        break;
+    default:
+        DBG("Failed to change filter type.");
+    }
     
 }
 

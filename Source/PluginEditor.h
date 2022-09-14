@@ -49,7 +49,9 @@ private:
     juce::Slider FilterModAmount;
     juce::Label FilterModAmountLabel;
     juce::Slider FilterResonanceSlider;
+    juce::Label FilterResonanceLabel;
     juce::ComboBox FilterWaveChoice;
+    juce::ComboBox FilterType;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment;
@@ -76,6 +78,7 @@ private:
 
 
     void changeWave(modules m);
+    void changeFilterType(int index);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoKittyAudioProcessorEditor)
 };

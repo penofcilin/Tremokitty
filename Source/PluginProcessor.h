@@ -58,6 +58,7 @@ public:
 
 
     void changeWave(int index, modules module);
+    void changeFilterType(int index);
 
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
