@@ -67,12 +67,13 @@ public:
 
 private:
 
-    
+    viator_dsp::LFOGenerator testLFO;
 
     viator_dsp::LFOGenerator tremLFO;
     viator_dsp::LFOGenerator panLFO;
     viator_dsp::LFOGenerator filterLFO;
     
+    juce::dsp::StateVariableTPTFilter<float> filter;
 
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();

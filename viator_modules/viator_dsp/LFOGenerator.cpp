@@ -55,7 +55,7 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
     {
         case viator_dsp::LFOGenerator::WaveType::kSine:
         {
-            initialise([](float x){return std::sin(x); }, 256);
+            initialise([](float x){return std::sin(x); }, 128);
             break;
         }
             

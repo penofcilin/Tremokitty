@@ -26,6 +26,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     tremLFO.initialise([](float x) {return std::sin(x); }, 256);
     panLFO.initialise([](float x) {return std::sin(x); }, 256);
     filterLFO.initialise([](float x) {return std::sin(x); }, 256);
+    testLFO.initialise([](float x) {return std::sin(x); }, 256);
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
@@ -109,7 +110,10 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     filterLFO.prepare(spec);
     panLFO.prepare(spec);
 
+    testLFO.prepare(spec);
 
+    filter.prepare(spec);
+    filter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
 
 }
 
@@ -189,6 +193,20 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     float panRate = apvts.getRawParameterValue("PANRATE")->load();
     panLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, panRate * 50);
     //Add panning functionality
+
+    //Filter Section
+    float filterCutoff = apvts.getRawParameterValue("FILTERCUTOFF")->load();
+    float filterResonance = apvts.getRawParameterValue("FILTERRES")->load();
+    float moddedFilterCutoff = filterLFO.processSample(filterCutoff);
+
+    testLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, 1000.f);
+    testLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
+    auto value = testLFO.processSample(100.f);
+
+    DBG(std::to_string(value));
+
+    filter.setCutoffFrequency(filterCutoff);
+    //filter.setResonance(filterResonance);
     
 
 
@@ -241,6 +259,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", 0.f, 20.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 20.f, 20000.f, 20000.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBYPASS", "Filter Bypass", true));
