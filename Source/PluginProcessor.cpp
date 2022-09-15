@@ -115,6 +115,8 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     filter.prepare(spec);
     filter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
 
+    panner.prepare(spec);
+    panner.setRule(juce::dsp::PannerRule::sin3dB);
 }
 
 void TremoKittyAudioProcessor::releaseResources()
@@ -193,6 +195,20 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     float panRate = apvts.getRawParameterValue("PANRATE")->load();
     panLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, panRate * 50);
     //Add panning functionality
+    
+    
+
+    float newPanVal = panLFO.processSample(0.f);
+    if(panDepth != 0.f)
+        panner.setPan(newPanVal*panDepth);
+    else
+    {
+        panner.setPan(0.f);
+    }
+    panner.process(juce::dsp::ProcessContextReplacing<float>(block));
+
+
+
 
     //Filter Section
     float filterCutoff = apvts.getRawParameterValue("FILTERCUTOFF")->load();
@@ -202,8 +218,6 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     testLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, 1000.f);
     testLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
     auto value = testLFO.processSample(100.f);
-
-    DBG(std::to_string(value));
 
     filter.setCutoffFrequency(filterCutoff);
     //filter.setResonance(filterResonance);

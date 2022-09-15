@@ -16,7 +16,9 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     //Header
-    header.setColour(1, juce::Colours::chartreuse);
+    header.setColour(juce::TextButton::buttonColourId, juce::Colours::beige);
+    header.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+    
     header.setButtonText("TremoKitty!");
     addAndMakeVisible(header);
 
@@ -38,8 +40,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     tremWaveChoice.addItem("Square", 3);
     tremWaveChoice.onChange = [&] {changeWave(modules::tremolo); };
     addAndMakeVisible(tremWaveChoice);
-    tremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
-
+    tremWaveChoice.setSelectedItemIndex(0);
 
     /*Tremolo end*/
 
@@ -59,6 +60,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     PanWaveChoice.addItem("square", 3);
     PanWaveChoice.onChange = [&] {changeWave(modules::pan); };
     addAndMakeVisible(PanWaveChoice);
+    PanWaveChoice.setSelectedItemIndex(0);
 
     /*Panning ends*/
 
@@ -66,7 +68,9 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     //Filter cutoff
     createSlider(FilterCutoffSlider);
     FilterCutoffSlider.setRange(0.f, 20.f, 18.f);
+    FilterCutoffSlider.setSkewFactor(0.00005);
     filterCutoffAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "FILTERCUTOFF", FilterCutoffSlider);
+    
     createLabel("Cutoff", FilterCutoffLabel);
 
     //Filter mod rate
@@ -91,6 +95,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterWaveChoice.addItem("Saw", 2);
     FilterWaveChoice.addItem("square", 3);
     FilterWaveChoice.onChange = [&] {changeWave(modules::filter); };
+    FilterWaveChoice.setSelectedItemIndex(0);
     addAndMakeVisible(FilterWaveChoice);
     
 
@@ -99,6 +104,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterType.addItem("High Pass", 2);
     FilterType.addItem("Band Pass", 3);
     FilterType.onChange = [&] {changeFilterType(FilterType.getSelectedItemIndex()); };
+    FilterType.setSelectedItemIndex(0);
     addAndMakeVisible(FilterType);
     /*Filter ends*/
     
@@ -155,7 +161,7 @@ TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
 void TremoKittyAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(juce::Colours::beige);
+    g.fillAll(juce::Colours::lightgoldenrodyellow);
     getTopLevelComponent()->setName("TremoKitty!");
 }
 
@@ -167,6 +173,10 @@ void TremoKittyAudioProcessorEditor::resized()
     juce::FlexBox Filterfb;
 
     auto area = getLocalBounds();
+    auto threeQuarterArea = juce::Rectangle<int>(500, 365);
+    auto x = area.getX();
+    auto y = area.getY();
+    //DBG();
     auto TremArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.63);
     auto PanArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.63);
     auto FilterArea = juce::Rectangle<int>(area.getX(), area.getY() * 0.33);
@@ -185,25 +195,25 @@ void TremoKittyAudioProcessorEditor::resized()
     Tremfb.flexDirection = juce::FlexBox::Direction::column;
     Tremfb.flexWrap = juce::FlexBox::Wrap::wrap;
     Tremfb.alignContent = juce::FlexBox::AlignContent::stretch;
-    Tremfb.justifyContent = juce::FlexBox::JustifyContent::center;
+    Tremfb.justifyContent = juce::FlexBox::JustifyContent::flexStart;
 
-    Tremfb.items.add(juce::FlexItem(75, 75, tremRateSlider));
-    Tremfb.items.add(juce::FlexItem(75, 75, tremRateLabel));
-    Tremfb.items.add(juce::FlexItem(75, 75, tremDepthSlider));
-    Tremfb.items.add(juce::FlexItem(75, 75, TremDepthLabel));
-    Tremfb.items.add(juce::FlexItem(75, 75, tremWaveChoice));
+    Tremfb.items.add(juce::FlexItem(75, 45, tremRateSlider));
+    Tremfb.items.add(juce::FlexItem(75, 45, tremRateLabel));
+    Tremfb.items.add(juce::FlexItem(75, 45, tremDepthSlider));
+    Tremfb.items.add(juce::FlexItem(75, 45, TremDepthLabel));
+    Tremfb.items.add(juce::FlexItem(75, 45, tremWaveChoice));
 
     //Pan Section
     Panfb.flexDirection = juce::FlexBox::Direction::column;
     Panfb.flexWrap = juce::FlexBox::Wrap::wrap;
     Panfb.alignContent = juce::FlexBox::AlignContent::stretch;
-    Panfb.justifyContent = juce::FlexBox::JustifyContent::center;
+    Panfb.justifyContent = juce::FlexBox::JustifyContent::flexStart;
 
-    Panfb.items.add(juce::FlexItem(75, 75, PanRateSlider));
-    Panfb.items.add(juce::FlexItem(75, 75, PanRateLabel));
-    Panfb.items.add(juce::FlexItem(75, 75, PanDepthSlider));
-    Panfb.items.add(juce::FlexItem(75, 75, PanDepthLabel));
-    Panfb.items.add(juce::FlexItem(75, 75, PanWaveChoice));
+    Panfb.items.add(juce::FlexItem(75, 45, PanRateSlider));
+    Panfb.items.add(juce::FlexItem(75, 45, PanRateLabel));
+    Panfb.items.add(juce::FlexItem(75, 45, PanDepthSlider));
+    Panfb.items.add(juce::FlexItem(75, 45, PanDepthLabel));
+    Panfb.items.add(juce::FlexItem(75, 45, PanWaveChoice));
 
     //Filter Section
     Filterfb.flexDirection = juce::FlexBox::Direction::column;
@@ -211,20 +221,21 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.alignContent = juce::FlexBox::AlignContent::stretch;
     Filterfb.justifyContent = juce::FlexBox::JustifyContent::center;
 
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterCutoffSlider));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterCutoffLabel));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterModRate));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterModLabel));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterModAmount));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterModAmountLabel));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterResonanceSlider));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterResonanceLabel));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterType));
-    Filterfb.items.add(juce::FlexItem(75, 75, FilterWaveChoice));
+    Filterfb.items.add(juce::FlexItem(100, 45, FilterCutoffSlider));
+    Filterfb.items.add(juce::FlexItem(25, 25, FilterCutoffLabel));
+    Filterfb.items.add(juce::FlexItem(75, 45, FilterModRate));
+    Filterfb.items.add(juce::FlexItem(25, 25, FilterModLabel));
+    Filterfb.items.add(juce::FlexItem(75, 45, FilterModAmount));
+    Filterfb.items.add(juce::FlexItem(25, 25, FilterModAmountLabel));
+    Filterfb.items.add(juce::FlexItem(75, 45, FilterResonanceSlider));
+    Filterfb.items.add(juce::FlexItem(25, 25, FilterResonanceLabel));
+    Filterfb.items.add(juce::FlexItem(75, 45, FilterType));
+    Filterfb.items.add(juce::FlexItem(75, 45, FilterWaveChoice));
 
     //Performing Layout
-    Tremfb.performLayout(area.removeFromLeft(TremArea.getX()));
-    Panfb.performLayout(area.removeFromRight(area.getX()+50));
-    Filterfb.performLayout(area.removeFromBottom(area.getX()));
-    ArchFB.performLayout(area.removeFromTop(35));
+    ArchFB.performLayout(threeQuarterArea.removeFromTop(35));
+    Tremfb.performLayout(threeQuarterArea.removeFromLeft(200));
+    Panfb.performLayout(threeQuarterArea.removeFromRight(200));
+    Filterfb.performLayout(area.removeFromBottom(135));
+    
 }

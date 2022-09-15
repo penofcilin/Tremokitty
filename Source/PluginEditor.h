@@ -27,6 +27,7 @@ public:
 
 private:
     juce::TextButton header;
+
     //Tremolo Section
     juce::Slider tremRateSlider;
     juce::Label tremRateLabel;
@@ -55,7 +56,6 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> tremWaveAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panDepthAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterCutoffAttachment;
