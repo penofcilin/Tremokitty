@@ -54,7 +54,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     enum class waveForms { sine, saw, square };
-    enum class modules { tremolo, pan, filter };
+    enum class modules { tremolo, pan, filter, master };
 
 
     void changeWave(int index, modules module);
@@ -63,10 +63,17 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
-    
+    bool masterBP;
+    bool tremBP;
+    bool panBP;
+    bool filterBP;
+
+    float filterCutoffTest;
     
 
 private:
+
+    juce::dsp::ProcessSpec spec;
 
     viator_dsp::LFOGenerator testLFO;
 
@@ -81,6 +88,8 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
     void prepare(const juce::dsp::ProcessSpec& spec);
+
+    
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoKittyAudioProcessor)

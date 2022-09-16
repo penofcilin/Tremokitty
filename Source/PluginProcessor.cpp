@@ -22,11 +22,18 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
                        ), apvts(*this, nullptr, "apvts", createParameters())
 #endif
 {
-
+   
     tremLFO.initialise([](float x) {return std::sin(x); }, 256);
     panLFO.initialise([](float x) {return std::sin(x); }, 256);
     filterLFO.initialise([](float x) {return std::sin(x); }, 256);
     testLFO.initialise([](float x) {return std::sin(x); }, 256);
+
+    masterBP = false;
+    tremBP = false;
+    panBP = false;
+    filterBP = false;
+    apvts.state = juce::ValueTree("SavedParams");
+    filterCutoffTest = 0.8f;
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
@@ -99,7 +106,7 @@ void TremoKittyAudioProcessor::changeProgramName (int index, const juce::String&
 //==============================================================================
 void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    juce::dsp::ProcessSpec spec;
+    
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
@@ -186,7 +193,13 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     //Having the LFO process the gain sample, then setting the gainmodules gain to the new value given by the LFO,
     //then processing with the gain mod
     float newGain = tremLFO.processSample(apvts.getRawParameterValue("GAIN")->load());
-    gainModule.setGainLinear(newGain*tremDepth);
+    if(!tremBP)
+        gainModule.setGainLinear(newGain*tremDepth);
+    else
+    {
+        gainModule.setGainLinear(1.f);
+    }
+
     gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
 
 
@@ -195,9 +208,6 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     float panRate = apvts.getRawParameterValue("PANRATE")->load();
     panLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, panRate * 50);
     //Add panning functionality
-    
-    
-
     float newPanVal = panLFO.processSample(0.f);
     if(panDepth != 0.f)
         panner.setPan(newPanVal*panDepth);
@@ -205,9 +215,8 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     {
         panner.setPan(0.f);
     }
-    panner.process(juce::dsp::ProcessContextReplacing<float>(block));
-
-
+    if(!panBP)
+        panner.process(juce::dsp::ProcessContextReplacing<float>(block));
 
 
     //Filter Section
@@ -219,10 +228,13 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     testLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
     auto value = testLFO.processSample(100.f);
 
-    filter.setCutoffFrequency(filterCutoff);
-    //filter.setResonance(filterResonance);
+    float filterCutoffInHertz = juce::jmap(filterCutoffTest, 20.f, 20000.f);
+    DBG(std::to_string(filterCutoffInHertz));
+    filter.setCutoffFrequency(filterCutoffInHertz);
+    filter.setResonance(filterResonance);
 
-    filter.process(juce::dsp::ProcessContextReplacing<float>(block));
+    if(!filterBP)
+        filter.process(juce::dsp::ProcessContextReplacing<float>(block));
     
 
 
@@ -270,20 +282,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", 0.f, 20.f, 5.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
-    layout.add(std::make_unique<juce::AudioParameterBool>("TREMBYPASS", "Tremolo Bypass", false));
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", 0.f, 20.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 20.f, 20000.f, 18000.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBYPASS", "Filter Bypass", true));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 0.f, 1.f, 0.8f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", 0.7f, 10.f, 1 / sqrt(2)));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", 0.f, 20.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANDEPTH", "Pan Depth", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterBool>("PANBYPASS", "Pan Bypass", true));
     layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 
 
@@ -359,18 +368,20 @@ void TremoKittyAudioProcessor::changeFilterType(int index)
 {
     switch (index)
     {
-    case(1):
+    case(0):
         filter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
         break;
-    case(2):
+    case(1):
         filter.setType(juce::dsp::StateVariableTPTFilterType::highpass);
         break;
-    case(3):
+    case(2):
         filter.setType(juce::dsp::StateVariableTPTFilterType::bandpass);
         break;
     default:
         DBG("Failed to change filter type.");
     }
+    filter.reset();
+    filter.prepare(spec);
     
 }
 

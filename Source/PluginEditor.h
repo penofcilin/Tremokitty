@@ -15,7 +15,7 @@
 //==============================================================================
 /**
 */
-class TremoKittyAudioProcessorEditor  : public juce::AudioProcessorEditor
+class TremoKittyAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Slider::Listener
 {
 public:
     TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor&);
@@ -27,6 +27,7 @@ public:
 
 private:
     juce::TextButton header;
+    juce::ToggleButton MasterBypass;
 
     //Tremolo Section
     juce::Slider tremRateSlider;
@@ -34,6 +35,8 @@ private:
     juce::Slider tremDepthSlider;
     juce::Label TremDepthLabel;
     juce::ComboBox tremWaveChoice;
+    juce::ToggleButton TremBypass;
+    juce::ToggleButton TremSync;
 
     //Panning Section
     juce::Slider PanRateSlider;
@@ -41,6 +44,8 @@ private:
     juce::Slider PanDepthSlider;
     juce::Label PanDepthLabel;
     juce::ComboBox PanWaveChoice;
+    juce::ToggleButton PanBypass;
+    juce::ToggleButton PanSync;
 
     //Filter Section
     juce::Slider FilterCutoffSlider;
@@ -53,32 +58,39 @@ private:
     juce::Label FilterResonanceLabel;
     juce::ComboBox FilterWaveChoice;
     juce::ComboBox FilterType;
+    juce::ToggleButton FilterBypass;
+    juce::ToggleButton FIlterModSync;
 
+    //Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment; 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panDepthAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterCutoffAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterResonanceAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModAmountAttachment;
-
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 
+
+    //Member functions
     void createSlider(juce::Slider& slider);
     void createLabel(const juce::String& name, juce::Label& label);
+    void toggleBypass(modules m);
+    void changeWave(modules m);
+    void changeFilterType(int index);
+    void sliderValueChanged(juce::Slider* slider) override;
+
+    //Member variables
+    bool initializedGUI = false;
 
     
-
-
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
+//Processor
     TremoKittyAudioProcessor& audioProcessor;
 
 
 
-    void changeWave(modules m);
-    void changeFilterType(int index);
+    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoKittyAudioProcessorEditor)
 };

@@ -64,6 +64,12 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
             initialise([](float x){return x / juce::MathConstants<float>::pi; }, 256);
             break;
         }
+
+        case viator_dsp::LFOGenerator::WaveType::kNegSaw:
+        {
+            initialise([](float x) {return (x / juce::MathConstants<float>::pi)* (-1); }, 256);
+            break;
+        }
             
         case viator_dsp::LFOGenerator::WaveType::kSquare:
         {
