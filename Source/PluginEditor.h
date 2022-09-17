@@ -69,11 +69,14 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment; 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panDepthAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterCutoffAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterResonanceAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModAmountAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> MasterBypassAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> TremBypassAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> PanBypassAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> FilterBypassAttachment;
 
 
     //Member functions
@@ -81,7 +84,6 @@ private:
     void createLabel(const juce::String& name, juce::Label& label);
     void createToggleButton(const juce::String& text, juce::ToggleButton& button);
     void createSyncBox(juce::ComboBox& box);
-    void toggleBypass(modules m);
     void changeWave(modules m);
     void changeFilterType(int index);
     void sliderValueChanged(juce::Slider* slider) override;

@@ -63,10 +63,6 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
-    bool masterBP;
-    bool tremBP;
-    bool panBP;
-    bool filterBP;
 
     float filterCutoff;
     

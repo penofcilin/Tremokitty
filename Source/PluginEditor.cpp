@@ -23,7 +23,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
 
     //Master BP
     createToggleButton("Master Bypass", MasterBypass);
-    MasterBypass.onClick = [&] {toggleBypass(modules::master); };
+    MasterBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "MASTERBP", MasterBypass);
     
 
     /*Tremolo start*/
@@ -44,11 +44,10 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     tremWaveChoice.addItem("Square", 3);
     tremWaveChoice.onChange = [&] {changeWave(modules::tremolo); };
     addAndMakeVisible(tremWaveChoice);
-    if(!initializedGUI)
-        tremWaveChoice.setSelectedItemIndex(0);
+    tremWaveChoice.setSelectedItemIndex(audioProcessor.apvts.getRawParameterValue("TREMWAVE")->load());
 
     createToggleButton("Tremolo Bypass", TremBypass);
-    TremBypass.onClick = [&] {toggleBypass(modules::tremolo); };
+    TremBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMBP", TremBypass);
 
     
 
@@ -70,11 +69,10 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     PanWaveChoice.addItem("square", 3);
     PanWaveChoice.onChange = [&] {changeWave(modules::pan); };
     addAndMakeVisible(PanWaveChoice);
-    if(!initializedGUI)
-        PanWaveChoice.setSelectedItemIndex(0);
+    PanWaveChoice.setSelectedItemIndex(audioProcessor.apvts.getRawParameterValue("PANWAVE")->load());
 
     createToggleButton("Pan Bypass", PanBypass);
-    PanBypass.onClick = [&] {toggleBypass(modules::pan); };
+    PanBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "PANBP", PanBypass);
 
     /*Panning ends*/
 
@@ -84,7 +82,8 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterCutoffSlider.setRange(0.00001f, 1.f, 0.00001f);
     FilterCutoffSlider.setSkewFactorFromMidPoint(0.05);
     FilterCutoffSlider.addListener(this);
-    //filterCutoffAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "FILTERCUTOFF", FilterCutoffSlider);
+    FilterCutoffSlider.setValue(audioProcessor.filterCutoff);
+    
     
     createLabel("Cutoff", FilterCutoffLabel);
     FilterCutoffLabel.attachToComponent(&FilterCutoffSlider, false);
@@ -111,8 +110,8 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterWaveChoice.addItem("Saw", 2);
     FilterWaveChoice.addItem("square", 3);
     FilterWaveChoice.onChange = [&] {changeWave(modules::filter); };
-    if(!initializedGUI)
-        FilterWaveChoice.setSelectedItemIndex(0);
+
+    FilterWaveChoice.setSelectedItemIndex(audioProcessor.apvts.getRawParameterValue("FILTERWAVE")->load());
     addAndMakeVisible(FilterWaveChoice);
     
 
@@ -121,12 +120,12 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterType.addItem("High Pass", 2);
     FilterType.addItem("Band Pass", 3);
     FilterType.onChange = [&] {changeFilterType(FilterType.getSelectedItemIndex()); };
-    if (!initializedGUI)
-        FilterType.setSelectedItemIndex(0);
+
+    FilterType.setSelectedItemIndex(0);
     addAndMakeVisible(FilterType);
 
     createToggleButton("Filter Bypass", FilterBypass);
-    FilterBypass.onClick = [&] {toggleBypass(modules::filter); };
+    FilterBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "FILTERBP", FilterBypass);
     /*Filter ends*/
     
 
@@ -151,30 +150,40 @@ void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
     if (slider == &FilterCutoffSlider)
     {
         audioProcessor.filterCutoff = newValue;
+        if (initializedGUI)
+        {
+            audioProcessor.apvts.getRawParameterValue("FILTERCUTOFF")->store(newValue);
+            DBG("Stored new value");
+        }
         FilterCutoffLabel.setText((std::to_string((int)juce::jmap(newValue, 20.f, 20000.f))) + " HZ", juce::NotificationType::dontSendNotification);
         DBG("Slider changed");
     }
 }
 
-void TremoKittyAudioProcessorEditor::toggleBypass(modules m)
-    {
-    DBG("Button here");
-        switch (m)
-        {
-        case(modules::tremolo):
-            audioProcessor.tremBP = !audioProcessor.tremBP;
-            break;
-        case(modules::pan):
-            audioProcessor.panBP = !audioProcessor.panBP;
-            break;
-        case(modules::filter):
-            audioProcessor.filterBP = !audioProcessor.filterBP;
-            break;
-        default:
-            audioProcessor.masterBP = !audioProcessor.masterBP;
-            break;
-        }
-    }
+//void TremoKittyAudioProcessorEditor::toggleBypass(modules m)
+//    {
+//    bool oldValue;
+//    DBG("Button here");
+//        /*switch (m)
+//        {
+//        case(modules::tremolo):
+//            oldValue = audioProcessor.apvts.getRawParameterValue("TREMBP")->load();
+//            audioProcessor.apvts.getRawParameterValue("TREMBP")->store(!oldValue);
+//            break;
+//        case(modules::pan):
+//            oldValue = audioProcessor.apvts.getRawParameterValue("PANBP")->load();
+//            audioProcessor.apvts.getRawParameterValue("PANBP")->store(!oldValue);
+//            break;
+//        case(modules::filter):
+//            oldValue = audioProcessor.apvts.getRawParameterValue("FILTERBP")->load();
+//            audioProcessor.apvts.getRawParameterValue("FILTERBP")->store(!oldValue);
+//            break;
+//        default:
+//            oldValue = audioProcessor.apvts.getRawParameterValue("MASTERBP")->load();
+//            audioProcessor.apvts.getRawParameterValue("MASTERBP")->store(!oldValue);
+//            break;
+//        }*/
+//    }
 
 void TremoKittyAudioProcessorEditor::changeFilterType(int index)
 {
