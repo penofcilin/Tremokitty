@@ -37,6 +37,7 @@ private:
     juce::ComboBox tremWaveChoice;
     juce::ToggleButton TremBypass;
     juce::ToggleButton TremSync;
+    juce::ComboBox TremSyncChoice;
 
     //Panning Section
     juce::Slider PanRateSlider;
@@ -46,6 +47,7 @@ private:
     juce::ComboBox PanWaveChoice;
     juce::ToggleButton PanBypass;
     juce::ToggleButton PanSync;
+    juce::ComboBox PanSyncChoice;
 
     //Filter Section
     juce::Slider FilterCutoffSlider;
@@ -60,6 +62,7 @@ private:
     juce::ComboBox FilterType;
     juce::ToggleButton FilterBypass;
     juce::ToggleButton FIlterModSync;
+    juce::ComboBox FilterSyncChoice;
 
     //Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
@@ -76,6 +79,8 @@ private:
     //Member functions
     void createSlider(juce::Slider& slider);
     void createLabel(const juce::String& name, juce::Label& label);
+    void createToggleButton(const juce::String& text, juce::ToggleButton& button);
+    void createSyncBox(juce::ComboBox& box);
     void toggleBypass(modules m);
     void changeWave(modules m);
     void changeFilterType(int index);

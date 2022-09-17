@@ -33,7 +33,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     panBP = false;
     filterBP = false;
     apvts.state = juce::ValueTree("SavedParams");
-    filterCutoffTest = 0.8f;
+    filterCutoff = 0.8f;
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
@@ -160,6 +160,8 @@ bool TremoKittyAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    if (masterBP)
+        return;
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -220,17 +222,29 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
 
     //Filter Section
-    float filterCutoff = apvts.getRawParameterValue("FILTERCUTOFF")->load();
+    
     float filterResonance = apvts.getRawParameterValue("FILTERRES")->load();
-    float moddedFilterCutoff = filterLFO.processSample(filterCutoff);
+    float filterModRate = apvts.getRawParameterValue("FILTERRATE")->load();
+    filterLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, filterModRate * 50);
 
-    testLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, 1000.f);
-    testLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSine);
-    auto value = testLFO.processSample(100.f);
+    //Value between -1 and 1
+    float filterModCurrent = filterLFO.processSample(0.f);
+    filterModCurrent *= apvts.getRawParameterValue("FILTERMODLEVEL")->load();
+    
+    
 
-    float filterCutoffInHertz = juce::jmap(filterCutoffTest, 20.f, 20000.f);
-    DBG(std::to_string(filterCutoffInHertz));
-    filter.setCutoffFrequency(filterCutoffInHertz);
+
+    float filterCutoffInHertz = juce::jmap(filterCutoff, 20.f, 20000.f);
+    float filterModder = filterModCurrent * 19980;
+    float finalCutoff = (filterCutoffInHertz + filterModder);
+    if (finalCutoff > 19980)
+    {
+        finalCutoff = 19980;
+    }
+    else if (finalCutoff < 21)
+        finalCutoff = 21;
+    DBG(std::to_string(finalCutoff));
+    filter.setCutoffFrequency(finalCutoff);
     filter.setResonance(filterResonance);
 
     if(!filterBP)
@@ -291,7 +305,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", 0.7f, 10.f, 1 / sqrt(2)));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", 0.f, 20.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", 0.f, 20.f, 7.5f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANDEPTH", "Pan Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
 

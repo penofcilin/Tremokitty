@@ -68,7 +68,7 @@ public:
     bool panBP;
     bool filterBP;
 
-    float filterCutoffTest;
+    float filterCutoff;
     
 
 private:

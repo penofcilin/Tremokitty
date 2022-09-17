@@ -22,10 +22,9 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     addAndMakeVisible(header);
 
     //Master BP
-    MasterBypass.setButtonText("Master Bypass");
-    MasterBypass.setColour(juce::ToggleButton::ColourIds::textColourId, juce::Colours::black);
+    createToggleButton("Master Bypass", MasterBypass);
     MasterBypass.onClick = [&] {toggleBypass(modules::master); };
-    addAndMakeVisible(MasterBypass);
+    
 
     /*Tremolo start*/
     //Trem Rate
@@ -47,6 +46,9 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     addAndMakeVisible(tremWaveChoice);
     if(!initializedGUI)
         tremWaveChoice.setSelectedItemIndex(0);
+
+    createToggleButton("Tremolo Bypass", TremBypass);
+    TremBypass.onClick = [&] {toggleBypass(modules::tremolo); };
 
     
 
@@ -70,6 +72,9 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     addAndMakeVisible(PanWaveChoice);
     if(!initializedGUI)
         PanWaveChoice.setSelectedItemIndex(0);
+
+    createToggleButton("Pan Bypass", PanBypass);
+    PanBypass.onClick = [&] {toggleBypass(modules::pan); };
 
     /*Panning ends*/
 
@@ -119,6 +124,9 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     if (!initializedGUI)
         FilterType.setSelectedItemIndex(0);
     addAndMakeVisible(FilterType);
+
+    createToggleButton("Filter Bypass", FilterBypass);
+    FilterBypass.onClick = [&] {toggleBypass(modules::filter); };
     /*Filter ends*/
     
 
@@ -126,12 +134,23 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     initializedGUI = true;
 }
 
+
+void TremoKittyAudioProcessorEditor::createToggleButton(const juce::String& text, juce::ToggleButton& button)
+{
+    button.setButtonText(text);
+    button.setClickingTogglesState(true);
+    button.setColour(juce::ToggleButton::ColourIds::textColourId, juce::Colours::black);
+    button.setColour(juce::ToggleButton::ColourIds::tickColourId, juce::Colours::red);
+    button.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, juce::Colours::black);
+    addAndMakeVisible(button);
+}
+
 void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
     float newValue = slider->getValue();
     if (slider == &FilterCutoffSlider)
     {
-        audioProcessor.filterCutoffTest = newValue;
+        audioProcessor.filterCutoff = newValue;
         FilterCutoffLabel.setText((std::to_string((int)juce::jmap(newValue, 20.f, 20000.f))) + " HZ", juce::NotificationType::dontSendNotification);
         DBG("Slider changed");
     }
@@ -139,6 +158,7 @@ void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 
 void TremoKittyAudioProcessorEditor::toggleBypass(modules m)
     {
+    DBG("Button here");
         switch (m)
         {
         case(modules::tremolo):
@@ -234,7 +254,7 @@ void TremoKittyAudioProcessorEditor::resized()
     ArchFB.alignContent = juce::FlexBox::AlignContent::stretch;
 
     ArchFB.items.add(juce::FlexItem(100, 35, header));
-    ArchFB.items.add(juce::FlexItem(20, 20, MasterBypass));
+    ArchFB.items.add(juce::FlexItem(50, 50, MasterBypass));
 
     //Tremolo
     Tremfb.flexDirection = juce::FlexBox::Direction::column;
@@ -247,6 +267,7 @@ void TremoKittyAudioProcessorEditor::resized()
     Tremfb.items.add(juce::FlexItem(75, 45, tremDepthSlider));
     Tremfb.items.add(juce::FlexItem(75, 45, TremDepthLabel));
     Tremfb.items.add(juce::FlexItem(75, 45, tremWaveChoice));
+    Tremfb.items.add(juce::FlexItem(45, 45, TremBypass));
 
     //Pan Section
     Panfb.flexDirection = juce::FlexBox::Direction::column;
@@ -259,6 +280,7 @@ void TremoKittyAudioProcessorEditor::resized()
     Panfb.items.add(juce::FlexItem(75, 45, PanDepthSlider));
     Panfb.items.add(juce::FlexItem(75, 45, PanDepthLabel));
     Panfb.items.add(juce::FlexItem(75, 45, PanWaveChoice));
+    Panfb.items.add(juce::FlexItem(45, 45, PanBypass));
 
     //Filter Section
     Filterfb.flexDirection = juce::FlexBox::Direction::column;
@@ -276,6 +298,7 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.items.add(juce::FlexItem(25, 25, FilterResonanceLabel));
     Filterfb.items.add(juce::FlexItem(75, 45, FilterType));
     Filterfb.items.add(juce::FlexItem(75, 45, FilterWaveChoice));
+    Filterfb.items.add(juce::FlexItem(45, 45, FilterBypass));
 
     //Performing Layout
     ArchFB.performLayout(threeQuarterArea.removeFromTop(50));
