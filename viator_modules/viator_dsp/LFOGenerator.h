@@ -17,6 +17,8 @@ namespace viator_dsp
         void initialise (const std::function<float (float)>& function, size_t lookupTableNumPoints = 0);
         
         float processSample(float newInput);
+
+        float processSample(float newInput, float mod);
             
         enum class ParameterId
         {

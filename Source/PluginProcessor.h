@@ -59,6 +59,8 @@ public:
 
     void changeWave(int index, modules module);
     void changeFilterType(int index);
+    void resetEverything();
+    void loadPreset(const juce::String& name);
 
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
@@ -76,6 +78,7 @@ private:
     viator_dsp::LFOGenerator tremLFO;
     viator_dsp::LFOGenerator panLFO;
     viator_dsp::LFOGenerator filterLFO;
+    viator_dsp::LFOGenerator modLFO;
     
     juce::dsp::StateVariableTPTFilter<float> filter;
     juce::dsp::Panner<float> panner;

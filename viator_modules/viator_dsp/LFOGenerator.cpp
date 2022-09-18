@@ -40,6 +40,12 @@ float viator_dsp::LFOGenerator::processSample(float newInput)
     return newInput + generator (phase.advance (increment) - juce::MathConstants<float>::pi);
 }
 
+float viator_dsp::LFOGenerator::processSample(float newInput, float mod)
+{
+    auto increment = juce::MathConstants<float>::twoPi * m_frequency.getNextValue() / sampleRate;
+    return (newInput + generator(phase.advance(increment) - juce::MathConstants<float>::pi))*mod;
+}
+
 void viator_dsp::LFOGenerator::setParameter(ParameterId parameter, float parameterValue)
 {
     switch (parameter)

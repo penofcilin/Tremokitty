@@ -28,6 +28,7 @@ public:
 private:
     juce::TextButton header;
     juce::ToggleButton MasterBypass;
+    juce::TextButton ResetButton;
 
     //Tremolo Section
     juce::Slider tremRateSlider;
@@ -64,6 +65,14 @@ private:
     juce::ToggleButton FIlterModSync;
     juce::ComboBox FilterSyncChoice;
 
+    //ModLFO section
+    juce::Slider ModLFORateSlider;
+    juce::Label ModLFORateLabel;
+    juce::ComboBox ModLFOCurrentMod;
+    juce::Slider ModLFODepthSlider;
+    juce::Label ModLFODepthLabel;
+    juce::ComboBox ModLFOWaveType;
+
     //Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment; 
@@ -73,10 +82,15 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterResonanceAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModAmountAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> modLFOattachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> MasterBypassAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> TremBypassAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> PanBypassAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> FilterBypassAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> TremWaveAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> PanWaveAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterWaveAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterTypeAttachment;
 
 
     //Member functions
@@ -87,6 +101,7 @@ private:
     void changeWave(modules m);
     void changeFilterType(int index);
     void sliderValueChanged(juce::Slider* slider) override;
+    void resetEverything();
 
     //Member variables
     bool initializedGUI = false;

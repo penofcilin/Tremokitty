@@ -22,15 +22,18 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
                        ), apvts(*this, nullptr, "apvts", createParameters())
 #endif
 {
-   
-    tremLFO.initialise([](float x) {return std::sin(x); }, 256);
-    panLFO.initialise([](float x) {return std::sin(x); }, 256);
-    filterLFO.initialise([](float x) {return std::sin(x); }, 256);
+    if (!apvts.getRawParameterValue("LFOINIT")->load());
+    {
+        tremLFO.initialise([](float x) {return std::sin(x); }, 256);
+        panLFO.initialise([](float x) {return std::sin(x); }, 256);
+        filterLFO.initialise([](float x) {return std::sin(x); }, 256);
+        modLFO.initialise([](float x) {return std::sin(x); }, 256);
+        apvts.getRawParameterValue("LFOINIT")->store(true);
+    }
+    
 
-    /*apvts.getRawParameterValue("TREMWAVE")->store(0);
-    apvts.getRawParameterValue("FILTERWAVE")->store(0);
-    apvts.getRawParameterValue("PANWAVE")->store(0);
-    filterCutoff = 0.8f;*/
+    
+    filterCutoff = apvts.getRawParameterValue("FILTERCUTOFF")->load();
 
     apvts.state = juce::ValueTree("SavedParams");
     
@@ -116,14 +119,19 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     tremLFO.prepare(spec);
     filterLFO.prepare(spec);
     panLFO.prepare(spec);
+    modLFO.prepare(spec);
 
     testLFO.prepare(spec);
+
+    panner.prepare(spec);
+    panner.setRule(juce::dsp::PannerRule::sin3dB);
 
     filter.prepare(spec);
     filter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
 
-    panner.prepare(spec);
-    panner.setRule(juce::dsp::PannerRule::sin3dB);
+
+
+    
 }
 
 void TremoKittyAudioProcessor::releaseResources()
@@ -226,16 +234,9 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     float filterResonance = apvts.getRawParameterValue("FILTERRES")->load();
     float filterModRate = apvts.getRawParameterValue("FILTERRATE")->load();
     filterLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, filterModRate * 100);
-
     //Value between -1 and 1
-    float filterModCurrent = filterLFO.processSample(0.f);
-    filterModCurrent *= apvts.getRawParameterValue("FILTERMODLEVEL")->load();
-    
-    
-
-
+    float filterModder = filterLFO.processSample(0.f) * apvts.getRawParameterValue("FILTERMODLEVEL")->load() * 19980;
     float filterCutoffInHertz = juce::jmap(filterCutoff, 20.f, 20000.f);
-    float filterModder = filterModCurrent * 19980;
     float finalCutoff = (filterCutoffInHertz + filterModder);
     if (finalCutoff > 19980)
     {
@@ -243,9 +244,9 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     }
     else if (finalCutoff < 21)
         finalCutoff = 21;
-    DBG(std::to_string(finalCutoff));
     filter.setCutoffFrequency(finalCutoff);
     filter.setResonance(filterResonance);
+    //DBG("Actual cutoff " + std::to_string(finalCutoff));
 
     if(!apvts.getRawParameterValue("FILTERBP")->load())
         filter.process(juce::dsp::ProcessContextReplacing<float>(block));
@@ -292,6 +293,25 @@ void TremoKittyAudioProcessor::setStateInformation(const void* data, int sizeInB
 
 }
 
+void TremoKittyAudioProcessor::loadPreset(const juce::String& name)
+{
+
+}
+
+void TremoKittyAudioProcessor::resetEverything()
+{
+    juce::ValueTree state = apvts.copyState();  // grab a copy of the current parameters Value Tree
+    std::unique_ptr<juce::XmlElement> tempXml(state.createXml());  // convert parameters Value Tree to an XML object
+
+    // iterate through each "PARAM" element in XML, and overwrite values with their defaults
+    forEachXmlChildElementWithTagName(*tempXml, child, "PARAM")
+    {
+        float defaultValue = apvts.getParameter(child->getStringAttribute("id"))->getDefaultValue();
+        child->setAttribute("value", defaultValue);
+    }
+    apvts.replaceState(juce::ValueTree::fromXml(*tempXml));
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
@@ -304,6 +324,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", 0.f, 1.f, 1.f));
+    layout.add(std::make_unique < juce::AudioParameterBool>("LFOINIT", "LFOs initialized", false));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", 0.f, 20.f, 5.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
@@ -313,9 +334,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", 0.f, 20.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 0.f, 1.f, 0.8f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 0.f, 1.f, 0.7f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", 0.7f, 10.f, 1 / sqrt(2)));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERTYPE", "Filter Type", juce::StringArray("Low Pass", "High Pass", "Band Pass"), 0));
 
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", 0.f, 20.f, 7.5f));
