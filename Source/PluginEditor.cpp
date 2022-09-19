@@ -49,7 +49,6 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     tremWaveChoice.addItem("Sine", 1);
     tremWaveChoice.addItem("Saw", 2);
     tremWaveChoice.addItem("Square", 3);
-    tremWaveChoice.onChange = [&] {changeWave(modules::tremolo); };
     addAndMakeVisible(tremWaveChoice);
     TremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
 
@@ -73,8 +72,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     //pan wave combobox
     PanWaveChoice.addItem("Sine", 1);
     PanWaveChoice.addItem("Saw", 2);
-    PanWaveChoice.addItem("square", 3);
-    PanWaveChoice.onChange = [&] {changeWave(modules::pan); };
+    PanWaveChoice.addItem("Square", 3);
     addAndMakeVisible(PanWaveChoice);
     PanWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANWAVE", PanWaveChoice);
 
@@ -116,7 +114,6 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterWaveChoice.addItem("Sine", 1);
     FilterWaveChoice.addItem("Saw", 2);
     FilterWaveChoice.addItem("square", 3);
-    FilterWaveChoice.onChange = [&] {changeWave(modules::filter); };
     FilterWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERWAVE", FilterWaveChoice);
     addAndMakeVisible(FilterWaveChoice);
     
@@ -125,10 +122,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterType.addItem("Low Pass", 1);
     FilterType.addItem("High Pass", 2);
     FilterType.addItem("Band Pass", 3);
-    FilterType.onChange = [&] {changeFilterType(FilterType.getSelectedItemIndex()); };
-    FilterTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERTYPE", FilterWaveChoice);
-
-    FilterType.setSelectedItemIndex(0);
+    FilterTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERTYPE", FilterType);
     addAndMakeVisible(FilterType);
 
     createToggleButton("Filter Bypass", FilterBypass);
@@ -159,7 +153,6 @@ void TremoKittyAudioProcessorEditor::createToggleButton(const juce::String& text
 
 void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
-    
     if (slider == &FilterCutoffSlider)
     { 
         if (initializedGUI)
@@ -167,59 +160,9 @@ void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
             float newValue = slider->getValue();
             audioProcessor.apvts.getRawParameterValue("FILTERCUTOFF")->store(newValue);
             audioProcessor.filterCutoff = newValue;
-            DBG("Stored new value");
             FilterCutoffLabel.setText((std::to_string((int)juce::jmap(newValue, 20.f, 20000.f))) + " HZ", juce::NotificationType::dontSendNotification);
         }
     }
-}
-
-//void TremoKittyAudioProcessorEditor::toggleBypass(modules m)
-//    {
-//    bool oldValue;
-//    DBG("Button here");
-//        /*switch (m)
-//        {
-//        case(modules::tremolo):
-//            oldValue = audioProcessor.apvts.getRawParameterValue("TREMBP")->load();
-//            audioProcessor.apvts.getRawParameterValue("TREMBP")->store(!oldValue);
-//            break;
-//        case(modules::pan):
-//            oldValue = audioProcessor.apvts.getRawParameterValue("PANBP")->load();
-//            audioProcessor.apvts.getRawParameterValue("PANBP")->store(!oldValue);
-//            break;
-//        case(modules::filter):
-//            oldValue = audioProcessor.apvts.getRawParameterValue("FILTERBP")->load();
-//            audioProcessor.apvts.getRawParameterValue("FILTERBP")->store(!oldValue);
-//            break;
-//        default:
-//            oldValue = audioProcessor.apvts.getRawParameterValue("MASTERBP")->load();
-//            audioProcessor.apvts.getRawParameterValue("MASTERBP")->store(!oldValue);
-//            break;
-//        }*/
-//    }
-
-void TremoKittyAudioProcessorEditor::changeFilterType(int index)
-{
-    audioProcessor.changeFilterType(index);
- }
-
-void TremoKittyAudioProcessorEditor::changeWave(modules m)
-{
-    switch (m)
-    {
-    case(modules::tremolo):
-        audioProcessor.changeWave(tremWaveChoice.getSelectedItemIndex(), modules::tremolo);
-        break;
-    case(modules::pan):
-        audioProcessor.changeWave(PanWaveChoice.getSelectedItemIndex(), modules::pan);
-        break;
-    case(modules::filter):
-        audioProcessor.changeWave(FilterWaveChoice.getSelectedItemIndex(), modules::filter);
-        break;
-    default:
-        DBG("Failed to send change wave command to processor");
-    }
-
 }
 
 void TremoKittyAudioProcessorEditor::createLabel(const juce::String& name, juce::Label& label)

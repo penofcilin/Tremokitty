@@ -13,7 +13,9 @@
 //==============================================================================
 /**
 */
-class TremoKittyAudioProcessor  : public juce::AudioProcessor
+class TremoKittyAudioProcessor  : 
+    public juce::AudioProcessor,
+    public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -55,16 +57,11 @@ public:
 
     enum class waveForms { sine, saw, square };
     enum class modules { tremolo, pan, filter, master };
-
-
-    void changeWave(int index, modules module);
-    void changeFilterType(int index);
     void resetEverything();
     void loadPreset(const juce::String& name);
 
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
-
 
     float filterCutoff;
     
@@ -86,8 +83,11 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
-    void prepare(const juce::dsp::ProcessSpec& spec);
+    void getFilterType(bool shouldPrepare);
+    void getWave(modules module);
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
 
+    bool shouldPrepare;
     
 
     //==============================================================================

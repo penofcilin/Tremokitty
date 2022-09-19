@@ -98,8 +98,6 @@ private:
     void createLabel(const juce::String& name, juce::Label& label);
     void createToggleButton(const juce::String& text, juce::ToggleButton& button);
     void createSyncBox(juce::ComboBox& box);
-    void changeWave(modules m);
-    void changeFilterType(int index);
     void sliderValueChanged(juce::Slider* slider) override;
     void resetEverything();
 
