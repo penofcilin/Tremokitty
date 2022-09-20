@@ -206,10 +206,16 @@ void TremoKittyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         {
 
         }
-
-
-        
     }
+
+   
+        playHead = this->getPlayHead();
+        if (playHead != nullptr)
+        {
+            playHead->getCurrentPosition(playheadCurrentPosition);
+            auto bpm = playheadCurrentPosition.bpm;
+            noteDuration.prepare(bpm);
+        }
 
 
     //My Stuff
@@ -320,12 +326,19 @@ void TremoKittyAudioProcessor::resetEverything()
     juce::ValueTree state = apvts.copyState();  // grab a copy of the current parameters Value Tree
     std::unique_ptr<juce::XmlElement> tempXml(state.createXml());  // convert parameters Value Tree to an XML object
 
-    // iterate through each "PARAM" element in XML, and overwrite values with their defaults
-    forEachXmlChildElementWithTagName(*tempXml, child, "PARAM")
+    //Iterate through elements in the XML with the tag of param, set their values back to default
+    for (auto* element : tempXml->getChildWithTagNameIterator("PARAM"))
+    {
+        float defaultValue = apvts.getParameter(element->getStringAttribute("id"))->getDefaultValue();
+        element->setAttribute("value", defaultValue);
+    }
+
+    //Deprecated method
+    /*forEachXmlChildElementWithTagName(*tempXml, child, "PARAM")
     {
         float defaultValue = apvts.getParameter(child->getStringAttribute("id"))->getDefaultValue();
         child->setAttribute("value", defaultValue);
-    }
+    }*/
     apvts.replaceState(juce::ValueTree::fromXml(*tempXml));
 }
 

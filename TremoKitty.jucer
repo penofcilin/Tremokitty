@@ -4,6 +4,9 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="qZML3O" name="TremoKitty">
     <GROUP id="{CF98ECBA-25AC-378B-D540-903DD503CB7C}" name="Source">
+      <FILE id="dL52yE" name="NoteDurations.h" compile="0" resource="0" file="Source/NoteDurations.h"/>
+      <FILE id="vtCXqV" name="NoteDurations.cpp" compile="1" resource="0"
+            file="Source/NoteDurations.cpp"/>
       <FILE id="M8LVSy" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="FT56Fz" name="PluginProcessor.h" compile="0" resource="0"

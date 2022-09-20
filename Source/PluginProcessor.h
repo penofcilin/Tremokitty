@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "NoteDurations.h"
 
 //==============================================================================
 /**
@@ -67,6 +68,11 @@ public:
     
 
 private:
+
+    juce::AudioPlayHead* playHead;
+    juce::AudioPlayHead::CurrentPositionInfo playheadCurrentPosition;
+
+    NoteDurations noteDuration;
 
     juce::dsp::ProcessSpec spec;
 
