@@ -61,6 +61,7 @@ public:
     void resetEverything();
     void loadPreset(const juce::String& name);
 
+    NoteDurations noteDuration;
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
@@ -72,7 +73,7 @@ private:
     juce::AudioPlayHead* playHead;
     juce::AudioPlayHead::CurrentPositionInfo playheadCurrentPosition;
 
-    NoteDurations noteDuration;
+    
 
     juce::dsp::ProcessSpec spec;
 

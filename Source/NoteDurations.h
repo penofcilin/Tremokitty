@@ -9,14 +9,17 @@
 */
 
 #pragma once
+#include <JuceHeader.h>
 
 class NoteDurations
 {
 public:
 
     NoteDurations();
+    
 
     void prepare(float bpm);
+    juce::StringArray getNoteTypes();
 
     float getHalfNote();
     float getDottedHalfNote();
@@ -32,5 +35,6 @@ public:
 
 private:
     float BPM;
+    juce::StringArray NoteTypes;
 };
 

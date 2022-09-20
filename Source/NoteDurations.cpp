@@ -12,6 +12,13 @@
 
 NoteDurations::NoteDurations()
 {
+    DBG("Happy to initialize you suh!");
+    NoteTypes = juce::StringArray{ "Half", "DHalf", "Quarter", "DQuarter", "TQuarter", "8th", "D8th", "T8th", "16th", "D16th", "T16th" };
+}
+
+juce::StringArray NoteDurations::getNoteTypes()
+{
+    return NoteTypes;
 }
 
 void NoteDurations::prepare(float bpm)
