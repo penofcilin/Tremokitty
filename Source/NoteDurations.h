@@ -20,7 +20,10 @@ public:
 
     void prepare(float bpm);
     juce::StringArray getNoteTypes();
+    juce::StringArray getStraightNoteTypes();
+    juce::StringArray getModdedNoteTypes();
 
+    float getWholeNote();
     float getHalfNote();
     float getDottedHalfNote();
     float getQuarterNote();
@@ -35,6 +38,5 @@ public:
 
 private:
     float BPM;
-    juce::StringArray NoteTypes;
 };
 

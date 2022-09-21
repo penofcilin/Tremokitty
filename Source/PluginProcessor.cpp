@@ -33,8 +33,6 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     apvts.addParameterListener("FILTERTYPE", this);
     apvts.addParameterListener("FILTERWAVE", this);
 
-
-    filterCutoff = apvts.getRawParameterValue("FILTERCUTOFF")->load();
     getFilterType(false);
     shouldPrepare = false;
     apvts.state = juce::ValueTree("SavedParams");
@@ -266,10 +264,13 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     
     float filterResonance = apvts.getRawParameterValue("FILTERRES")->load();
     float filterModRate = apvts.getRawParameterValue("FILTERRATE")->load();
+    float filterCutoff = apvts.getRawParameterValue("FILTERCUTOFF")->load();
+    
     filterLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, filterModRate * 100);
     //Value between -1 and 1
     float filterModder = filterLFO.processSample(0.f) * apvts.getRawParameterValue("FILTERMODLEVEL")->load() * 19980;
     float filterCutoffInHertz = juce::jmap(filterCutoff, 20.f, 20000.f);
+    
     float finalCutoff = (filterCutoffInHertz + filterModder);
     if (finalCutoff > 19980)
     {
@@ -279,6 +280,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         finalCutoff = 21;
     filter.setCutoffFrequency(finalCutoff);
     filter.setResonance(filterResonance);
+    DBG("Cutoff = " + std::to_string(finalCutoff));
     //DBG("Actual cutoff " + std::to_string(finalCutoff));
 
     if(!apvts.getRawParameterValue("FILTERBP")->load())
@@ -398,15 +400,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
     //Filter section
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", 0.f, 20.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", 0.f, 1.f, 0.7f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", 0.7f, 10.f, 1 / sqrt(2)));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", juce::NormalisableRange<float>(0.f, 1.f, 0.001f, 0.35), 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", juce::NormalisableRange<float>(0.f, 1.f, 0.000001, 0.25), 0.9f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", juce::NormalisableRange<float>(0.7f, 10.f, 0.05, 0.9), 1 / sqrt(2)));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERTYPE", "Filter Type", juce::StringArray("Low Pass", "High Pass", "Band Pass"), 0));
     layout.add(std::make_unique<juce::AudioParameterBool>("FILTERMODSYNC", "Filter Modulation Tempo Snyc", false));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERMODSYNCRATE", "Filter Modulation Tempo Sync Rate", noteDuration.getNoteTypes(), 0));
     layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBP", "Filter Bypass", false));
 
+    layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFORATE", 0.f, 1.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFODEPTH", 0.f, 1.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("MODLFOWAVETYPE", juce::StringArray("Sine", "Saw", "Square", 0)));
+    //layout.add(std::make_unique
+    //ModLFO Section
     //Returning every parameter
     return layout;
 }

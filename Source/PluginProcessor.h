@@ -65,15 +65,15 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
-    float filterCutoff;
+    juce::StringArray moddedParams;
+    juce::StringArray modableParams;
+
     
 
 private:
 
     juce::AudioPlayHead* playHead;
     juce::AudioPlayHead::CurrentPositionInfo playheadCurrentPosition;
-
-    
 
     juce::dsp::ProcessSpec spec;
 

@@ -39,6 +39,7 @@ private:
     juce::ToggleButton TremBypass;
     juce::ToggleButton TremSync;
     juce::ComboBox TremSyncChoice;
+    juce::ComboBox TremSyncChoiceMod;
 
     //Panning Section
     juce::Slider PanRateSlider;
@@ -49,6 +50,7 @@ private:
     juce::ToggleButton PanBypass;
     juce::ToggleButton PanSync;
     juce::ComboBox PanSyncChoice;
+    juce::ComboBox PanSyncChoiceMod;
 
     //Filter Section
     juce::Slider FilterCutoffSlider;
@@ -64,14 +66,17 @@ private:
     juce::ToggleButton FilterBypass;
     juce::ToggleButton FIlterModSync;
     juce::ComboBox FilterSyncChoice;
+    juce::ComboBox FilterSyncChoiceMod;
 
     //ModLFO section
     juce::Slider ModLFORateSlider;
     juce::Label ModLFORateLabel;
-    juce::ComboBox ModLFOCurrentMod;
+    juce::ComboBox ModLFOModOptions;
     juce::Slider ModLFODepthSlider;
     juce::Label ModLFODepthLabel;
     juce::ComboBox ModLFOWaveType;
+    juce::ComboBox ModLFOSyncChoice;
+    juce::ComboBox ModLFOSyncChoiceMod;
 
     //Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
@@ -81,8 +86,10 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModRateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterResonanceAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModAmountAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterCutoffAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> modLFOattachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ModLFORateattachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ModLFODepthAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> MasterBypassAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> TremBypassAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> PanBypassAttachment;
@@ -91,13 +98,22 @@ private:
     std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> PanWaveAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterWaveAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterTypeAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterSyncChoiceAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> TremSyncChoiceAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment>PanSyncChoiceAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModLFOSyncChoiceAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModLFOWaveTypeAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterSyncChoiceModAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> PanSyncChoiceModAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> TremSyncChoiceModAttachment;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModLFOSyncChoiceModAttachment;
 
 
     //Member functions
     void createSlider(juce::Slider& slider);
     void createLabel(const juce::String& name, juce::Label& label);
     void createToggleButton(const juce::String& text, juce::ToggleButton& button);
-    void createSyncBox(juce::ComboBox& box);
+    void createSyncBox(juce::ComboBox& box, bool ModBox);
     void sliderValueChanged(juce::Slider* slider) override;
     void resetEverything();
 
