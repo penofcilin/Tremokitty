@@ -71,12 +71,12 @@ private:
     //ModLFO section
     juce::Slider ModLFORateSlider;
     juce::Label ModLFORateLabel;
-    juce::ComboBox ModLFOModOptions;
     juce::Slider ModLFODepthSlider;
     juce::Label ModLFODepthLabel;
     juce::ComboBox ModLFOWaveType;
     juce::ComboBox ModLFOSyncChoice;
     juce::ComboBox ModLFOSyncChoiceMod;
+    juce::ComboBox ModLFOModOptions;
 
     //Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
@@ -88,7 +88,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModAmountAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterCutoffAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ModLFORateattachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ModLFORateAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ModLFODepthAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> MasterBypassAttachment;
     std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment> TremBypassAttachment;

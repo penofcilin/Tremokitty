@@ -20,14 +20,15 @@ juce::StringArray NoteDurations::getNoteTypes()
     return juce::StringArray{ "Whole", "Half", "Dotted Half", "Quarter", "Dotted Quarter", "Triplet Quarter", "Eighth", "Dotted Eighth", "Triplet Eighth", "Sixteenth", "Dotted Sixteenth", "Triplet Sixteenth" };
 }
 
+// ;)
 juce::StringArray NoteDurations::getStraightNoteTypes()
 {
-    return juce::StringArray("Whole", "Half", "Quarter", "Eighth", "Sixteenth");
+    return juce::StringArray("Free", "Whole", "Half", "Quarter", "Eighth", "Sixteenth");
 }
 
 juce::StringArray NoteDurations::getModdedNoteTypes()
 {
-    return juce::StringArray("Dotted Half", "Dotted Quarter", "Triplet Quarter", "Dotted Eighth", "Triplet Eighth", "Dotted Sixteenth", "Triplet Sixteenth");
+    return juce::StringArray("Straight", "Dotted Half", "Dotted Quarter", "Triplet Quarter", "Dotted Eighth", "Triplet Eighth", "Dotted Sixteenth", "Triplet Sixteenth");
 }
 
 void NoteDurations::prepare(float bpm)

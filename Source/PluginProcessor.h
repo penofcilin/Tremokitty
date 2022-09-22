@@ -65,8 +65,9 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
+    enum modableParamsEnum{TremRate, TremDepth, PanRate, PanDepth, FilterCutoff, FilterModRate, FilterModDepth, FilterRes};
+    juce::StringArray modableParams{"Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Cutoff", "Filter Mod Rate", "Filter Mod Depth", "Filter Resonance"};
     juce::StringArray moddedParams;
-    juce::StringArray modableParams;
 
     
 

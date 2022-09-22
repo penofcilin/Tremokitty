@@ -137,13 +137,13 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "FILTERBP", FilterBypass);
     /*Filter ends*/
 
-    /*Mod LFO Starts*/
+    /*Mod Section Starts*/
     createSlider(ModLFORateSlider);
     ModLFORateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "MODLFORATE", ModLFORateSlider);
     createLabel("Mod LFO Rate", ModLFORateLabel);
-    for (int i = 1; i < audioProcessor.modableParams.size(); i++)
+    for (int i = 0; i < audioProcessor.modableParams.size(); i++)
     {
-        ModLFOModOptions.addItem(audioProcessor.modableParams[i - 1], i);
+        ModLFOModOptions.addItem(audioProcessor.modableParams[i], i+1);
     }
     createSlider(ModLFODepthSlider);
     createLabel("Mod LFO Depth", ModLFODepthLabel);
@@ -152,8 +152,15 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     ModLFOWaveType.addItem("Saw", 2);
     ModLFOWaveType.addItem("Square", 3);
     ModLFOWaveTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "LFOWAVETYPE", ModLFOWaveType);
+    //Fils the combobox with the straight notes
+    createSyncBox(ModLFOSyncChoice, false);
+    createSyncBox(ModLFOSyncChoiceMod, true);
+    addAndMakeVisible(ModLFOSyncChoice);
+    addAndMakeVisible(ModLFOSyncChoiceMod);
+    addAndMakeVisible(ModLFOWaveType);
+    addAndMakeVisible(ModLFOModOptions);
        
-
+    /*Mod Section Ends*/
     
     
     
@@ -174,8 +181,9 @@ void TremoKittyAudioProcessorEditor::createSyncBox(juce::ComboBox& box, bool Mod
     }
     else
     {
-        box.addItem("Dotted", 1);
-        box.addItem("Triplet", 2);
+        box.addItem("Straight", 1);
+        box.addItem("Dotted", 2);
+        box.addItem("Triplet", 3);
     }
     addAndMakeVisible(box);
 }
@@ -245,6 +253,7 @@ void TremoKittyAudioProcessorEditor::resized()
     juce::FlexBox Tremfb;
     juce::FlexBox Panfb;
     juce::FlexBox Filterfb;
+    juce::FlexBox Modfb;
 
     auto area = getLocalBounds();
     auto threeQuarterArea = juce::Rectangle<int>(500, 365);
@@ -254,6 +263,7 @@ void TremoKittyAudioProcessorEditor::resized()
     auto TremArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.63);
     auto PanArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.63);
     auto FilterArea = juce::Rectangle<int>(area.getX(), area.getY() * 0.33);
+    auto ModArea = juce::Rectangle<int>(area.getX()/4, area.getY()/4);
 
     auto headerHeight = 36;
     auto sliderWidth = 45;
@@ -279,6 +289,8 @@ void TremoKittyAudioProcessorEditor::resized()
     Tremfb.items.add(juce::FlexItem(75, 45, TremDepthLabel));
     Tremfb.items.add(juce::FlexItem(75, 45, tremWaveChoice));
     Tremfb.items.add(juce::FlexItem(45, 45, TremBypass));
+    Tremfb.items.add(juce::FlexItem(45, 45, TremSyncChoice));
+    Tremfb.items.add(juce::FlexItem(45, 45, TremSyncChoiceMod));
 
     //Pan Section
     Panfb.flexDirection = juce::FlexBox::Direction::column;
@@ -292,6 +304,8 @@ void TremoKittyAudioProcessorEditor::resized()
     Panfb.items.add(juce::FlexItem(75, 45, PanDepthLabel));
     Panfb.items.add(juce::FlexItem(75, 45, PanWaveChoice));
     Panfb.items.add(juce::FlexItem(45, 45, PanBypass));
+    Panfb.items.add(juce::FlexItem(45, 45, PanSyncChoice));
+    Panfb.items.add(juce::FlexItem(45, 45, PanSyncChoiceMod));
 
     //Filter Section
     Filterfb.flexDirection = juce::FlexBox::Direction::column;
@@ -310,11 +324,29 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.items.add(juce::FlexItem(75, 45, FilterType));
     Filterfb.items.add(juce::FlexItem(75, 45, FilterWaveChoice));
     Filterfb.items.add(juce::FlexItem(45, 45, FilterBypass));
+    Filterfb.items.add(juce::FlexItem(45, 45, FilterSyncChoice));
+    Filterfb.items.add(juce::FlexItem(45, 45, FilterSyncChoiceMod));
+
+    //Mod Section
+    Modfb.flexDirection = juce::FlexBox::Direction::column;
+    Modfb.flexWrap = juce::FlexBox::Wrap::wrap;
+    Modfb.alignContent = juce::FlexBox::AlignContent::stretch;
+    Modfb.justifyContent = juce::FlexBox::JustifyContent::center;
+
+    Modfb.items.add(juce::FlexItem(35, 35, ModLFORateSlider));
+    Modfb.items.add(juce::FlexItem(35, 35, ModLFORateLabel));
+    Modfb.items.add(juce::FlexItem(35, 35, ModLFODepthSlider));
+    Modfb.items.add(juce::FlexItem(35, 35, ModLFODepthLabel));
+    Modfb.items.add(juce::FlexItem(35, 35, ModLFOWaveType));
+    Modfb.items.add(juce::FlexItem(35, 35, ModLFOSyncChoice));
+    Modfb.items.add(juce::FlexItem(35, 35, ModLFOSyncChoiceMod));
+    Modfb.items.add(juce::FlexItem(35, 35, ModLFOModOptions));
 
     //Performing Layout
     ArchFB.performLayout(threeQuarterArea.removeFromTop(50));
     Tremfb.performLayout(threeQuarterArea.removeFromLeft(200));
     Panfb.performLayout(threeQuarterArea.removeFromRight(200));
+    Modfb.performLayout(threeQuarterArea.removeFromTop(150));
     Filterfb.performLayout(area.removeFromBottom(135));
     
 }
