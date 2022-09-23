@@ -57,7 +57,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     enum class waveForms { sine, saw, square };
-    enum class modules { tremolo, pan, filter, master };
+    enum class modules { tremolo, pan, filter, mod, master };
     void resetEverything();
     void loadPreset(const juce::String& name);
 
@@ -94,6 +94,7 @@ private:
     void getFilterType(bool shouldPrepare);
     void getWave(modules module);
     void parameterChanged(const juce::String& parameterID, float newValue) override;
+    void processSyncTime(modules m);
 
     bool shouldPrepare;
     

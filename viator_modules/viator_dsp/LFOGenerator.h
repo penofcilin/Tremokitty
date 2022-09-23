@@ -35,6 +35,8 @@ namespace viator_dsp
         };
 
         void setParameter(ParameterId parameter, float parameterValue);
+
+        float getFrequency();
         
         void setWaveType(WaveType newWaveType);
         

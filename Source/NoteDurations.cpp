@@ -38,60 +38,60 @@ void NoteDurations::prepare(float bpm)
 
 float NoteDurations::getWholeNote()
 {
-    return 240 / BPM;
+    return BPM / 240;
 }
 
 float NoteDurations::getHalfNote()
 {
-    return 120 / BPM;
+    return BPM/ 120;
 }
 
 float NoteDurations::getDottedHalfNote()
 {
-    return 120 / BPM + 60 / BPM;
+    return  BPM / 120 + BPM / 60;
 }
 
 float NoteDurations::getQuarterNote()
 {
-    return 60 / BPM;
+    return BPM / 60;
 }
 
 float NoteDurations::getDottedQuarterNote()
 {
-    return 90 / BPM;
+    return BPM / 90;
 }
 
 float NoteDurations::getTripletQuarterNote()
 {
-    return 40 / BPM;
+    return BPM / 40;
 }
 
 float NoteDurations::getEighthNote()
 {
-    return 30 / BPM;
+    return BPM / 30;
 }
 
 float NoteDurations::getDottedEighthNote()
 {
-    return 45 / BPM;
+    return BPM / 45;
 }
 
 float NoteDurations::getTripletEighthNote()
 {
-    return 20 / BPM;
+    return BPM / 20;
 }
 
 float NoteDurations::getSixteenthNote()
 {
-    return 15 / BPM;
+    return BPM / 15;
 }
 
 float NoteDurations::getDottedSixteenthNote()
 {
-    return 22.5 / BPM;
+    return BPM / 22.5;
 }
 
 float NoteDurations::getTripletSixteenthNote()
 {
-    return 10 / BPM;
+    return BPM / 10;
 }

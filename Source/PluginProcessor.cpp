@@ -220,13 +220,30 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         auto bpm = playheadCurrentPosition.bpm;
         noteDuration.prepare(bpm);
     }
+    else
+    {
+        noteDuration.prepare(60.f);
+    }
 
     //Tremolo Section
     //Loading the tremolo rate and depth parameters
     float tremDepth = apvts.getRawParameterValue("TREMDEPTH")->load();
     float tremRate = apvts.getRawParameterValue("TREMRATE")->load();
-    //setting the parameters in the tremolo LFO to match the correct ones
-    tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, tremRate * 50);
+    //If the tremsyncrate is free, set the frequency to whatever is stored by the slider. Else, find out what sync time it is.
+    if (apvts.getRawParameterValue("TREMSYNCRATE")->load() == 0)
+    {
+        //setting the parameters in the tremolo LFO to match the correct ones
+        tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, tremRate * 50);
+        DBG("Everything is happy and WONDERFul");
+    }
+    else
+    {
+        processSyncTime(modules::tremolo);
+        //DBG("Everything is shit");
+        //DBG(std::to_string(tremLFO.getFrequency()));
+    }
+    
+    
     //Having the LFO process the gain sample, then setting the gainmodules gain to the new value given by the LFO,
     //then processing with the gain mod
     //Could literally just be 1.f
@@ -280,11 +297,335 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         finalCutoff = 21;
     filter.setCutoffFrequency(finalCutoff);
     filter.setResonance(filterResonance);
-    DBG("Cutoff = " + std::to_string(finalCutoff));
-    //DBG("Actual cutoff " + std::to_string(finalCutoff));
 
     if(!apvts.getRawParameterValue("FILTERBP")->load())
         filter.process(juce::dsp::ProcessContextReplacing<float>(block));
+}
+
+void  TremoKittyAudioProcessor::processSyncTime(modules m)
+{
+    float finalFrequency;
+    float syncRate;
+    float syncRateMod;
+    switch(m)
+    {
+        //If it's tremolo...
+    case(modules::tremolo):
+        syncRate = apvts.getRawParameterValue("TREMSYNCRATE")->load();
+        syncRateMod = apvts.getRawParameterValue("TREMSYNCMOD")->load();
+        //If its a straight note...
+        if (syncRateMod == 0)
+        {
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getEighthNote();
+                break;
+            case(5):
+                finalFrequency = noteDuration.getSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't Properly Assign Sync Time Tremolo");
+                break;
+            }
+        }
+        //If its a dotted note...
+        else if (syncRateMod == 1)
+        {
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getDottedHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getDottedQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getDottedEighthNote();
+                break;
+            case(5):
+                finalFrequency = noteDuration.getDottedSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't select dotted sync time tremolo");
+                break;
+            }
+        }
+        //If it's a triplet...
+        else
+        {
+            
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getTripletQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getTripletSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't set triplet sync rate tremolo");
+                break;
+            }
+        }
+        tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency);
+        break;
+    case(modules::pan):
+        syncRate = apvts.getRawParameterValue("PANSYNCRATE")->load();
+        syncRateMod = apvts.getRawParameterValue("PANSYNCMOD")->load();
+        //If its a straight note...
+        if (syncRateMod == 0)
+        {
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getEighthNote();
+                break;
+            case(5):
+                finalFrequency = noteDuration.getSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't Properly Assign Sync Time Pan");
+                break;
+            }
+        }
+        //If its a dotted note...
+        else if (syncRateMod == 1)
+        {
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getDottedHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getDottedQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getDottedEighthNote();
+                break;
+            case(5):
+                finalFrequency = noteDuration.getDottedSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't select dotted sync time Pan");
+                break;
+            }
+        }
+        //If it's a triplet...
+        else
+        {
+
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getTripletQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getTripletSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't set triplet sync rate Pan");
+                break;
+            }
+        }
+        panLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency);
+        break;
+    case(modules::filter):
+        syncRate = apvts.getRawParameterValue("FILTERMODSYNCRATE")->load();
+        syncRateMod = apvts.getRawParameterValue("FILTERMODSYNCMOD")->load();
+        //If its a straight note...
+        if (syncRateMod == 0)
+        {
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getEighthNote();
+                break;
+            case(5):
+                finalFrequency = noteDuration.getSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't Properly Assign Sync Time Filter");
+                break;
+            }
+        }
+        //If its a dotted note...
+        else if (syncRateMod == 1)
+        {
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getDottedHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getDottedQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getDottedEighthNote();
+                break;
+            case(5):
+                finalFrequency = noteDuration.getDottedSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't select dotted sync time Filter");
+                break;
+            }
+        }
+        //If it's a triplet...
+        else
+        {
+
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getTripletQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getTripletSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't set triplet sync rate Filter");
+                break;
+            }
+        }
+        filterLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency);
+        break;
+    case(modules::mod):
+        syncRate = apvts.getRawParameterValue("LFOSYNCRATE")->load();
+        syncRateMod = apvts.getRawParameterValue("LFOSYNCMOD")->load();
+        //If its a straight note...
+        if (syncRateMod == 0)
+        {
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getEighthNote();
+                break;
+            case(5):
+                finalFrequency = noteDuration.getSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't Properly Assign Sync Time mod LFO");
+                break;
+            }
+        }
+        //If its a dotted note...
+        else if (syncRateMod == 1)
+        {
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getDottedHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getDottedQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getDottedEighthNote();
+                break;
+            case(5):
+                finalFrequency = noteDuration.getDottedSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't select dotted sync time mod LFO");
+                break;
+            }
+        }
+        //If it's a triplet...
+        else
+        {
+
+            switch ((int)syncRate)
+            {
+            case(1):
+                finalFrequency = noteDuration.getWholeNote();
+                break;
+            case(2):
+                finalFrequency = noteDuration.getHalfNote();
+                break;
+            case(3):
+                finalFrequency = noteDuration.getTripletQuarterNote();
+                break;
+            case(4):
+                finalFrequency = noteDuration.getTripletSixteenthNote();
+                break;
+            default:
+                DBG("Couldn't set triplet sync rate mod LFO");
+                break;
+            }
+        }
+        modLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency);
+        break;
+    default:
+        DBG("Something went horribly wrong in the big function. Good luck");
+    }
+
 }
 
 //==============================================================================
@@ -385,7 +726,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Modulation Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMSYNCRATE", "Tremolo Tempo Sync", noteDuration.getStraightNoteTypes(), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("TREMSYNCRATEMOD", "Tremolo Sync Rate Mod", juce::StringArray("Straight", "Dotted", "Triplet"), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("TREMSYNCMOD", "Tremolo Sync Rate Mod", juce::StringArray("Straight", "Dotted", "Triplet"), 0));
     layout.add(std::make_unique < juce::AudioParameterBool>("TREMBP", "Tremolo Bypass", false));
 
     
@@ -393,8 +734,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", 0.f, 20.f, 7.5f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANDEPTH", "Pan Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("PANSYNC", "Pan Modulation Tempo Sync", noteDuration.getStraightNoteTypes(), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("PANSYNCRATEMOD", "Pan Mod Sync Mod", juce::StringArray("Straight", "Dotted", "Triplet"), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("PANSYNCRATE", "Pan Modulation Tempo Sync Rate", noteDuration.getStraightNoteTypes(), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("PANSYNCMOD", "Pan Mod Sync Mod", juce::StringArray("Straight", "Dotted", "Triplet"), 0));
     layout.add(std::make_unique < juce::AudioParameterBool>("PANBP", "Pan Bypass", false));
 
     //Filter section
@@ -413,7 +754,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFODEPTH", "Mod LFO Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODLFOWAVETYPE", "Mod LFO Wave Type", juce::StringArray("Sine", "Saw", "Square"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODLFOSYNCRATE", "Mod LFO Sync Rate", noteDuration.getStraightNoteTypes(), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("MODLFOSYNCRATEMOD", "Mod LFO Sync Rate Mod", juce::StringArray("Straight", "Dotted", "Triplet"), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("MODLFOSYNCMOD", "Mod LFO Sync Rate Mod", juce::StringArray("Straight", "Dotted", "Triplet"), 0));
     //layout.add(std::make_unique<juce::AudioParameter> moddedStuff
 
     //Returning every parameter
