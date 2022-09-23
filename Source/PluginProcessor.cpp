@@ -240,7 +240,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     {
         processSyncTime(modules::tremolo);
         //DBG("Everything is shit");
-        //DBG(std::to_string(tremLFO.getFrequency()));
+        DBG(std::to_string(tremLFO.getFrequency()));
     }
     
     
@@ -379,6 +379,9 @@ void  TremoKittyAudioProcessor::processSyncTime(modules m)
                 finalFrequency = noteDuration.getTripletQuarterNote();
                 break;
             case(4):
+                finalFrequency = noteDuration.getTripletEighthNote();
+                break;
+            case(5):
                 finalFrequency = noteDuration.getTripletSixteenthNote();
                 break;
             default:
@@ -386,7 +389,7 @@ void  TremoKittyAudioProcessor::processSyncTime(modules m)
                 break;
             }
         }
-        tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency);
+        tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency*163.75f);
         break;
     case(modules::pan):
         syncRate = apvts.getRawParameterValue("PANSYNCRATE")->load();
@@ -457,6 +460,9 @@ void  TremoKittyAudioProcessor::processSyncTime(modules m)
                 finalFrequency = noteDuration.getTripletQuarterNote();
                 break;
             case(4):
+                finalFrequency = noteDuration.getTripletEighthNote();
+                break;
+            case(5):
                 finalFrequency = noteDuration.getTripletSixteenthNote();
                 break;
             default:
@@ -535,6 +541,9 @@ void  TremoKittyAudioProcessor::processSyncTime(modules m)
                 finalFrequency = noteDuration.getTripletQuarterNote();
                 break;
             case(4):
+                finalFrequency = noteDuration.getTripletEighthNote();
+                break;
+            case(5):
                 finalFrequency = noteDuration.getTripletSixteenthNote();
                 break;
             default:
@@ -613,6 +622,9 @@ void  TremoKittyAudioProcessor::processSyncTime(modules m)
                 finalFrequency = noteDuration.getTripletQuarterNote();
                 break;
             case(4):
+                finalFrequency = noteDuration.getTripletEighthNote();
+                break;
+            case(5):
                 finalFrequency = noteDuration.getTripletSixteenthNote();
                 break;
             default:
@@ -620,7 +632,7 @@ void  TremoKittyAudioProcessor::processSyncTime(modules m)
                 break;
             }
         }
-        modLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency);
+        modLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency*120.f);
         break;
     default:
         DBG("Something went horribly wrong in the big function. Good luck");

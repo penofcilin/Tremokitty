@@ -37,7 +37,6 @@ void viator_dsp::LFOGenerator::initialise (const std::function<float (float)>& f
 float viator_dsp::LFOGenerator::processSample(float newInput)
 {
     auto increment = juce::MathConstants<float>::twoPi * m_frequency.getNextValue() / sampleRate;
-    DBG(std::to_string(m_frequency.getNextValue()));
     return newInput + generator (phase.advance (increment) - juce::MathConstants<float>::pi);
 }
 
@@ -51,7 +50,7 @@ void viator_dsp::LFOGenerator::setParameter(ParameterId parameter, float paramet
 {
     switch (parameter)
     {
-        case viator_dsp::LFOGenerator::ParameterId::kFrequency: m_frequency = static_cast<int>(parameterValue); break;
+        case viator_dsp::LFOGenerator::ParameterId::kFrequency: m_frequency = parameterValue; break;
         case viator_dsp::LFOGenerator::ParameterId::kBypass: m_GlobalBypass = static_cast<bool>(parameterValue); break;
     }
 }

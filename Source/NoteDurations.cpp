@@ -48,7 +48,7 @@ float NoteDurations::getHalfNote()
 
 float NoteDurations::getDottedHalfNote()
 {
-    return  BPM / 120 + BPM / 60;
+    return  (BPM / 120) + (BPM / 240);
 }
 
 float NoteDurations::getQuarterNote()
