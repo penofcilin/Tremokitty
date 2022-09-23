@@ -241,7 +241,10 @@ TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
 void TremoKittyAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(juce::Colours::lightgoldenrodyellow);
+    g.setGradientFill(juce::ColourGradient::vertical(juce::Colour::fromRGB(245, 256, 220), getHeight(), juce::Colour::fromRGB(255, 182, 193), getHeight()));
+    g.fillRect(getLocalBounds());
+    g.setColour(juce::Colours::whitesmoke.withAlpha(0.25f));
+    g.fillRect(getLocalBounds());
     getTopLevelComponent()->setName("TremoKitty!");
 }
 
