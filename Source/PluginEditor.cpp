@@ -80,6 +80,8 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
 
     createSyncBox(PanSyncChoice, false);
     createSyncBox(PanSyncChoiceMod, true);
+    PanSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANSYNCCHOICE", PanSyncChoice);
+    PanSyncChoiceModAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANSYNCCHOICEMOD", PanSyncChoiceMod);
 
     createToggleButton("Pan Bypass", PanBypass);
     PanBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "PANBP", PanBypass);
@@ -123,6 +125,8 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERWAVE", FilterWaveChoice);
     createSyncBox(FilterSyncChoice, false);
     createSyncBox(FilterSyncChoiceMod, true);
+    FilterSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERSYNCCHOICE", FilterSyncChoice);
+    FilterSyncChoiceModAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERSYNCCHOICEMOD", FilterSyncChoiceMod);
     addAndMakeVisible(FilterWaveChoice);
     
 
@@ -154,9 +158,11 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     ModLFOWaveTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "LFOWAVETYPE", ModLFOWaveType);
     //Fils the combobox with the straight notes
     createSyncBox(ModLFOSyncChoice, false);
+    ModLFOSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODLFOSYNCCHOICE", ModLFOSyncChoice);
     createSyncBox(ModLFOSyncChoiceMod, true);
     addAndMakeVisible(ModLFOSyncChoice);
     addAndMakeVisible(ModLFOSyncChoiceMod);
+    ModLFOSyncChoiceModAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODLFOSYNCCHOICEMOD", ModLFOSyncChoiceMod);
     addAndMakeVisible(ModLFOWaveType);
     addAndMakeVisible(ModLFOModOptions);
        
