@@ -66,25 +66,25 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
     {
         case viator_dsp::LFOGenerator::WaveType::kSine:
         {
-            initialise([](float x){return std::sin(x); }, 128);
+            initialise([](float x){return std::sin(x); });
             break;
         }
             
         case viator_dsp::LFOGenerator::WaveType::kSaw:
         {
-            initialise([](float x){return x / juce::MathConstants<float>::pi; }, 256);
+            initialise([](float x){return x / juce::MathConstants<float>::pi; });
             break;
         }
 
         case viator_dsp::LFOGenerator::WaveType::kNegSaw:
         {
-            initialise([](float x) {return (x / juce::MathConstants<float>::pi)* (-1); }, 256);
+            initialise([](float x) {return (x / juce::MathConstants<float>::pi)* (-1); });
             break;
         }
             
         case viator_dsp::LFOGenerator::WaveType::kSquare:
         {
-            initialise([](float x){return x < 0.0f ? -1.0f : 1.0f; }, 64);
+            initialise([](float x){return x < 0.0f ? -1.0f : 1.0f; });
             break;
         }
     }

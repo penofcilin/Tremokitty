@@ -23,10 +23,10 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
 #endif
 {
     
-    tremLFO.initialise([](float x) {return std::sin(x); }, 256);
-    panLFO.initialise([](float x) {return std::sin(x); }, 256);
-    filterLFO.initialise([](float x) {return std::sin(x); }, 256);
-    modLFO.initialise([](float x) {return std::sin(x); }, 256);
+    tremLFO.initialise([](float x) {return std::sin(x); }, 128);
+    panLFO.initialise([](float x) {return std::sin(x); },128);
+    filterLFO.initialise([](float x) {return std::sin(x); }, 128);
+    modLFO.initialise([](float x) {return std::sin(x); }, 128);
     
     apvts.addParameterListener("TREMWAVE", this);
     apvts.addParameterListener("PANWAVE", this);
