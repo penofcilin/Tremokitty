@@ -1,7 +1,7 @@
 #include "KOLFO.h"
 
 //Prepares the samplerate, period, and current time variables.
-void KOModules::KOLFO::prepare(const juce::dsp::ProcessSpec& spec)
+void KOLFO::prepare(const juce::dsp::ProcessSpec& spec)
 {
 	sampleRate = spec.sampleRate;
 	period = 1.f / sampleRate;
@@ -9,7 +9,7 @@ void KOModules::KOLFO::prepare(const juce::dsp::ProcessSpec& spec)
 }
 
 //Sets the current time (phase) to 0.
-void KOModules::KOLFO::reset()
+void KOLFO::reset()
 {
 	currentTime = 0;
 }
@@ -17,7 +17,7 @@ void KOModules::KOLFO::reset()
 
 //Applies the waveFunction to get the next value out of the LFO.
 //Formula is 
-float KOModules::KOLFO::getNextValue()
+float KOLFO::getNextValue()
 {
 	if (currentTime >= 1.f)
 		currentTime = 0.f;
@@ -27,19 +27,19 @@ float KOModules::KOLFO::getNextValue()
 }
 
 //Returns Frequency
-float KOModules::KOLFO::getFrequency()
+float KOLFO::getFrequency()
 {
 	return frequency;
 }
 
 //Sets frequency
-void KOModules::KOLFO::setFrequency(float newFrequency)
+void KOLFO::setFrequency(float newFrequency)
 {
 	frequency = newFrequency;
 }
 
 //Sets the wavetype of the LFO to the given type.
-void KOModules::KOLFO::setWaveType(WaveType newWaveType)
+void KOLFO::setWaveType(WaveType newWaveType)
 {
 	switch (newWaveType)
 	{
