@@ -19,6 +19,8 @@ namespace viator_dsp
         float processSample(float newInput);
 
         float processSample(float newInput, float mod);
+
+        float getNextValue();
             
         enum class ParameterId
         {
@@ -41,7 +43,13 @@ namespace viator_dsp
         void setWaveType(WaveType newWaveType);
         
     private:
-        
+        //My Implementation
+        float period;
+        float currentPhase;
+
+        std::function<float(float)> waveFunction;
+
+
         float m_frequency;
         float sampleRate;
         

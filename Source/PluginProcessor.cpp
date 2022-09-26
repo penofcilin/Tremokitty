@@ -27,6 +27,8 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     panLFO.initialise([](float x) {return std::sin(x); },128);
     filterLFO.initialise([](float x) {return std::sin(x); }, 128);
     modLFO.initialise([](float x) {return std::sin(x); }, 128);
+
+    testLFO.initialise([](float x) { return std::sin(x); });
     
     apvts.addParameterListener("TREMWAVE", this);
     apvts.addParameterListener("PANWAVE", this);
@@ -148,10 +150,6 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
     filter.prepare(spec);
     shouldPrepare = true;
-
-
-
-    
 }
 
 void TremoKittyAudioProcessor::releaseResources()
@@ -198,16 +196,20 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
-
+    testLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, 100.f);
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
         for (int sample = 0; sample <= buffer.getNumSamples(); ++sample)
         {
-
+            float value = testLFO.getNextValue();
+            DBG("TestVal = " + std::to_string(value));
         }
     }
+
+    
+    
 
     //My Stuff
     juce::dsp::AudioBlock<float> block(buffer);
@@ -234,13 +236,12 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     {
         //setting the parameters in the tremolo LFO to match the correct ones
         tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, tremRate * 50);
-        DBG("Everything is happy and WONDERFul");
+        //DBG("Everything is happy and WONDERFul");
     }
     else
     {
         processSyncTime(modules::tremolo);
-        //DBG("Everything is shit");
-        DBG(std::to_string(tremLFO.getFrequency()));
+        //DBG(std::to_string(tremLFO.getFrequency()));
     }
     
     
@@ -249,9 +250,14 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     //Could literally just be 1.f
     float gain = apvts.getRawParameterValue("GAIN")->load();
     float gainMod = (tremLFO.processSample(0.f))*tremDepth;
-    if ((!apvts.getRawParameterValue("TREMBP")->load()) && tremRate != 0.f)
+    if ((!apvts.getRawParameterValue("TREMBP")->load()))
     {
-        gainModule.setGainLinear(gain + gainMod);
+        if(tremRate != 0.f)
+            gainModule.setGainLinear(gain + gainMod);
+        else
+        {
+            gainModule.setGainLinear(1.f);
+        }
     }
     else
     {

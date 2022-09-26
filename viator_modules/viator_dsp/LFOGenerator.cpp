@@ -3,6 +3,7 @@
 void viator_dsp::LFOGenerator::prepare(const juce::dsp::ProcessSpec &spec)
 {
     sampleRate = spec.sampleRate;
+    period = 1.f / sampleRate;
     
     reset();
 }
@@ -17,19 +18,17 @@ void viator_dsp::LFOGenerator::initialise (const std::function<float (float)>& f
 {
     if (lookupTableNumPoints != 0)
     {
-        auto* table = new juce::dsp::LookupTableTransform<float> (function,
-                                                             -juce::MathConstants<float>::pi,
-                                                                  juce::MathConstants<float>::pi,
+        auto* table = new juce::dsp::LookupTableTransform<float> (function, -juce::MathConstants<float>::pi, juce::MathConstants<float>::pi,
                                                              lookupTableNumPoints);
 
         lookupTable.reset (table);
         generator = [table] (float x) { return (*table) (x); };
     }
-    
     else
     {
         generator = function;
     }
+    waveFunction = function;
 }
 
 float viator_dsp::LFOGenerator::processSample(float newInput)
@@ -56,6 +55,16 @@ void viator_dsp::LFOGenerator::setParameter(ParameterId parameter, float paramet
 float viator_dsp::LFOGenerator::getFrequency()
 {
     return m_frequency;
+}
+
+float  viator_dsp::LFOGenerator::getNextValue()
+{
+    currentPhase += period;
+    if (currentPhase >= 1.f)
+        currentPhase = 0.f;
+    float value = waveFunction(juce::MathConstants<float>::twoPi * m_frequency * currentPhase + 0.f);
+    currentPhase += period;
+    return value;
 }
 
 void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
