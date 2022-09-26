@@ -19,7 +19,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
 #endif
                      .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-    ), noteDuration{ NoteDurations() } , apvts(*this, nullptr, "apvts", createParameters())
+    ), apvts(*this, nullptr, "apvts", createParameters())
 #endif
 {
     
@@ -196,7 +196,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
-    testLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, 100.f);
+    testLFO.setFrequency(10.f);
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -241,7 +241,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     else
     {
         processSyncTime(modules::tremolo);
-        //DBG(std::to_string(tremLFO.getFrequency()));
     }
     
     
