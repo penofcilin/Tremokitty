@@ -42,7 +42,7 @@ namespace viator_dsp
         
     private:
         
-        juce::SmoothedValue<float> m_frequency;
+        float m_frequency;
         float sampleRate;
         
         juce::dsp::Phase<float> phase;

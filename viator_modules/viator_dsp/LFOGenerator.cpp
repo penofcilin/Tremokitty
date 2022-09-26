@@ -3,8 +3,6 @@
 void viator_dsp::LFOGenerator::prepare(const juce::dsp::ProcessSpec &spec)
 {
     sampleRate = spec.sampleRate;
-    m_frequency.reset (sampleRate, 0.05);
-    m_frequency.setTargetValue(1.0);
     
     reset();
 }
@@ -36,13 +34,13 @@ void viator_dsp::LFOGenerator::initialise (const std::function<float (float)>& f
 
 float viator_dsp::LFOGenerator::processSample(float newInput)
 {
-    auto increment = juce::MathConstants<float>::twoPi * m_frequency.getNextValue() / sampleRate;
+    auto increment = juce::MathConstants<float>::twoPi * m_frequency / sampleRate;
     return newInput + generator (phase.advance (increment) - juce::MathConstants<float>::pi);
 }
 
 float viator_dsp::LFOGenerator::processSample(float newInput, float mod)
 {
-    auto increment = juce::MathConstants<float>::twoPi * m_frequency.getNextValue() / sampleRate;
+    auto increment = juce::MathConstants<float>::twoPi * m_frequency / sampleRate;
     return (newInput + generator(phase.advance(increment) - juce::MathConstants<float>::pi))*mod;
 }
 
@@ -57,7 +55,7 @@ void viator_dsp::LFOGenerator::setParameter(ParameterId parameter, float paramet
 
 float viator_dsp::LFOGenerator::getFrequency()
 {
-    return m_frequency.getCurrentValue();
+    return m_frequency;
 }
 
 void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
