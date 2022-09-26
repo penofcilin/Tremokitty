@@ -28,7 +28,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     filterLFO.initialise([](float x) {return std::sin(x); }, 128);
     modLFO.initialise([](float x) {return std::sin(x); }, 128);
 
-    testLFO.initialise([](float x) { return std::sin(x); });
+    testLFO.setWaveType(KOLFO::WaveType::Sine);
     
     apvts.addParameterListener("TREMWAVE", this);
     apvts.addParameterListener("PANWAVE", this);

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "NoteDurations.h"
+
 
 //==============================================================================
 /**
@@ -61,7 +61,7 @@ public:
     void resetEverything();
     void loadPreset(const juce::String& name);
 
-    NoteDurations noteDuration;
+    KOTempo noteDuration;
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
@@ -78,12 +78,13 @@ private:
 
     juce::dsp::ProcessSpec spec;
 
-    viator_dsp::LFOGenerator testLFO;
+    KOLFO testLFO;
 
     viator_dsp::LFOGenerator tremLFO;
     viator_dsp::LFOGenerator panLFO;
     viator_dsp::LFOGenerator filterLFO;
     viator_dsp::LFOGenerator modLFO;
+   
     
     juce::dsp::StateVariableTPTFilter<float> filter;
     juce::dsp::Panner<float> panner;

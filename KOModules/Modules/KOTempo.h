@@ -1,23 +1,22 @@
 /*
-  ==============================================================================
+==============================================================================
 
-    NoteDurations.h
-    Created: 19 Sep 2022 8:20:00pm
-    Author:  Levi
+KOTempo.h
+Created: 26 Sep 2022 3:51:21am
+Author:  Penofcilin The King Of KO
+Purpose: Provides useful tempo related methods.
 
-  ==============================================================================
+==============================================================================
 */
 
 #pragma once
-#include <JuceHeader.h>
+#ifndef KOTempo_h
+#define KOTempo_h
 
-class NoteDurations
+#include <JuceHeader.h>
+class KOTempo
 {
 public:
-
-    NoteDurations();
-    
-
     void prepare(float bpm);
     juce::StringArray getNoteTypes();
     juce::StringArray getStraightNoteTypes();
@@ -39,4 +38,4 @@ public:
 private:
     float BPM;
 };
-
+#endif // !KOTempo_h
