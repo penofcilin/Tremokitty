@@ -203,8 +203,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         auto* channelData = buffer.getWritePointer(channel);
         for (int sample = 0; sample <= buffer.getNumSamples(); ++sample)
         {
-            float value = testLFO.getNextValue();
-            DBG("TestVal = " + std::to_string(value));
         }
     }
 
@@ -235,7 +233,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     if (apvts.getRawParameterValue("TREMSYNCRATE")->load() == 0)
     {
         //setting the parameters in the tremolo LFO to match the correct ones
-        tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, tremRate * 50);
+        tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, tremRate);
         //DBG("Everything is happy and WONDERFul");
     }
     else
@@ -269,7 +267,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     //Panning section
     float panDepth = apvts.getRawParameterValue("PANDEPTH")->load();
     float panRate = apvts.getRawParameterValue("PANRATE")->load();
-    panLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, panRate * 50);
+    panLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, panRate);
     //Add panning functionality
     float newPanVal = panLFO.processSample(0.f);
     if(panDepth != 0.f)
@@ -288,7 +286,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     float filterModRate = apvts.getRawParameterValue("FILTERRATE")->load();
     float filterCutoff = apvts.getRawParameterValue("FILTERCUTOFF")->load();
     
-    filterLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, filterModRate * 100);
+    filterLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, filterModRate);
     //Value between -1 and 1
     float filterModder = filterLFO.processSample(0.f) * apvts.getRawParameterValue("FILTERMODLEVEL")->load() * 19980;
     float filterCutoffInHertz = juce::jmap(filterCutoff, 20.f, 20000.f);
@@ -394,7 +392,7 @@ void  TremoKittyAudioProcessor::processSyncTime(modules m)
                 break;
             }
         }
-        tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency*163.75f);
+        tremLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency);
         break;
     case(modules::pan):
         syncRate = apvts.getRawParameterValue("PANSYNCRATE")->load();
@@ -637,7 +635,7 @@ void  TremoKittyAudioProcessor::processSyncTime(modules m)
                 break;
             }
         }
-        modLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency*120.f);
+        modLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, finalFrequency);
         break;
     default:
         DBG("Something went horribly wrong in the big function. Good luck");
@@ -739,7 +737,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
 
     //Tremolo Section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", 0.f, 20.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.35f), 0.1f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Modulation Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMSYNCRATE", "Tremolo Tempo Sync", noteDuration.getStraightNoteTypes(), 0));
@@ -748,7 +746,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
     
     //Panner section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", 0.f, 20.f, 7.5f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.35f), 7.5f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANDEPTH", "Pan Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", juce::StringArray("Sine", "Saw", "Square"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("PANSYNCRATE", "Pan Modulation Tempo Sync Rate", noteDuration.getStraightNoteTypes(), 0));
@@ -756,7 +754,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique < juce::AudioParameterBool>("PANBP", "Pan Bypass", false));
 
     //Filter section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", 0.f, 20.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.35f), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", juce::NormalisableRange<float>(0.f, 1.f, 0.001f, 0.35), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", juce::NormalisableRange<float>(0.f, 1.f, 0.000001, 0.25), 0.9f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", juce::NormalisableRange<float>(0.7f, 10.f, 0.05, 0.9), (1 / sqrt(2))));
@@ -767,7 +765,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBP", "Filter Bypass", false));
 
     //ModLFO Section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFORATE", "Mod LFO Rate", 0.f, 1.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFORATE", "Mod LFO Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.35f), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFODEPTH", "Mod LFO Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODLFOWAVETYPE", "Mod LFO Wave Type", juce::StringArray("Sine", "Saw", "Square"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODLFOSYNCRATE", "Mod LFO Sync Rate", noteDuration.getStraightNoteTypes(), 0));

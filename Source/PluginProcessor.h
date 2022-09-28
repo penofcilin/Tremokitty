@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <chrono>
 
 
 //==============================================================================
@@ -77,6 +78,11 @@ private:
     juce::AudioPlayHead::CurrentPositionInfo playheadCurrentPosition;
 
     juce::dsp::ProcessSpec spec;
+
+    int counter{ 0 };
+
+    static inline std::chrono::steady_clock::time_point StartTime{ std::chrono::steady_clock::now() };
+
 
     KOLFO testLFO;
 

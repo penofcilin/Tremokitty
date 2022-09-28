@@ -2,7 +2,8 @@
 
 void viator_dsp::LFOGenerator::prepare(const juce::dsp::ProcessSpec &spec)
 {
-    sampleRate = spec.sampleRate;
+    sampleRate = spec.sampleRate / spec.maximumBlockSize;
+    DBG(std::to_string(spec.maximumBlockSize));
     period = 1.f / sampleRate;
     
     reset();
@@ -73,7 +74,7 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
     {
         case viator_dsp::LFOGenerator::WaveType::kSine:
         {
-            initialise([](float x){return std::sin(x); });
+            initialise([](float x){return std::cos(x); });
             break;
         }
             
