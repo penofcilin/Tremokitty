@@ -9,7 +9,6 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include <chrono>
 
 
 //==============================================================================
@@ -62,29 +61,18 @@ public:
     void resetEverything();
     void loadPreset(const juce::String& name);
 
-    KOTempo noteDuration;
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
-    enum modableParamsEnum{TremRate, TremDepth, PanRate, PanDepth, FilterCutoff, FilterModRate, FilterModDepth, FilterRes};
-    juce::StringArray modableParams{"Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Cutoff", "Filter Mod Rate", "Filter Mod Depth", "Filter Resonance"};
-    juce::StringArray moddedParams;
+    juce::StringArray ModParamsStrings{"None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Cutoff", "Filter Mod Rate", "Filter Mod Depth", "Filter Resonance"};
+    enum ModParams{None, TremRate, TremDepth, PanRate, PanDepth, FilterCutoff, FilterModRate, FilterModDepth, FilterResonance};
+    juce::StringArray WaveTypes{ "Sine", "Saw", "SawDown", "Triangle", "Square" };
 
     
 
 private:
 
-    juce::AudioPlayHead* playHead;
-    juce::AudioPlayHead::CurrentPositionInfo playheadCurrentPosition;
-
     juce::dsp::ProcessSpec spec;
-
-    int counter{ 0 };
-
-    static inline std::chrono::steady_clock::time_point StartTime{ std::chrono::steady_clock::now() };
-
-
-    KOLFO testLFO;
 
     viator_dsp::LFOGenerator tremLFO;
     viator_dsp::LFOGenerator panLFO;
@@ -101,7 +89,10 @@ private:
     void getFilterType(bool shouldPrepare);
     void getWave(modules module);
     void parameterChanged(const juce::String& parameterID, float newValue) override;
-    void processSyncTime(modules m);
+    void processMod(ModParams Parameter);
+    void stopProcessMod();
+    juce::String discernParameterID(ModParams P);
+    //void processSyncTime(modules m);
 
     bool shouldPrepare;
     

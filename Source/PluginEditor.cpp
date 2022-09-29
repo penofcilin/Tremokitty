@@ -46,15 +46,13 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     createLabel("tremdepth", TremDepthLabel);
 
     //Trem Wave Combobox
-    tremWaveChoice.addItem("Sine", 1);
-    tremWaveChoice.addItem("Saw", 2);
-    tremWaveChoice.addItem("Square", 3);
+    for (int i = 0; i < audioProcessor.WaveTypes.size(); i++)
+    {
+        tremWaveChoice.addItem(audioProcessor.WaveTypes[i], i + 1);
+    }
+
     addAndMakeVisible(tremWaveChoice);
     TremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
-    createSyncBox(TremSyncChoice, false);
-    createSyncBox(TremSyncChoiceMod, true);
-    TremSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMSYNCRATE", TremSyncChoice);
-    TremSyncChoiceModAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMSYNCMOD", TremSyncChoiceMod);
 
     createToggleButton("Tremolo Bypass", TremBypass);
     TremBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMBP", TremBypass);
@@ -79,11 +77,6 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     PanWaveChoice.addItem("Square", 3);
     addAndMakeVisible(PanWaveChoice);
     PanWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANWAVE", PanWaveChoice);
-
-    createSyncBox(PanSyncChoice, false);
-    createSyncBox(PanSyncChoiceMod, true);
-    PanSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANSYNCRATE", PanSyncChoice);
-    PanSyncChoiceModAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANSYNCMOD", PanSyncChoiceMod);
 
     createToggleButton("Pan Bypass", PanBypass);
     PanBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "PANBP", PanBypass);
@@ -125,11 +118,6 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     FilterWaveChoice.addItem("Saw", 2);
     FilterWaveChoice.addItem("square", 3);
     FilterWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERWAVE", FilterWaveChoice);
-    createSyncBox(FilterSyncChoice, false);
-    createSyncBox(FilterSyncChoiceMod, true);
-    FilterSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERMODSYNCRATE", FilterSyncChoice);
-    FilterSyncChoiceModAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERMODSYNCMOD", FilterSyncChoiceMod);
-    addAndMakeVisible(FilterWaveChoice);
     
 
     //Filter type Combobox
@@ -147,24 +135,21 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     createSlider(ModLFORateSlider);
     ModLFORateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "MODLFORATE", ModLFORateSlider);
     createLabel("Mod LFO Rate", ModLFORateLabel);
-    for (int i = 0; i < audioProcessor.modableParams.size(); i++)
+    for (int i = 0; i < audioProcessor.ModParamsStrings.size(); i++)
     {
-        ModLFOModOptions.addItem(audioProcessor.modableParams[i], i+1);
+        ModLFOModOptions.addItem(audioProcessor.ModParamsStrings[i], i+1);
     }
+    ModLFOModdedParameterAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODCHOICE", ModLFOModOptions);
     createSlider(ModLFODepthSlider);
     createLabel("Mod LFO Depth", ModLFODepthLabel);
     ModLFODepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "MODLFODEPTH", ModLFODepthSlider);
-    ModLFOWaveType.addItem("Sine", 1);
-    ModLFOWaveType.addItem("Saw", 2);
-    ModLFOWaveType.addItem("Square", 3);
-    ModLFOWaveTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODLFOWAVETYPE", ModLFOWaveType);
+    for (int i = 0; i < audioProcessor.WaveTypes.size(); i++)
+    {
+        ModLFOWaveType.addItem(audioProcessor.WaveTypes[i], i+1);
+        
+    }
+    ModLFOWaveTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODWAVETYPE", ModLFOWaveType);
     //Fils the combobox with the straight notes
-    createSyncBox(ModLFOSyncChoice, false);
-    ModLFOSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODLFOSYNCRATE", ModLFOSyncChoice);
-    createSyncBox(ModLFOSyncChoiceMod, true);
-    addAndMakeVisible(ModLFOSyncChoice);
-    addAndMakeVisible(ModLFOSyncChoiceMod);
-    ModLFOSyncChoiceModAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODLFOSYNCMOD", ModLFOSyncChoiceMod);
     addAndMakeVisible(ModLFOWaveType);
     addAndMakeVisible(ModLFOModOptions);
        
@@ -177,24 +162,6 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     initializedGUI = true;
 }
 
-void TremoKittyAudioProcessorEditor::createSyncBox(juce::ComboBox& box, bool ModBox)
-{
-    int i = 1;
-    if (!ModBox)
-    {
-        for (juce::String s : audioProcessor.noteDuration.getStraightNoteTypes())
-        {
-            box.addItem(s, i++);
-        }
-    }
-    else
-    {
-        box.addItem("Straight", 1);
-        box.addItem("Dotted", 2);
-        box.addItem("Triplet", 3);
-    }
-    addAndMakeVisible(box);
-}
 
 void TremoKittyAudioProcessorEditor::resetEverything()
 {
@@ -300,8 +267,6 @@ void TremoKittyAudioProcessorEditor::resized()
     Tremfb.items.add(juce::FlexItem(75, 45, TremDepthLabel));
     Tremfb.items.add(juce::FlexItem(75, 45, tremWaveChoice));
     Tremfb.items.add(juce::FlexItem(45, 45, TremBypass));
-    Tremfb.items.add(juce::FlexItem(45, 45, TremSyncChoice));
-    Tremfb.items.add(juce::FlexItem(45, 45, TremSyncChoiceMod));
 
     //Pan Section
     Panfb.flexDirection = juce::FlexBox::Direction::column;
@@ -315,8 +280,6 @@ void TremoKittyAudioProcessorEditor::resized()
     Panfb.items.add(juce::FlexItem(75, 45, PanDepthLabel));
     Panfb.items.add(juce::FlexItem(75, 45, PanWaveChoice));
     Panfb.items.add(juce::FlexItem(45, 45, PanBypass));
-    Panfb.items.add(juce::FlexItem(45, 45, PanSyncChoice));
-    Panfb.items.add(juce::FlexItem(45, 45, PanSyncChoiceMod));
 
     //Filter Section
     Filterfb.flexDirection = juce::FlexBox::Direction::column;
@@ -335,8 +298,6 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.items.add(juce::FlexItem(75, 45, FilterType));
     Filterfb.items.add(juce::FlexItem(75, 45, FilterWaveChoice));
     Filterfb.items.add(juce::FlexItem(45, 45, FilterBypass));
-    Filterfb.items.add(juce::FlexItem(45, 45, FilterSyncChoice));
-    Filterfb.items.add(juce::FlexItem(45, 45, FilterSyncChoiceMod));
 
     //Mod Section
     Modfb.flexDirection = juce::FlexBox::Direction::column;
@@ -349,8 +310,6 @@ void TremoKittyAudioProcessorEditor::resized()
     Modfb.items.add(juce::FlexItem(35, 35, ModLFODepthSlider));
     Modfb.items.add(juce::FlexItem(35, 35, ModLFODepthLabel));
     Modfb.items.add(juce::FlexItem(35, 35, ModLFOWaveType));
-    Modfb.items.add(juce::FlexItem(35, 35, ModLFOSyncChoice));
-    Modfb.items.add(juce::FlexItem(35, 35, ModLFOSyncChoiceMod));
     Modfb.items.add(juce::FlexItem(35, 35, ModLFOModOptions));
 
     //Performing Layout
