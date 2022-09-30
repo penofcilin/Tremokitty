@@ -64,8 +64,8 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
-    juce::StringArray ModParamsStrings{"None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Cutoff", "Filter Mod Rate", "Filter Mod Depth", "Filter Resonance"};
-    enum ModParams{None, TremRate, TremDepth, PanRate, PanDepth, FilterCutoff, FilterModRate, FilterModDepth, FilterResonance};
+    juce::StringArray ModParamsStrings{"None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Cutoff", "Filter Mod Rate", "Filter Mod Depth"};
+    enum ModParams{None, TremRate, TremDepth, PanRate, PanDepth, FilterCutoff, FilterModRate, FilterModDepth};
     juce::StringArray WaveTypes{ "Sine", "Saw", "SawDown", "Triangle", "Square" };
 
     
@@ -90,7 +90,8 @@ private:
     void getWave(modules module);
     void parameterChanged(const juce::String& parameterID, float newValue) override;
     void processMod(ModParams Parameter);
-    void stopProcessMod();
+    void switchProcessMod(float newValue);
+    void updateModParam(float newValue);
     juce::String discernParameterID(ModParams P);
     //void processSyncTime(modules m);
 
