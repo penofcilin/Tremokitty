@@ -36,7 +36,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     apvts.addParameterListener("MODCHOICE", this);
 
     //Adding listeners to each of the modable parameters- see the enumerator ModParams
-    for (int i = 1; i < 8; i++)
+    for (int i = 1; i < 7; i++)
     {
         ModParams param = ModParams(i);
         juce::String paramID = discernParameterID(param);
@@ -340,9 +340,6 @@ juce::String TremoKittyAudioProcessor::discernParameterID(ModParams p)
     case(ModParams::FilterModDepth):
         ParameterID = "FILTERMODLEVEL";
         break;
-    case(ModParams::FilterCutoff):
-        ParameterID = "FILTERCUTOFF";
-        break;
     default:
         DBG("Error discerning parameter ID from MODPARAMS");
     }
@@ -351,7 +348,24 @@ juce::String TremoKittyAudioProcessor::discernParameterID(ModParams p)
 
 void TremoKittyAudioProcessor::processMod(ModParams Parameter)
 {
+    float modFrequency = apvts.getRawParameterValue("MODLFORATE")->load();
+    float modDepth = apvts.getRawParameterValue("MODLFODEPTH")->load();
+    float paramMaxValue;
+    modLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, modFrequency);
+    if (modFrequency == 0)
+        modDepth = 0.f;
+ 
+    
     juce::String ParameterID = discernParameterID(Parameter);
+    //Determining the max value of our modded parameter based on whether it's a rate or depth parameter. (Rates are always 0-10. depth is 0-1).
+    if (ParameterID.contains("RATE"))
+    {
+        paramMaxValue = 10.f;
+    }
+    else
+    {
+        paramMaxValue = 1.f;
+    }
     
     //Saving the value before mod of our nice little eensie weensie mod value for later so we can use it and shit
     //Will only save the first time, wont save again until process mod is stopped (when the mod parameter is changed to None)
@@ -365,17 +379,27 @@ void TremoKittyAudioProcessor::processMod(ModParams Parameter)
         //Should store the index of the last modded parameter
         apvts.getRawParameterValue("LASTMODDEDPARAM")->store(Parameter);
     }
-    float modFrequency = apvts.getRawParameterValue("MODLFORATE")->load();
-    float modDepth = apvts.getRawParameterValue("MODLFODEPTH")->load();
-    modLFO.setParameter(viator_dsp::LFOGenerator::ParameterId::kFrequency, modFrequency);
-    //Number between 0 and 1 * modScaler, so if moddepth is 1 modscaler will be a value between 0 and 1. If mod Depth is like 0.5 modscaler will be a value between 0 and 0.5
     
-    float modScaler = ((modLFO.processSample(0.f)+1) * 0.5f) * modDepth;
-    //The value of the modded id is equal to it's old value times 1 - the modscaler
-    /*old value is 14.f, modscaler is 0.5
-    */
+    //Mod scaler is a value between 1 and 0, times the modDepth of 0 to 1.
+    float modScaler = ((modLFO.processSample(0.f) + 1) * 0.5);
     auto oldValue = apvts.getRawParameterValue("MODPARAMPREVIOUSVALUE")->load();
-    apvts.getRawParameterValue(ParameterID)->store(oldValue * (1 - modScaler));
+    if (paramMaxValue > 5.f)
+    {
+        //if oldvalue is 10, the LFO will be mapped from 0-1 to -10 to 10. I.E if the LFO gives 1, the modscaler gives 10. If the LFO gives 0, the modscaler gives -10.
+        modScaler = juce::jmap(modScaler, 0 - oldValue, 10 - oldValue);
+    }
+    else
+    {
+        //If the oldvalue is 0.5, the lfo will be mapped between 0-1 to -0.5 to 0.5. Therefore if the LFO gives 1, the modscaler gives 0.5. so our original value 0.5+ the lfo mod 0.5 will put us up to 1, the max value. 
+        modScaler = juce::jmap(modScaler, 0 - oldValue, 1 - oldValue);
+    }
+    //Storing the oldvalue +the modscaler * modDepth. Lets do the math
+    /*values between 0 and 10:
+    * say the original value is 7. The modscaler will be 0-1 mapped out between 0 minus 7 and 10 minus 7, in other words -7 and 13. Lets say the LFO is giving us a value of 1.0, so the scaler is at the max value. the modscaler will give us 13. Then when we add that to our original value, 7+13 = 10, therefore the max from the LFO will give us the max of the actual value. This is only if the moddepth is fully engaged. If the moddepth is at, say, 0.5, then the range of the modscaler collapses from -7 to 13 to -3.5 to 6.5. This way, the signal is only being modulated from a range that goes from the original value to halfway down to 0, and halfway to the max. In other words it modulates 7 down to 3.5, up to 13.5. And of course, if mod depth is 0, then 0 will be added to the oldvalue, so the parameter will not be being changed at all.
+    * The math is pretty much the same for the 0-1 values. Just shrink the formula down.
+    */
+    apvts.getRawParameterValue(ParameterID)->store(oldValue + (modScaler*modDepth));
+    DBG("The parameter is  " + std::to_string(apvts.getRawParameterValue(ParameterID)->load()));
     
 }
 
@@ -834,19 +858,19 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
 
     //Tremolo Section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.35f), 0.1f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.1f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Modulation Waveform", juce::StringArray("Sine", "Saw", "SawDown", "Triangle", "Square"), 0));
     layout.add(std::make_unique < juce::AudioParameterBool>("TREMBP", "Tremolo Bypass", false));
 
     //Panner section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.35f), 7.5f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 7.5f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANDEPTH", "Pan Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", juce::StringArray("Sine", "Saw", "SawDown", "Triangle", "Square"), 0));
     layout.add(std::make_unique < juce::AudioParameterBool>("PANBP", "Pan Bypass", false));
 
     //Filter section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.35f), 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", juce::NormalisableRange<float>(0.f, 1.f, 0.001f, 0.35), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", juce::NormalisableRange<float>(0.f, 1.f, 0.000001, 0.25), 0.9f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", juce::NormalisableRange<float>(0.7f, 10.f, 0.05, 0.9), (1 / sqrt(2))));
@@ -855,12 +879,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBP", "Filter Bypass", false));
 
     //ModLFO Section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFORATE", "Mod LFO Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.35f), 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFORATE", "Mod LFO Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFODEPTH", "Mod LFO Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODWAVETYPE", "Mod LFO Wave Type", juce::StringArray("Sine", "Saw", "SawDown", "Triangle", "Square"), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("MODCHOICE", "Mod LFO Parameter Choice", juce::StringArray("None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Cutoff", "Filter Mod Rate", "Filter Mod Depth"), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("MODCHOICE", "Mod LFO Parameter Choice", juce::StringArray("None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Mod Rate", "Filter Mod Depth"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("LASTMODDEDPARAM", "The String Name of the last parameter that was modded", juce::StringArray("None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Cutoff", "Filter Mod Rate", "Filter Mod Depth"), 0));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("MODPARAMPREVIOUSVALUE", "Modded Parameter Pre-modded Value", 0.f, 20.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("MODPARAMPREVIOUSVALUE", "Modded Parameter Pre-modded Value", 0.f, 10.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterBool>("MODRESETSWITCH", "Modded Param Reset Switch", true));
 
     //Returning every parameter
