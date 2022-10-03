@@ -4,6 +4,7 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="qZML3O" name="TremoKitty">
     <GROUP id="{CF98ECBA-25AC-378B-D540-903DD503CB7C}" name="Source">
+      <FILE id="yf8sjr" name="PresetPanel.h" compile="0" resource="0" file="Source/PresetPanel.h"/>
       <FILE id="M8LVSy" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="FT56Fz" name="PluginProcessor.h" compile="0" resource="0"
@@ -35,7 +36,6 @@
         <MODULEPATH id="juce_gui_basics" path="../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../JUCE/modules"/>
         <MODULEPATH id="viator_modules" path="."/>
-        <MODULEPATH id="KOModules" path="."/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>
@@ -54,7 +54,6 @@
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="KOModules" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="viator_modules" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
 </JUCERPROJECT>
