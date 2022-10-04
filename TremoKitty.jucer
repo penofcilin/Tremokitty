@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="GRGKvp" name="TremoKitty" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="KOAudio">
   <MAINGROUP id="qZML3O" name="TremoKitty">
     <GROUP id="{CF98ECBA-25AC-378B-D540-903DD503CB7C}" name="Source">
-      <FILE id="yf8sjr" name="PresetPanel.h" compile="0" resource="0" file="Source/PresetPanel.h"/>
+      <GROUP id="{880E8726-415A-DC57-9B02-DEE1B8E37D2D}" name="Service">
+        <FILE id="lOZsSU" name="PresetManager.cpp" compile="1" resource="0"
+              file="Source/Service/PresetManager.cpp"/>
+        <FILE id="js9MvG" name="PresetManager.h" compile="0" resource="0" file="Source/Service/PresetManager.h"/>
+      </GROUP>
+      <GROUP id="{9F2CC2FD-6121-4DA6-8393-0F53939D78C7}" name="Gui">
+        <FILE id="yf8sjr" name="PresetPanel.h" compile="0" resource="0" file="Source/PresetPanel.h"/>
+      </GROUP>
       <FILE id="M8LVSy" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="FT56Fz" name="PluginProcessor.h" compile="0" resource="0"

@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "PresetPanel.h"
 #define modules TremoKittyAudioProcessor::modules
 
 //==============================================================================
@@ -29,6 +30,8 @@ private:
     juce::TextButton header;
     juce::ToggleButton MasterBypass;
     juce::TextButton ResetButton;
+
+    Gui::PresetPanel presetPanel;
 
     //Tremolo Section
     juce::Slider tremRateSlider;

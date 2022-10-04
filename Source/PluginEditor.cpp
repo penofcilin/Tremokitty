@@ -13,7 +13,7 @@
 
 //==============================================================================
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager())
 {
     //Header
     header.setColour(juce::TextButton::buttonColourId, juce::Colours::beige);
@@ -21,10 +21,12 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     header.setButtonText("TremoKitty!");
     addAndMakeVisible(header);
 
+    addAndMakeVisible(presetPanel);
+
     //Reset Button
     ResetButton.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
     ResetButton.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
-    ResetButton.setButtonText("Reset Everything");
+    ResetButton.setButtonText("Reset To Default");
     ResetButton.onClick = [&] {resetEverything(); };
     addAndMakeVisible(ResetButton);
 
@@ -158,7 +160,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     
     
 
-    setSize (500, 500);
+    setSize (500, 550);
     initializedGUI = true;
 }
 
@@ -166,6 +168,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
 void TremoKittyAudioProcessorEditor::resetEverything()
 {
     audioProcessor.resetEverything();
+    presetPanel.changePresetIndex(0);
 }
 
 
@@ -287,17 +290,17 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.alignContent = juce::FlexBox::AlignContent::stretch;
     Filterfb.justifyContent = juce::FlexBox::JustifyContent::center;
 
-    Filterfb.items.add(juce::FlexItem(100, 45, FilterCutoffSlider));
-    Filterfb.items.add(juce::FlexItem(25, 25, FilterCutoffLabel));
+    Filterfb.items.add(juce::FlexItem(75, 45, FilterCutoffSlider));
+    Filterfb.items.add(juce::FlexItem(25, 10, FilterCutoffLabel));
     Filterfb.items.add(juce::FlexItem(75, 45, FilterModRate));
-    Filterfb.items.add(juce::FlexItem(25, 25, FilterModLabel));
+    Filterfb.items.add(juce::FlexItem(25, 10, FilterModLabel));
     Filterfb.items.add(juce::FlexItem(75, 45, FilterModAmount));
-    Filterfb.items.add(juce::FlexItem(25, 25, FilterModAmountLabel));
+    Filterfb.items.add(juce::FlexItem(25, 10, FilterModAmountLabel));
     Filterfb.items.add(juce::FlexItem(75, 45, FilterResonanceSlider));
-    Filterfb.items.add(juce::FlexItem(25, 25, FilterResonanceLabel));
-    Filterfb.items.add(juce::FlexItem(75, 45, FilterType));
-    Filterfb.items.add(juce::FlexItem(75, 45, FilterWaveChoice));
-    Filterfb.items.add(juce::FlexItem(45, 45, FilterBypass));
+    Filterfb.items.add(juce::FlexItem(25, 10, FilterResonanceLabel));
+    Filterfb.items.add(juce::FlexItem(55, 45, FilterType));
+    Filterfb.items.add(juce::FlexItem(55, 45, FilterWaveChoice));
+    Filterfb.items.add(juce::FlexItem(15, 15, FilterBypass));
 
     //Mod Section
     Modfb.flexDirection = juce::FlexBox::Direction::column;
@@ -313,10 +316,12 @@ void TremoKittyAudioProcessorEditor::resized()
     Modfb.items.add(juce::FlexItem(35, 35, ModLFOModOptions));
 
     //Performing Layout
-    ArchFB.performLayout(threeQuarterArea.removeFromTop(50));
-    Tremfb.performLayout(threeQuarterArea.removeFromLeft(200));
-    Panfb.performLayout(threeQuarterArea.removeFromRight(200));
-    Modfb.performLayout(threeQuarterArea.removeFromTop(150));
-    Filterfb.performLayout(area.removeFromBottom(135));
-    
+    ArchFB.performLayout(threeQuarterArea.removeFromTop(threeQuarterArea.proportionOfHeight(0.1f)).reduced(4));
+    Tremfb.performLayout(threeQuarterArea.removeFromLeft(threeQuarterArea.proportionOfWidth(0.5)).reduced(4));
+    Panfb.performLayout(threeQuarterArea.removeFromRight(threeQuarterArea.getWidth()).reduced(4));
+    Filterfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.2f)).reduced(4));
+    Modfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.2f)).reduced(4));
+
+    presetPanel.setBounds(area.removeFromBottom(area.proportionOfHeight(0.1f)));
+
 }

@@ -3,7 +3,6 @@
 void viator_dsp::LFOGenerator::prepare(const juce::dsp::ProcessSpec &spec)
 {
     sampleRate = spec.sampleRate / spec.maximumBlockSize;
-    DBG(std::to_string(spec.maximumBlockSize));
     period = 1.f / sampleRate;
     
     reset();

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Service/PresetManager.h"
 
 
 //==============================================================================
@@ -60,6 +61,7 @@ public:
     enum class modules { tremolo, pan, filter, mod, master };
     void resetEverything();
     void loadPreset(const juce::String& name);
+    Service::PresetManager& getPresetManager() { return *presetManager; }
 
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
@@ -86,6 +88,9 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
+    std::unique_ptr<Service::PresetManager> presetManager;
+
+   
     void getFilterType(bool shouldPrepare);
     void getWave(modules module);
     void parameterChanged(const juce::String& parameterID, float newValue) override;
@@ -93,7 +98,6 @@ private:
     void switchProcessMod(float newValue);
     void updateModParam(float newValue);
     juce::String discernParameterID(ModParams P);
-    //void processSyncTime(modules m);
 
     bool shouldPrepare;
     
