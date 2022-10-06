@@ -38,8 +38,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     //Adding listeners to each of the modable parameters- see the enumerator ModParams
     for (int i = 1; i < 7; i++)
     {
-        ModParams param = ModParams(i);
-        juce::String paramID = discernParameterID(param);
+        juce::String paramID = ModParamsStrings[i];
         apvts.addParameterListener(paramID, this);
     }
 
@@ -85,11 +84,13 @@ void TremoKittyAudioProcessor::parameterChanged(const juce::String& parameterID,
     //Mod Params Bullshit:
     else
     {
-        //If the slider changed is equal to the one we're modding, else it will update based on every single slider we change
-        updateModParam(newValue);
+        if (parameterID == ModParamsStrings[apvts.getRawParameterValue("MODCHOICE")->load()])
+        {
+            updateModParam(newValue);
+        }
+        
+        
     }
-    
-
 }
 
 //==============================================================================
@@ -313,37 +314,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     if(!apvts.getRawParameterValue("FILTERBP")->load())
         filter.process(juce::dsp::ProcessContextReplacing<float>(block));
 }
-juce::String TremoKittyAudioProcessor::discernParameterID(ModParams p)
-{
-    juce::String ParameterID;
-    switch (p)
-    {
-    case(ModParams::None):
-        ParameterID = "NONE";
-        break;
-    case(ModParams::TremRate):
-        ParameterID = "TREMRATE";
-        break;
-    case(ModParams::TremDepth):
-        ParameterID = "TREMDEPTH";
-        break;
-    case(ModParams::PanRate):
-        ParameterID = "PANRATE";
-        break;
-    case(ModParams::PanDepth):
-        ParameterID = "PANDEPTH";
-        break;
-    case(ModParams::FilterModRate):
-        ParameterID = "FILTERRATE";
-        break;
-    case(ModParams::FilterModDepth):
-        ParameterID = "FILTERMODLEVEL";
-        break;
-    default:
-        DBG("Error discerning parameter ID from MODPARAMS");
-    }
-    return ParameterID;
-}
 
 void TremoKittyAudioProcessor::processMod(ModParams Parameter)
 {
@@ -355,7 +325,7 @@ void TremoKittyAudioProcessor::processMod(ModParams Parameter)
         modDepth = 0.f;
  
     
-    juce::String ParameterID = discernParameterID(Parameter);
+    juce::String ParameterID = ModParamsStrings[Parameter];
     //Determining the max value of our modded parameter based on whether it's a rate or depth parameter. (Rates are always 0-10. depth is 0-1).
     if (ParameterID.contains("RATE"))
     {
@@ -405,9 +375,9 @@ void TremoKittyAudioProcessor::processMod(ModParams Parameter)
 void TremoKittyAudioProcessor::switchProcessMod(float newValue)
 {
     int oldParamIndex = apvts.getRawParameterValue("LASTMODDEDPARAM")->load();
-    juce::String ParameterID = discernParameterID(ModParams(oldParamIndex));
+    juce::String ParameterID = ModParamsStrings[oldParamIndex];
     //sets the modded parameter id back to its original value
-    if (ParameterID != "NONE")
+    if (ParameterID != "None")
     {
         float oldValue = (apvts.getRawParameterValue("MODPARAMPREVIOUSVALUE")->load());
         DBG("Old value = " + std::to_string(oldValue));
@@ -457,12 +427,6 @@ void TremoKittyAudioProcessor::setStateInformation(const void* data, int sizeInB
             apvts.state = juce::ValueTree::fromXml(*xmlParams);
         }
     }
-
-}
-
-//Will load a preset.
-void TremoKittyAudioProcessor::loadPreset(const juce::String& name)
-{
 
 }
 
@@ -516,7 +480,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFORATE", "Mod LFO Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFODEPTH", "Mod LFO Depth", 0.f, 1.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODWAVETYPE", "Mod LFO Wave Type", juce::StringArray("Sine", "Saw", "SawDown", "Triangle", "Square"), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("MODCHOICE", "Mod LFO Parameter Choice", juce::StringArray("None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Mod Rate", "Filter Mod Depth"), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("MODCHOICE", "Mod LFO Parameter Choice", juce::StringArray("None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("LASTMODDEDPARAM", "The String Name of the last parameter that was modded", juce::StringArray("None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Cutoff", "Filter Mod Rate", "Filter Mod Depth"), 0));
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODPARAMPREVIOUSVALUE", "Modded Parameter Pre-modded Value", 0.f, 10.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterBool>("MODRESETSWITCH", "Modded Param Reset Switch", true));

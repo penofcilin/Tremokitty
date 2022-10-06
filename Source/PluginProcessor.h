@@ -60,13 +60,12 @@ public:
     enum class waveForms { sine, saw, square };
     enum class modules { tremolo, pan, filter, mod, master };
     void resetEverything();
-    void loadPreset(const juce::String& name);
     Service::PresetManager& getPresetManager() { return *presetManager; }
 
     juce::AudioProcessorValueTreeState apvts;
     juce::dsp::Gain<float> gainModule;
 
-    juce::StringArray ModParamsStrings{"None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Mod Rate", "Filter Mod Depth"};
+    juce::StringArray ModParamsStrings{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
     enum ModParams{None, TremRate, TremDepth, PanRate, PanDepth, FilterModRate, FilterModDepth};
     juce::StringArray WaveTypes{ "Sine", "Saw", "SawDown", "Triangle", "Square" };
 
@@ -97,7 +96,6 @@ private:
     void processMod(ModParams Parameter);
     void switchProcessMod(float newValue);
     void updateModParam(float newValue);
-    juce::String discernParameterID(ModParams P);
 
     bool shouldPrepare;
     
