@@ -8,6 +8,14 @@ void viator_dsp::LFOGenerator::prepare(const juce::dsp::ProcessSpec &spec)
     reset();
 }
 
+void viator_dsp::LFOGenerator::prepare(const float customSampleRate)
+{
+    sampleRate = customSampleRate;
+    period = 1.f / sampleRate;
+
+    reset();
+}
+
 void viator_dsp::LFOGenerator::reset()
 {
     phase.reset();
@@ -78,18 +86,12 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
         }
         case viator_dsp::LFOGenerator::WaveType::kSaw:
         {
-            initialise([](float x){return x / juce::MathConstants<float>::pi; });
+            initialise([](float x){return x / juce::MathConstants<float>::pi; }, 44100);
             break;
         }
         case viator_dsp::LFOGenerator::WaveType::kSawDown:
         {
             initialise([](float x) {return (x / juce::MathConstants<float>::pi)* (-1); });
-            break;
-        }
-        //doesnt work atm
-        case viator_dsp::LFOGenerator::WaveType::kTriangle:
-        {
-            initialise([](float x) {return (2.f/ juce::MathConstants<float>::pi) * pow(std::sin(std::sin(juce::MathConstants<float>::pi * x)), -1); });
             break;
         }
         case viator_dsp::LFOGenerator::WaveType::kSquare:

@@ -21,6 +21,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     header.setButtonText("TremoKitty!");
     addAndMakeVisible(header);
 
+    //PresetPanel
     addAndMakeVisible(presetPanel);
 
     //Reset Button
@@ -47,20 +48,13 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     tremDepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMDEPTH", tremDepthSlider);
     createLabel("tremdepth", TremDepthLabel);
 
-    //Trem Wave Combobox
-    for (int i = 0; i < audioProcessor.WaveTypes.size(); i++)
-    {
-        tremWaveChoice.addItem(audioProcessor.WaveTypes[i], i + 1);
-    }
+    tremWaveChoice.addItemList(audioProcessor.WaveTypes, 1);
 
     addAndMakeVisible(tremWaveChoice);
     TremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
 
     createToggleButton("Tremolo Bypass", TremBypass);
     TremBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMBP", TremBypass);
-
-    
-
     /*Tremolo end*/
 
     /*Panning starts*/
@@ -83,8 +77,6 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     createToggleButton("Pan Bypass", PanBypass);
     PanBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "PANBP", PanBypass);
     
-    
-
     /*Panning ends*/
 
     /*Filter starts*/
@@ -116,9 +108,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     filterResonanceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "FILTERRES", FilterResonanceSlider);
     createLabel("Filter Resonance", FilterResonanceLabel);
     //Filter Wave Combobox
-    FilterWaveChoice.addItem("Sine", 1);
-    FilterWaveChoice.addItem("Saw", 2);
-    FilterWaveChoice.addItem("square", 3);
+    FilterWaveChoice.addItemList(audioProcessor.ModParams, 1);
     FilterWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERWAVE", FilterWaveChoice);
     
 
@@ -137,31 +127,22 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     createSlider(ModLFORateSlider);
     ModLFORateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "MODLFORATE", ModLFORateSlider);
     createLabel("Mod LFO Rate", ModLFORateLabel);
-    for (int i = 0; i < audioProcessor.ModParamsStrings.size(); i++)
-    {
-        ModLFOModOptions.addItem(audioProcessor.ModParamsStrings[i], i+1);
-    }
+    ModLFOModOptions.addItemList(audioProcessor.ModParams, 1);
     ModLFOModdedParameterAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODCHOICE", ModLFOModOptions);
     createSlider(ModLFODepthSlider);
     createLabel("Mod LFO Depth", ModLFODepthLabel);
     ModLFODepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "MODLFODEPTH", ModLFODepthSlider);
-    for (int i = 0; i < audioProcessor.WaveTypes.size(); i++)
-    {
-        ModLFOWaveType.addItem(audioProcessor.WaveTypes[i], i+1);
-        
-    }
+    ModLFOWaveType.addItemList(audioProcessor.WaveTypes, 1);
     ModLFOWaveTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODWAVETYPE", ModLFOWaveType);
     //Fils the combobox with the straight notes
     addAndMakeVisible(ModLFOWaveType);
     addAndMakeVisible(ModLFOModOptions);
+    createToggleButton("Mod LFO Bypass", ModBypass);
+    ModBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "MODBP", ModBypass);
        
     /*Mod Section Ends*/
-    
-    
-    
 
     setSize (500, 550);
-    initializedGUI = true;
 }
 
 
@@ -186,11 +167,8 @@ void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &FilterCutoffSlider)
     { 
-        if (initializedGUI)
-        {
-            float newValue = slider->getValue();
-            FilterCutoffLabel.setText((std::to_string((int)juce::jmap(newValue, 20.f, 20000.f))) + " HZ", juce::NotificationType::dontSendNotification);
-        }
+        float newValue = slider->getValue();
+        FilterCutoffLabel.setText((std::to_string((int)juce::jmap(newValue, 20.f, 20000.f))) + " HZ", juce::NotificationType::dontSendNotification);
     }
 }
 
@@ -314,6 +292,7 @@ void TremoKittyAudioProcessorEditor::resized()
     Modfb.items.add(juce::FlexItem(35, 35, ModLFODepthLabel));
     Modfb.items.add(juce::FlexItem(35, 35, ModLFOWaveType));
     Modfb.items.add(juce::FlexItem(35, 35, ModLFOModOptions));
+    Modfb.items.add(juce::FlexItem(15, 15, ModBypass));
 
     //Performing Layout
     ArchFB.performLayout(threeQuarterArea.removeFromTop(threeQuarterArea.proportionOfHeight(0.1f)).reduced(4));

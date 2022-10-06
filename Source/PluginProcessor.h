@@ -57,46 +57,49 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    enum class waveForms { sine, saw, square };
     enum class modules { tremolo, pan, filter, mod, master };
     void resetEverything();
     Service::PresetManager& getPresetManager() { return *presetManager; }
 
     juce::AudioProcessorValueTreeState apvts;
-    juce::dsp::Gain<float> gainModule;
 
-    juce::StringArray ModParamsStrings{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
-    enum ModParams{None, TremRate, TremDepth, PanRate, PanDepth, FilterModRate, FilterModDepth};
-    juce::StringArray WaveTypes{ "Sine", "Saw", "SawDown", "Triangle", "Square" };
 
-    
-
+    //Some Information objects
+    juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
+    juce::StringArray WaveTypes{ "Sine", "Saw", "SawDown", "Square" };
+    juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
 private:
 
     juce::dsp::ProcessSpec spec;
 
+    //LFO Section, so pretty, all in a row, like red toy soldiers marching through the snow
     viator_dsp::LFOGenerator tremLFO;
     viator_dsp::LFOGenerator panLFO;
     viator_dsp::LFOGenerator filterLFO;
     viator_dsp::LFOGenerator modLFO;
-   
-    
-    juce::dsp::StateVariableTPTFilter<float> filter;
-    juce::dsp::Panner<float> panner;
 
+   //DSP modules
+    juce::dsp::Gain<float> gainModule;
+    juce::LinearSmoothedValue<float> gainSmoothed{ 0 };
+    juce::dsp::Panner<float> panner;
+    juce::dsp::StateVariableTPTFilter<float> filter;
+    
+    //APVTS helper methods
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
+    //Our presetManager Instance
     std::unique_ptr<Service::PresetManager> presetManager;
 
-   
+   //Some Member Functions
     void getFilterType(bool shouldPrepare);
     void getWave(modules module);
     void parameterChanged(const juce::String& parameterID, float newValue) override;
-    void processMod(ModParams Parameter);
-    void switchProcessMod(float newValue);
+    void processMod(const juce::String& parameterID);
+    void switchProcessMod();
     void updateModParam(float newValue);
 
+    //Used for preparing the filter module.
     bool shouldPrepare;
     
 

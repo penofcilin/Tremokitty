@@ -27,10 +27,10 @@ public:
     void resized() override;
 
 private:
+    //General Elements
     juce::TextButton header;
     juce::ToggleButton MasterBypass;
     juce::TextButton ResetButton;
-
     Gui::PresetPanel presetPanel;
 
     //Tremolo Section
@@ -69,6 +69,7 @@ private:
     juce::Label ModLFODepthLabel;
     juce::ComboBox ModLFOWaveType;
     juce::ComboBox ModLFOModOptions;
+    juce::ToggleButton ModBypass;
 
     //Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
@@ -86,6 +87,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> TremBypassAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> PanBypassAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> FilterBypassAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> ModBypassAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> TremWaveAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> PanWaveAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterWaveAttachment;
@@ -101,16 +103,8 @@ private:
     void sliderValueChanged(juce::Slider* slider) override;
     void resetEverything();
 
-    //Member variables
-    bool initializedGUI = false;
-
-    
-//Processor
+    //Processor
     TremoKittyAudioProcessor& audioProcessor;
-
-
-
-    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoKittyAudioProcessorEditor)
 };
