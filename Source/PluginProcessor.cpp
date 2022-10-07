@@ -23,7 +23,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
 #endif
 {
     
-    tremLFO.initialise([](float x) {return std::sin(x); }, 44100);
+    tremLFO.initialise([](float x) {return std::sin(x); });
     panLFO.initialise([](float x) {return std::sin(x); },128);
     filterLFO.initialise([](float x) {return std::sin(x); }, 128);
     modLFO.initialise([](float x) {return std::sin(x); }, 128);
@@ -34,6 +34,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     apvts.addParameterListener("FILTERWAVE", this);
     apvts.addParameterListener("MODWAVETYPE", this);
     apvts.addParameterListener("MODCHOICE", this);
+
 
     //Adding listeners to each of the modable parameters- see the enumerator ModParams
     for (int i = 1; i < 7; i++)
@@ -160,7 +161,7 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     spec.numChannels = getTotalNumOutputChannels();
 
     gainModule.prepare(spec);
-    tremLFO.prepare(19952);
+    tremLFO.prepare(sampleRate);
     filterLFO.prepare(spec);
     panLFO.prepare(spec);
     modLFO.prepare(spec);
@@ -223,6 +224,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     juce::dsp::AudioBlock<float> block(buffer);
 
     //The Mod LFO section is processed first, as it will affect the value of the others.
+    
     float modChoice = apvts.getRawParameterValue("MODCHOICE")->load();
     if (modChoice != 0.f)
     {
@@ -230,7 +232,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         int index = (int)modChoice;
         processMod(ModParams[index]);
     }
-
+    std::vector<float> results;
     //Tremolo Section
  //Loading the tremolo rate and depth parameters
     if ((!apvts.getRawParameterValue("TREMBP")->load()))
@@ -244,27 +246,23 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             //then processing with the gain mod
             //Could literally just be 1.f
             float gain = apvts.getRawParameterValue("GAIN")->load();
+            
+            std::vector<float> LFOLookupTable;
+            for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
+            {
+                LFOLookupTable.push_back(tremLFO.getNextValue());
+            }
 
             //Some GainStuff must be done in the classic loop, else there will be insane harmonics added at high frequencies.
-            /*for (int channel = 0; channel < totalNumInputChannels; ++channel)
+            for (int channel = 0; channel < totalNumInputChannels; ++channel)
             {
                 float* channelData = buffer.getWritePointer(channel);
 
                 for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
                 {
-                    float gainMod = (tremLFO.processSample(0.f)) * tremDepth;
-                    gainSmoothed.setTargetValue(gain + gainMod);
-                    channelData[samples] *= gainSmoothed.getNextValue();
+                    float gainMod = tremDepth * LFOLookupTable[samples];
+                    channelData[samples] *= gainMod;
                 }
-            }
-        }*/
-
-            for (int i = 0; i < 232; i++)
-            {
-                float gainMod = (tremLFO.processSample(0.f)) * tremDepth;
-                gainSmoothed.setTargetValue(gain + gainMod);
-                gainModule.setGainLinear(gainSmoothed.getNextValue());
-                gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
             }
         }
     }//if trembp is false
@@ -273,11 +271,16 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         gainModule.setGainLinear(1.f);
         gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
     }
+    for (float f : results)
+    {
+        DBG(std::to_string(f));
+    }
+    
 
 
 
 
-
+    
     //Panning section
     float panDepth = apvts.getRawParameterValue("PANDEPTH")->load();
     float panRate = apvts.getRawParameterValue("PANRATE")->load();
@@ -383,12 +386,15 @@ void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
     * say the original value is 7. The modscaler will be 0-1 mapped out between 0 minus 7 and 10 minus 7, in other words -7 and 13. Lets say the LFO is giving us a value of 1.0, so the scaler is at the max value. the modscaler will give us 13. Then when we add that to our original value, 7+13 = 10, therefore the max from the LFO will give us the max of the actual value. This is only if the moddepth is fully engaged. If the moddepth is at, say, 0.5, then the range of the modscaler collapses from -7 to 13 to -3.5 to 6.5. This way, the signal is only being modulated from a range that goes from the original value to halfway down to 0, and halfway to the max. In other words it modulates 7 down to 3.5, up to 13.5. And of course, if mod depth is 0, then 0 will be added to the oldvalue, so the parameter will not be being changed at all.
     * The math is pretty much the same for the 0-1 values. Just shrink the formula down.
     */
+
     if(!apvts.getRawParameterValue("MODBP")->load())
         apvts.getRawParameterValue(parameterID)->store(oldValue + (modScaler*modDepth));
     else
     {
         apvts.getRawParameterValue(parameterID)->store(oldValue);
     }
+
+    
 }
 
 //Changes the parameter that is being modded
@@ -473,6 +479,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique < juce::AudioParameterBool>("MASTERBP", "Master Bypass", false));
     //this guy is not used, but needs to be here or the presets load incorrectly. Actually, the presets wont load at all.
     layout.add(std::make_unique<juce::AudioParameterInt>("PRESETINDEX", "Preset Index", 0, 100000, 0));
+
 
     //Tremolo Section
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.1f));

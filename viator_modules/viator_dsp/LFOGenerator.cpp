@@ -3,7 +3,6 @@
 void viator_dsp::LFOGenerator::prepare(const juce::dsp::ProcessSpec &spec)
 {
     sampleRate = spec.sampleRate / spec.maximumBlockSize;
-    period = 1.f / sampleRate;
     
     reset();
 }
@@ -11,7 +10,6 @@ void viator_dsp::LFOGenerator::prepare(const juce::dsp::ProcessSpec &spec)
 void viator_dsp::LFOGenerator::prepare(const float customSampleRate)
 {
     sampleRate = customSampleRate;
-    period = 1.f / sampleRate;
 
     reset();
 }
@@ -65,14 +63,15 @@ float viator_dsp::LFOGenerator::getFrequency()
     return m_frequency;
 }
 
-float  viator_dsp::LFOGenerator::getNextValue()
+float viator_dsp::LFOGenerator::getNextValue()
 {
-    currentPhase += period;
-    if (currentPhase >= 1.f)
-        currentPhase = 0.f;
-    float value = waveFunction(juce::MathConstants<float>::twoPi * m_frequency * currentPhase + 0.f);
-    currentPhase += period;
-    return value;
+    inc = juce::MathConstants<float>::twoPi * m_frequency / sampleRate;
+    myPhase += inc;
+    if (myPhase > juce::MathConstants<float>::twoPi)
+        myPhase -= juce::MathConstants<float>::twoPi;
+
+    return std::sin(myPhase);
+
 }
 
 void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
@@ -81,7 +80,7 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
     {
         case viator_dsp::LFOGenerator::WaveType::kSine:
         {
-            initialise([](float x){return std::cos(x); });
+            initialise([](float x){return std::sin(x); });
             break;
         }
         case viator_dsp::LFOGenerator::WaveType::kSaw:

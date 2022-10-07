@@ -22,6 +22,7 @@ namespace viator_dsp
 
         float processSample(float newInput, float mod);
 
+
         float getNextValue();
             
         enum class ParameterId
@@ -46,16 +47,16 @@ namespace viator_dsp
         void setWaveType(WaveType newWaveType);
         
     private:
-        //My Implementation
-        float period;
-        float currentPhase;
 
-        std::function<float(float)> waveFunction;
-
+        float inc{ 0.f };
+        float myPhase{ 0.f };
+        
 
         float m_frequency;
         float sampleRate;
-        
+
+        std::function<float(float)> waveFunction;
+
         juce::dsp::Phase<float> phase;
         
         std::function<float (float)> generator;
