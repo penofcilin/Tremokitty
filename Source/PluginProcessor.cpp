@@ -160,7 +160,7 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     spec.numChannels = getTotalNumOutputChannels();
 
     gainModule.prepare(spec);
-    tremLFO.prepare(sampleRate);
+    tremLFO.prepare(19952);
     filterLFO.prepare(spec);
     panLFO.prepare(spec);
     modLFO.prepare(spec);
@@ -171,7 +171,7 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     //Filter Module
     filter.prepare(spec);
     shouldPrepare = true;
-    gainSmoothed.reset(sampleRate, 0.00005f);
+    gainSmoothed.reset(sampleRate, 0.0005f);
 }
 
 void TremoKittyAudioProcessor::releaseResources()
@@ -246,7 +246,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             float gain = apvts.getRawParameterValue("GAIN")->load();
 
             //Some GainStuff must be done in the classic loop, else there will be insane harmonics added at high frequencies.
-            for (int channel = 0; channel < totalNumInputChannels; ++channel)
+            /*for (int channel = 0; channel < totalNumInputChannels; ++channel)
             {
                 float* channelData = buffer.getWritePointer(channel);
 
@@ -256,6 +256,15 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
                     gainSmoothed.setTargetValue(gain + gainMod);
                     channelData[samples] *= gainSmoothed.getNextValue();
                 }
+            }
+        }*/
+
+            for (int i = 0; i < 232; i++)
+            {
+                float gainMod = (tremLFO.processSample(0.f)) * tremDepth;
+                gainSmoothed.setTargetValue(gain + gainMod);
+                gainModule.setGainLinear(gainSmoothed.getNextValue());
+                gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
             }
         }
     }//if trembp is false
