@@ -70,8 +70,7 @@ float viator_dsp::LFOGenerator::getNextValue()
     if (myPhase > juce::MathConstants<float>::twoPi)
         myPhase -= juce::MathConstants<float>::twoPi;
 
-    return std::sin(myPhase);
-
+    return waveFunction(myPhase);
 }
 
 void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
@@ -85,7 +84,7 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
         }
         case viator_dsp::LFOGenerator::WaveType::kSaw:
         {
-            initialise([](float x){return x / juce::MathConstants<float>::pi; }, 44100);
+            initialise([](float x){return x / juce::MathConstants<float>::pi; });
             break;
         }
         case viator_dsp::LFOGenerator::WaveType::kSawDown:

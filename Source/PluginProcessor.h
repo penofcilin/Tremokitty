@@ -80,7 +80,6 @@ private:
 
    //DSP modules
     juce::dsp::Gain<float> gainModule;
-    juce::LinearSmoothedValue<float> gainSmoothed{ 0 };
     juce::dsp::Panner<float> panner;
     juce::dsp::StateVariableTPTFilter<float> filter;
     

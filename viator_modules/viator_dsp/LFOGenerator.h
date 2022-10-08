@@ -55,11 +55,12 @@ namespace viator_dsp
         float m_frequency;
         float sampleRate;
 
-        std::function<float(float)> waveFunction;
+        
 
         juce::dsp::Phase<float> phase;
         
         std::function<float (float)> generator;
+        std::function<float(float)> waveFunction;
         std::unique_ptr<juce::dsp::LookupTableTransform<float>> lookupTable;
         
         bool m_GlobalBypass {false};

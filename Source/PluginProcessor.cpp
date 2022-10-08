@@ -23,7 +23,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
 #endif
 {
     
-    tremLFO.initialise([](float x) {return std::sin(x); });
+    tremLFO.initialise([](float x) {return std::sin(x); },128);
     panLFO.initialise([](float x) {return std::sin(x); },128);
     filterLFO.initialise([](float x) {return std::sin(x); }, 128);
     modLFO.initialise([](float x) {return std::sin(x); }, 128);
@@ -172,7 +172,6 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     //Filter Module
     filter.prepare(spec);
     shouldPrepare = true;
-    gainSmoothed.reset(sampleRate, 0.0005f);
 }
 
 void TremoKittyAudioProcessor::releaseResources()
@@ -232,7 +231,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         int index = (int)modChoice;
         processMod(ModParams[index]);
     }
-    std::vector<float> results;
     //Tremolo Section
  //Loading the tremolo rate and depth parameters
     if ((!apvts.getRawParameterValue("TREMBP")->load()))
@@ -246,12 +244,12 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             //then processing with the gain mod
             //Could literally just be 1.f
             float gain = apvts.getRawParameterValue("GAIN")->load();
-            
-            std::vector<float> LFOLookupTable;
+            std::vector<float> lfoLookupTable;
             for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
             {
-                LFOLookupTable.push_back(tremLFO.getNextValue());
+                lfoLookupTable.push_back(tremLFO.getNextValue());
             }
+
 
             //Some GainStuff must be done in the classic loop, else there will be insane harmonics added at high frequencies.
             for (int channel = 0; channel < totalNumInputChannels; ++channel)
@@ -260,7 +258,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
                 for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
                 {
-                    float gainMod = tremDepth * LFOLookupTable[samples];
+                    float gainMod = tremDepth * lfoLookupTable[samples];
                     channelData[samples] *= gainMod;
                 }
             }
@@ -270,10 +268,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     {
         gainModule.setGainLinear(1.f);
         gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
-    }
-    for (float f : results)
-    {
-        DBG(std::to_string(f));
     }
     
 
