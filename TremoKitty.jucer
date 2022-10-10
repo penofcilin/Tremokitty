@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="GRGKvp" name="TremoKitty" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="KOAudio">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="KOAudio"
+              cppLanguageStandard="17">
   <MAINGROUP id="qZML3O" name="TremoKitty">
     <GROUP id="{CF98ECBA-25AC-378B-D540-903DD503CB7C}" name="Source">
       <GROUP id="{880E8726-415A-DC57-9B02-DEE1B8E37D2D}" name="Service">

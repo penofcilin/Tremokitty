@@ -48,10 +48,15 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     tremDepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMDEPTH", tremDepthSlider);
     createLabel("tremdepth", TremDepthLabel);
 
-    tremWaveChoice.addItemList(audioProcessor.WaveTypes, 1);
+    tremWaveChoice.addItem("Sine", 1);
+    tremWaveChoice.addItem("Saw", 2);
+    tremWaveChoice.addItem("SawDown", 3);
+    tremWaveChoice.addItem("Square", 4);
+    tremWaveChoice.addListener(this);
 
-    addAndMakeVisible(tremWaveChoice);
+    
     TremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
+    addAndMakeVisible(tremWaveChoice);
 
     createToggleButton("Tremolo Bypass", TremBypass);
     TremBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMBP", TremBypass);
@@ -145,6 +150,13 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     setSize (500, 550);
 }
 
+//DISGUSTING, ABSOLUTELY DISGUSTING
+void TremoKittyAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
+{
+    float index = comboBoxThatHasChanged->getSelectedItemIndex();
+    if (index == 3)
+        audioProcessor.changeTremWaveManually();
+}
 
 void TremoKittyAudioProcessorEditor::resetEverything()
 {
@@ -304,3 +316,5 @@ void TremoKittyAudioProcessorEditor::resized()
     presetPanel.setBounds(area.removeFromBottom(area.proportionOfHeight(0.1f)));
 
 }
+
+

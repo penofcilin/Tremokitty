@@ -55,11 +55,12 @@ public:
 
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    void setStateInformation(const void* data, int sizeInBytes) override;
 
     enum class modules { tremolo, pan, filter, mod, master };
     void resetEverything();
     Service::PresetManager& getPresetManager() { return *presetManager; }
+    void changeTremWaveManually();
 
     juce::AudioProcessorValueTreeState apvts;
 

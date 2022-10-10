@@ -16,7 +16,7 @@
 //==============================================================================
 /**
 */
-class TremoKittyAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Slider::Listener
+class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Slider::Listener, public juce::ComboBox::Listener
 {
 public:
     TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor&);
@@ -27,6 +27,8 @@ public:
     void resized() override;
 
 private:
+    void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
+
     //General Elements
     juce::TextButton header;
     juce::ToggleButton MasterBypass;

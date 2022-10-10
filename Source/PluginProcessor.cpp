@@ -59,6 +59,7 @@ void TremoKittyAudioProcessor::parameterChanged(const juce::String& parameterID,
 {
     if (parameterID == "TREMWAVE")
     {
+        DBG("Tremwave has chnaged" + std::to_string(newValue));
         getWave(modules::tremolo);
     }
     else if (parameterID == "PANWAVE")
@@ -247,10 +248,10 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             std::vector<float> lfoLookupTable;
             for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
             {
-                lfoLookupTable.push_back(tremLFO.getNextValue());
+                lfoLookupTable.push_back(tremLFO.processSample(0.f));
             }
-
-
+            float waveTypeIndex = apvts.getRawParameterValue("TREMWAVE")->load();
+            //DBG("INDEX = " + std::to_string(waveTypeIndex));
             //Some GainStuff must be done in the classic loop, else there will be insane harmonics added at high frequencies.
             for (int channel = 0; channel < totalNumInputChannels; ++channel)
             {
@@ -258,7 +259,8 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
                 for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
                 {
-                    float gainMod = tremDepth * lfoLookupTable[samples];
+                    //We have a value between -1 and 1 representing the position of a wave of sound. We also have a value between -1 and 1 that will modify that sound. We also have a value between 1 and 0 that will be multiplied by our modifying value, to give us a scalable depth control to our modulation. what we need is when the Modulation is at 1, the sound is untouched. The full value of the waveform gets through, regardless of depth. When modulation is at -1, the value is turned all the way down if depth is full, and turned down accordingly if depth is not full
+                    float gainMod = lfoLookupTable[samples] * tremDepth;
                     channelData[samples] *= gainMod;
                 }
             }
@@ -269,11 +271,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         gainModule.setGainLinear(1.f);
         gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
     }
-    
-
-
-
-
     
     //Panning section
     float panDepth = apvts.getRawParameterValue("PANDEPTH")->load();
@@ -456,6 +453,13 @@ void TremoKittyAudioProcessor::resetEverything()
     presetManager->loadPreset(Service::PresetManager::defaultPresetName);
 }
 
+void TremoKittyAudioProcessor::changeTremWaveManually()
+{
+    apvts.getRawParameterValue("TREMWAVE")->store(3.f);
+    getWave(modules::tremolo);
+    DBG("Manually changed tremwave to square.");
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
@@ -478,6 +482,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     //Tremolo Section
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.1f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
+
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Modulation Waveform", juce::StringArray("Sine", "Saw", "SawDown", "Square"), 0));
     layout.add(std::make_unique < juce::AudioParameterBool>("TREMBP", "Tremolo Bypass", false));
 
