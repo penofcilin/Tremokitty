@@ -37,7 +37,8 @@ namespace viator_dsp
             kSaw,
             kSawDown,
             kTriangle,
-            kSquare
+            kSquare,
+            kSmoothSquare
         };
 
         void setParameter(ParameterId parameter, float parameterValue);

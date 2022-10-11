@@ -39,7 +39,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     /*Tremolo start*/
     //Trem Rate
     createSlider(tremRateSlider);
-    tremRateSlider.setRange(0.f, 10.f, 10.f);
+    tremRateSlider.setRange(0.f, 20.f, 10.f);
     tremRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMRATE", tremRateSlider);
     createLabel("tremrate", tremRateLabel);
 

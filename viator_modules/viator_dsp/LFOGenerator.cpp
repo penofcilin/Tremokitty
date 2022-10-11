@@ -94,7 +94,14 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
         }
         case viator_dsp::LFOGenerator::WaveType::kSquare:
         {
-            initialise([](float x){return x < 0.0f ? -1.0f : 1.0f; });
+            initialise([](float x) {return x < 0.0f ? -1.0f : 1.0f; });
+            break;
+        }
+        case viator_dsp::LFOGenerator::WaveType::kSmoothSquare:
+        {
+            //initialise([](float x){return x < 0.0f ? -1.0f : 1.0f; });
+            //This function is much more expensive, but is a lot smoother, so it avoids clicking.
+            initialise([](float x) {return tanh(50 * cos(x)); });
             break;
         }
     }

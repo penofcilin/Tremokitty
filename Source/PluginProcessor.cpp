@@ -166,6 +166,8 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     filterLFO.prepare(spec);
     panLFO.prepare(spec);
     modLFO.prepare(spec);
+
+    smoothGain.reset(sampleRate, 0.00003);
     
     //Pan Module
     panner.prepare(spec);
@@ -248,20 +250,21 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             std::vector<float> lfoLookupTable;
             for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
             {
-                lfoLookupTable.push_back(tremLFO.processSample(0.f));
+                lfoLookupTable.push_back((tremLFO.processSample(0.f) + 1) * 0.5f);
             }
             float waveTypeIndex = apvts.getRawParameterValue("TREMWAVE")->load();
-            //DBG("INDEX = " + std::to_string(waveTypeIndex));
-            //Some GainStuff must be done in the classic loop, else there will be insane harmonics added at high frequencies.
+            
+            
             for (int channel = 0; channel < totalNumInputChannels; ++channel)
             {
                 float* channelData = buffer.getWritePointer(channel);
 
                 for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
                 {
-                    //We have a value between -1 and 1 representing the position of a wave of sound. We also have a value between -1 and 1 that will modify that sound. We also have a value between 1 and 0 that will be multiplied by our modifying value, to give us a scalable depth control to our modulation. what we need is when the Modulation is at 1, the sound is untouched. The full value of the waveform gets through, regardless of depth. When modulation is at -1, the value is turned all the way down if depth is full, and turned down accordingly if depth is not full
-                    float gainMod = lfoLookupTable[samples] * tremDepth;
-                    channelData[samples] *= gainMod;
+                    //We have a value between -1 and 1 representing the position of a wave of sound. We also have a value between 0 and 1 that will modify that sound. We also have a value between 1 and 0 that will be multiplied by our modifying value, to give us a scalable depth control to our modulation. what we need is when the Modulation is at 1, the sound is untouched. The full value of the waveform gets through, regardless of depth. When modulation is at -1, the value is turned all the way down if depth is full, and turned down accordingly if depth is not full
+                    float lfoPosition = lfoLookupTable[samples];
+                    float gainScaler = juce::jmap(lfoPosition, 0.f, channelData[samples]);
+                    channelData[samples] -= gainScaler * tremDepth;
                 }
             }
         }
@@ -338,7 +341,11 @@ void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
  
     
     //Determining the max value of our modded parameter based on whether it's a rate or depth parameter. (Rates are always 0-10. depth is 0-1).
-    if (parameterID.contains("RATE"))
+    if (parameterID.contains("TREMRATE"))
+    {
+        paramMaxValue = 20.f;
+    }
+    else if (parameterID.contains("RATE"))
     {
         paramMaxValue = 10.f;
     }
@@ -480,7 +487,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 
 
     //Tremolo Section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.1f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.5f), 0.1f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
 
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Modulation Waveform", juce::StringArray("Sine", "Saw", "SawDown", "Square"), 0));
@@ -538,7 +545,7 @@ void TremoKittyAudioProcessor::getWave(modules module)
             apvts.getParameter("TREMWAVE")->setValue(2);
             break;
         case 3:
-            tremLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSquare);
+            tremLFO.setWaveType(viator_dsp::LFOGenerator::WaveType::kSmoothSquare);
             apvts.getParameter("TREMWAVE")->setValue(3);
             break;
         default:
