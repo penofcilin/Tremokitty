@@ -11,6 +11,7 @@
         <FILE id="js9MvG" name="PresetManager.h" compile="0" resource="0" file="Source/Service/PresetManager.h"/>
       </GROUP>
       <GROUP id="{9F2CC2FD-6121-4DA6-8393-0F53939D78C7}" name="Gui">
+        <FILE id="Pugno3" name="MyLNF.h" compile="0" resource="0" file="Source/MyLNF.h"/>
         <FILE id="yf8sjr" name="PresetPanel.h" compile="0" resource="0" file="Source/PresetPanel.h"/>
       </GROUP>
       <FILE id="M8LVSy" name="PluginProcessor.cpp" compile="1" resource="0"

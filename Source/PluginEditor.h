@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "PresetPanel.h"
+#include "MyLNF.h"
 #define modules TremoKittyAudioProcessor::modules
 
 //==============================================================================
@@ -27,6 +28,8 @@ public:
     void resized() override;
 
 private:
+    juce::Gui::MyLNF myLNF;
+
     void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
 
     //General Elements

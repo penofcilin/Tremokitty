@@ -104,5 +104,9 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
             initialise([](float x) {return tanh(50 * cos(x)); });
             break;
         }
+        case viator_dsp::LFOGenerator::WaveType::kRandom:
+        {
+            initialise([&](float x) {return (x * rando.nextFloat()); });
+        }
     }
 }

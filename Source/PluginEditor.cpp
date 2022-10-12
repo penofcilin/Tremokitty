@@ -15,6 +15,7 @@
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager())
 {
+    juce::LookAndFeel::setDefaultLookAndFeel(&myLNF);
     //Header
     header.setColour(juce::TextButton::buttonColourId, juce::Colours::beige);
     header.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
@@ -203,6 +204,7 @@ void TremoKittyAudioProcessorEditor::createSlider(juce::Slider& slider)
 
 TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
 {
+    juce::LookAndFeel::setDefaultLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -244,9 +246,10 @@ void TremoKittyAudioProcessorEditor::resized()
     ArchFB.flexWrap = juce::FlexBox::Wrap::wrap;
     ArchFB.alignContent = juce::FlexBox::AlignContent::stretch;
 
-    ArchFB.items.add(juce::FlexItem(100, 35, header));
-    ArchFB.items.add(juce::FlexItem(50, 50, MasterBypass));
     ArchFB.items.add(juce::FlexItem(40, 40, ResetButton));
+    ArchFB.items.add(juce::FlexItem(100, 40, header));
+    ArchFB.items.add(juce::FlexItem(50, 40, MasterBypass));
+    
 
     //Tremolo
     Tremfb.flexDirection = juce::FlexBox::Direction::column;
@@ -308,12 +311,13 @@ void TremoKittyAudioProcessorEditor::resized()
 
     //Performing Layout
     ArchFB.performLayout(threeQuarterArea.removeFromTop(threeQuarterArea.proportionOfHeight(0.1f)).reduced(4));
+    presetPanel.setBounds(threeQuarterArea.removeFromTop(area.proportionOfHeight(0.1f)));
     Tremfb.performLayout(threeQuarterArea.removeFromLeft(threeQuarterArea.proportionOfWidth(0.5)).reduced(4));
     Panfb.performLayout(threeQuarterArea.removeFromRight(threeQuarterArea.getWidth()).reduced(4));
-    Filterfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.2f)).reduced(4));
+    Filterfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.3f)).reduced(4));
     Modfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.2f)).reduced(4));
 
-    presetPanel.setBounds(area.removeFromBottom(area.proportionOfHeight(0.1f)));
+    
 
 }
 

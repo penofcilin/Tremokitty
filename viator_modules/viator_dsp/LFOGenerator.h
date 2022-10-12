@@ -38,7 +38,8 @@ namespace viator_dsp
             kSawDown,
             kTriangle,
             kSquare,
-            kSmoothSquare
+            kSmoothSquare,
+            kRandom
         };
 
         void setParameter(ParameterId parameter, float parameterValue);
@@ -51,12 +52,12 @@ namespace viator_dsp
 
         float inc{ 0.f };
         float myPhase{ 0.f };
-        
+     
 
         float m_frequency;
         float sampleRate;
 
-        
+        juce::Random rando;
 
         juce::dsp::Phase<float> phase;
         
