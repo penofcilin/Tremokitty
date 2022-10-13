@@ -166,9 +166,11 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     filterLFO.prepare(spec);
     panLFO.prepare(spec);
     modLFO.prepare(spec);
-
-    smoothGain.reset(sampleRate, 0.00003);
     
+    gainModFilter.prepare(spec);
+    gainModFilter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    gainModFilter.setCutoffFrequency(150.f);
+
     //Pan Module
     panner.prepare(spec);
     panner.setRule(juce::dsp::PannerRule::sin3dB);
@@ -234,6 +236,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         int index = (int)modChoice;
         processMod(ModParams[index]);
     }
+
     //Tremolo Section
  //Loading the tremolo rate and depth parameters
     if ((!apvts.getRawParameterValue("TREMBP")->load()))
@@ -251,6 +254,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
             {
                 lfoLookupTable.push_back((tremLFO.processSample(0.f) + 1) * 0.5f);
+                lfoLookupTable[samples] =  gainModFilter.processSample(0, lfoLookupTable[samples]);
             }
             float waveTypeIndex = apvts.getRawParameterValue("TREMWAVE")->load();
             
@@ -264,7 +268,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
                     //We have a value between -1 and 1 representing the position of a wave of sound. We also have a value between 0 and 1 that will modify that sound. We also have a value between 1 and 0 that will be multiplied by our modifying value, to give us a scalable depth control to our modulation. what we need is when the Modulation is at 1, the sound is untouched. The full value of the waveform gets through, regardless of depth. When modulation is at -1, the value is turned all the way down if depth is full, and turned down accordingly if depth is not full
                     float lfoPosition = lfoLookupTable[samples];
                     float gainScaler = juce::jmap(lfoPosition, 0.f, channelData[samples]);
-                    channelData[samples] -= gainScaler * tremDepth;
+                    channelData[samples] = gainScaler * tremDepth;
                 }
             }
         }

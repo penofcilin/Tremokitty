@@ -81,9 +81,10 @@ private:
 
    //DSP modules
     juce::dsp::Gain<float> gainModule;
-    juce::SmoothedValue<float> smoothGain;
+    juce::dsp::StateVariableTPTFilter<float> gainModFilter;
     juce::dsp::Panner<float> panner;
     juce::dsp::StateVariableTPTFilter<float> filter;
+    
     
     //APVTS helper methods
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
