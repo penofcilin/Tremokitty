@@ -17,17 +17,19 @@ namespace Gui
     public:
         PresetPanel(Service::PresetManager& pm) : presetManager(pm)
         {
-            configureButton(saveButton, "Save Preset");
-            configureButton(deleteButton, "Delete Preset"); //Might get rid of this/change at some point
+            
+            //I decided to get rid of the delete button because its kind of a weird thing to have. You don't want your customer to work really hard on a preset only to nudge the delete button and lose all their progress. Or be on the default and accidentally delete it, etc. And if they really want to, they can go into the preset folder themself and delete the file.
+            //configureButton(deleteButton, "Delete Preset"); //Might get rid of this/change at some point
             configureButton(previousPresetButton, "<");
             configureButton(nextPresetButton, ">");
+            configureButton(saveButton, "Save Preset");
+            configureButton(OpenPresetFolderButton, "Open Preset Folder");
+            configureButton(defaultPresetButton, "R");
 
             presetList.setTextWhenNothingSelected("None");
             presetList.setMouseCursor(juce::MouseCursor::PointingHandCursor);
             addAndMakeVisible(presetList);
             presetList.addListener(this);
-
-            
 
             loadPresetList();
             presetList.setText(" ", juce::NotificationType::dontSendNotification);
@@ -48,7 +50,7 @@ namespace Gui
         }
 
     private:
-        juce::TextButton saveButton, deleteButton, previousPresetButton, nextPresetButton;
+        juce::TextButton saveButton, deleteButton, previousPresetButton, nextPresetButton, OpenPresetFolderButton, defaultPresetButton;
         juce::ComboBox presetList;
         Service::PresetManager& presetManager;
         std::unique_ptr<juce::FileChooser> fileChooser;
@@ -70,7 +72,7 @@ namespace Gui
             }
             if (button == &previousPresetButton)
             {
-                const auto index = presetManager.loadNextPreset();
+                const auto index = presetManager.loadPreviousPreset();
                 presetList.setSelectedItemIndex(index, juce::NotificationType::dontSendNotification);
             }
             if (button == &nextPresetButton)
@@ -78,12 +80,18 @@ namespace Gui
                 const auto index = presetManager.loadNextPreset();
                 presetList.setSelectedItemIndex(index, juce::NotificationType::dontSendNotification);
             }
-            if (button == &deleteButton)
+            if (button == &OpenPresetFolderButton)
             {
-                presetManager.deletePreset(presetManager.getCurrentPreset());
-                loadPresetList();
+                presetManager.defaultDirectory.getChildFile(presetManager.defaultPresetName + "." + presetManager.extension).revealToUser();
+            }
+            if (button == &defaultPresetButton)
+            {
+                presetManager.loadPreset(presetManager.defaultPresetName);
+                const auto index = presetManager.getAllPresets().indexOf(presetManager.defaultPresetName);
+                presetList.setSelectedItemIndex(index, juce::NotificationType::dontSendNotification);
             }
         }
+
 
         void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override
         {
@@ -108,11 +116,12 @@ namespace Gui
             const auto container = getLocalBounds().reduced(4);
             auto bounds = container;
 
-            saveButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.2f)).reduced(4));
-            previousPresetButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.1f)).reduced(4));
-            presetList.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.4f)).reduced(4));
-            nextPresetButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.1f)).reduced(4));
-            deleteButton.setBounds(bounds.reduced(4));
+            saveButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.14f)));
+            previousPresetButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.07f)).reduced(1));
+            presetList.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.5f)).reduced(1));
+            nextPresetButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.07f)).reduced(1));
+            defaultPresetButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.05f)).reduced(1));
+            OpenPresetFolderButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.17)).reduced(1));
         }
         void configureButton(juce::Button& button, const juce::String& buttonText)
         {

@@ -57,20 +57,21 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
 
-    enum class modules { tremolo, pan, filter, mod, master };
-    void resetEverything();
+
+    //My Public Members
     Service::PresetManager& getPresetManager() { return *presetManager; }
     void changeTremWaveManually();
-
     juce::AudioProcessorValueTreeState apvts;
 
 
-    //Some Information objects
+    //Some Information Structures
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
     juce::StringArray WaveTypes{ "Sine", "Saw", "SawDown", "Square" };
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
+    enum class modules { tremolo, pan, filter, mod, master };
 private:
-
+    //LFOlookuptable holds the values that our LFO processes so it can be checked in the processing period.
+    std::vector<float> lfoLookupTable;
     juce::dsp::ProcessSpec spec;
 
     //LFO Section, so pretty, all in a row, like red toy soldiers marching through the snow
@@ -79,12 +80,11 @@ private:
     viator_dsp::LFOGenerator filterLFO;
     viator_dsp::LFOGenerator modLFO;
 
-   //DSP modules
+   //DSP modules, gainModFilter filters out the tremolo LFO to avoid clicking when processing highly transient waveforms like saw and square
     juce::dsp::Gain<float> gainModule;
     juce::dsp::StateVariableTPTFilter<float> gainModFilter;
     juce::dsp::Panner<float> panner;
     juce::dsp::StateVariableTPTFilter<float> filter;
-    
     
     //APVTS helper methods
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -104,7 +104,6 @@ private:
     //Used for preparing the filter module.
     bool shouldPrepare;
     
-
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoKittyAudioProcessor)
 };

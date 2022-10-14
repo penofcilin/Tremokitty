@@ -36,9 +36,7 @@ namespace viator_dsp
             kSine,
             kSaw,
             kSawDown,
-            kTriangle,
             kSquare,
-            kSmoothSquare,
             kRandom
         };
 

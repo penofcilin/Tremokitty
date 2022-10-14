@@ -22,6 +22,11 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="qbqlpH" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <GROUP id="{3B884DAE-C02C-DBC0-880C-C8486B11EBAC}" name="Resources">
+      <FILE id="ABQtbn" name="TremoKittyBanner.png" compile="0" resource="1"
+            file="Resources/TremoKittyBanner.png"/>
+      <FILE id="DBqUaG" name="BG.png" compile="0" resource="1" file="Resources/BG.png"/>
+    </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>

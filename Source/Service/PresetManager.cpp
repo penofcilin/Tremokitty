@@ -25,11 +25,10 @@ namespace Service
             const auto result = defaultDirectory.createDirectory();
             if (result.failed())
             {
-                DBG("Could not create preset directory! " +result.getErrorMessage());
+                DBG("Could not create preset directory! " + result.getErrorMessage());
                 jassertfalse;
             }
         }
-
         valueTreeState.state.addListener(this);
     }
 

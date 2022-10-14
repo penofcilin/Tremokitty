@@ -29,16 +29,18 @@ public:
 
 private:
     juce::Gui::MyLNF myLNF;
+    juce::ImageComponent tremoKittyBanner;
+    juce::ImageComponent background;
 
     void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
 
     //General Elements
-    juce::TextButton header;
+    juce::Label header;
     juce::ToggleButton MasterBypass;
-    juce::TextButton ResetButton;
     Gui::PresetPanel presetPanel;
 
     //Tremolo Section
+    juce::Label tremSectionHeader;
     juce::Slider tremRateSlider;
     juce::Label tremRateLabel;
     juce::Slider tremDepthSlider;
@@ -47,6 +49,7 @@ private:
     juce::ToggleButton TremBypass;
 
     //Panning Section
+    juce::Label panSectionHeader;
     juce::Slider PanRateSlider;
     juce::Label PanRateLabel;
     juce::Slider PanDepthSlider;
@@ -55,6 +58,7 @@ private:
     juce::ToggleButton PanBypass;
 
     //Filter Section
+    juce::Label filterSectionHeader;
     juce::Slider FilterCutoffSlider;
     juce::Label FilterCutoffLabel;
     juce::Slider FilterModRate;
@@ -68,6 +72,7 @@ private:
     juce::ToggleButton FilterBypass;
 
     //ModLFO section
+    juce::Label modSectionHeader;
     juce::Slider ModLFORateSlider;
     juce::Label ModLFORateLabel;
     juce::Slider ModLFODepthSlider;
@@ -98,7 +103,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterWaveAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterTypeAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModLFOWaveTypeAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>ModLFOModdedParameterAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModLFOModdedParameterAttachment;
 
 
     //Member functions
@@ -107,6 +112,12 @@ private:
     void createToggleButton(const juce::String& text, juce::ToggleButton& button);
     void sliderValueChanged(juce::Slider* slider) override;
     void resetEverything();
+
+    //Set up functions
+    void setUpTremoloSection();
+    void setUpPannerSection();
+    void setUpFilterSection();
+    void setUpModSection();
 
     //Processor
     TremoKittyAudioProcessor& audioProcessor;
