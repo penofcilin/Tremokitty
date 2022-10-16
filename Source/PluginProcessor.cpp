@@ -167,17 +167,24 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     panLFO.prepare(spec);
     modLFO.prepare(spec);
 
+    //Allocating memory for our lookuptable vector
     lfoLookupTable.resize(samplesPerBlock);
 
+    //The filter for our tremolo LFO
     gainModFilter.prepare(spec);
     gainModFilter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     gainModFilter.setCutoffFrequency(150.f);
+
     //Pan Module
     panner.prepare(spec);
     panner.setRule(juce::dsp::PannerRule::sin3dB);
     //Filter Module
     filter.prepare(spec);
     shouldPrepare = true;
+    filterLFOFilter.prepare(spec);
+    filterLFOFilter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    //Doesn't seem to be really necessary
+    filterLFOFilter.setCutoffFrequency(2000.f);
 }
 
 void TremoKittyAudioProcessor::releaseResources()
@@ -263,10 +270,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
                 for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
                 {
-                    //gainscaler is a 0 to 1 value mapped between 0 and the current sample value. So if the current lfo position is 1, and the current sample value is 0.86, then gainscaler will be 0.86. If the LFO position is 0 then it will always be 0.
-                    float lfoPosition = lfoLookupTable[samples];
-                    float gainScaler = juce::jmap(lfoPosition, 0.f, channelData[samples]);
-                    channelData[samples] = gainScaler*tremDepth;
+                    channelData[samples] *= (1-tremDepth) + lfoLookupTable[samples] * tremDepth;
                 }
             }
         }
@@ -311,17 +315,19 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         if (filterModLevel > 0)
         {
             //Value between -1 and 1
-            float filterModder = filterLFO.processSample(0.f) * filterModLevel * 19980;
+            float lfoResult = filterLFOFilter.processSample(0, filterLFO.processSample(0.f));
+            float filterModder =  lfoResult * filterModLevel * 19980;
             
 
             float finalCutoff = (filterCutoffInHertz + filterModder);
 
-            if (finalCutoff > 19980)
+            if (finalCutoff > 20000)
             {
-                finalCutoff = 19980;
+                
+                finalCutoff = 20000;
             }
-            else if (finalCutoff < 21)
-                finalCutoff = 21;
+            else if (finalCutoff < 20)
+                finalCutoff = 20;
             filter.setCutoffFrequency(finalCutoff);
         }
         else
@@ -393,8 +399,6 @@ void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
     {
         apvts.getRawParameterValue(parameterID)->store(oldValue);
     }
-
-    
 }
 
 //Changes the parameter that is being modded
@@ -497,7 +501,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     //Filter section
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", juce::NormalisableRange<float>(0.f, 1.f, 0.001f, 0.35), 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", juce::NormalisableRange<float>(0.f, 1.f, 0.000001, 0.25), 0.9f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", juce::NormalisableRange<float>(0.f, 1.f, 0.00001f, 0.35f), 0.9f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", juce::NormalisableRange<float>(0.7f, 10.f, 0.05, 0.9), (1 / sqrt(2))));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray("Sine", "Saw", "SawDown", "Square"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERTYPE", "Filter Type", juce::StringArray("Low Pass", "High Pass", "Band Pass"), 0));

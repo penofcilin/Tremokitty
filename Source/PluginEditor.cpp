@@ -53,10 +53,8 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     setUpFilterSection();
     setUpModSection();
   
-
     setSize (500, 550);
 }
-
 
 void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 {
@@ -114,10 +112,10 @@ void TremoKittyAudioProcessorEditor::setUpFilterSection()
     createLabel("Filter", filterSectionHeader);
     filterSectionHeader.setFont(juce::Font("Calibri", 35, juce::Font::bold));
     //Filter cutoff
-    FilterCutoffSlider.setRange(0.f, 1.f, 0.000001f);
+    createSlider(FilterCutoffSlider);
+    FilterCutoffSlider.setRange(0.f, 1.f, 0.00001f);
     FilterCutoffSlider.addListener(this);
     filterCutoffAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "FILTERCUTOFF", FilterCutoffSlider);
-    createSlider(FilterCutoffSlider);
     createLabel("Cutoff", FilterCutoffLabel);
     float startingCutoff = juce::jmap(audioProcessor.apvts.getRawParameterValue("FILTERCUTOFF")->load(), 20.f, 20000.f);
     FilterCutoffLabel.setText(std::to_string(startingCutoff), juce::NotificationType::dontSendNotification);

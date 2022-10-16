@@ -69,6 +69,7 @@ public:
     juce::StringArray WaveTypes{ "Sine", "Saw", "SawDown", "Square" };
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
     enum class modules { tremolo, pan, filter, mod, master };
+
 private:
     //LFOlookuptable holds the values that our LFO processes so it can be checked in the processing period.
     std::vector<float> lfoLookupTable;
@@ -85,6 +86,8 @@ private:
     juce::dsp::StateVariableTPTFilter<float> gainModFilter;
     juce::dsp::Panner<float> panner;
     juce::dsp::StateVariableTPTFilter<float> filter;
+    //This filter actually applies to the mod LFO of the filter. This is to stop it from crackling at high modulation levels. XD
+    juce::dsp::StateVariableTPTFilter<float> filterLFOFilter;
     
     //APVTS helper methods
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
