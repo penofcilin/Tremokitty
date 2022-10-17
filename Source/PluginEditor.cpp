@@ -13,10 +13,13 @@
 
 //==============================================================================
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager())
+    : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager(), &myLNF)
 {
     
     juce::LookAndFeel::setDefaultLookAndFeel(&myLNF);
+    background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
+    background.setAlpha(0.1);
+    addAndMakeVisible(background);
 
     //Getting the header rectangle image
     auto kittyImage = juce::ImageCache::getFromMemory(BinaryData::TremoKittyBanner_png, BinaryData::TremoKittyBanner_pngSize);
@@ -26,20 +29,12 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
         jassert(!kittyImage.isNull());
     addAndMakeVisible(tremoKittyBanner);
 
-    auto backgroundImage = juce::ImageCache::getFromMemory(BinaryData::BG_png, BinaryData::BG_pngSize);
-    if (!backgroundImage.isNull())
-    {
-        background.setImage(backgroundImage, juce::RectanglePlacement::stretchToFit);
-        background.setAlpha(0.1);
-    }
-    else
-        jassert(!backgroundImage.isNull());
-    addAndMakeVisible(background);
+    
 
     //Header Label
     createLabel("TremoKitty!", header);
     header.setFont(juce::Font("Calibri", 20.f, juce::Font::bold));
-    header.setColour(juce::Label::ColourIds::textColourId, juce::Colours::ghostwhite);
+    header.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
 
 
     //PresetPanel
@@ -59,7 +54,8 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
 void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 {
     createLabel("Tremolo", tremSectionHeader);
-    tremSectionHeader.setFont(juce::Font( "Calibri", 35, juce::Font::bold));
+    tremSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
+    tremSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
 
    //Trem Rate
@@ -87,7 +83,9 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 void TremoKittyAudioProcessorEditor::setUpPannerSection()
 {
     createLabel("Panner", panSectionHeader);
-    panSectionHeader.setFont(juce::Font("Calibri", 35, juce::Font::bold));
+    panSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
+    panSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
+
     createSlider(PanRateSlider);
     PanRateSlider.setRange(0.f, 10.f, 10.f);
     panRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "PANRATE", PanRateSlider);
@@ -110,7 +108,8 @@ void TremoKittyAudioProcessorEditor::setUpPannerSection()
 void TremoKittyAudioProcessorEditor::setUpFilterSection()
 {
     createLabel("Filter", filterSectionHeader);
-    filterSectionHeader.setFont(juce::Font("Calibri", 35, juce::Font::bold));
+    filterSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
+    filterSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
     //Filter cutoff
     createSlider(FilterCutoffSlider);
     FilterCutoffSlider.setRange(0.f, 1.f, 0.00001f);
@@ -157,7 +156,8 @@ void TremoKittyAudioProcessorEditor::setUpFilterSection()
 void TremoKittyAudioProcessorEditor::setUpModSection()
 {
     createLabel("Mod", modSectionHeader);
-    modSectionHeader.setFont(juce::Font("Calibri", 25, juce::Font::bold));
+    modSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
+    modSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
     createSlider(ModLFORateSlider);
     ModLFORateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "MODLFORATE", ModLFORateSlider);
     createLabel("Mod LFO Rate", ModLFORateLabel);
@@ -228,7 +228,7 @@ void TremoKittyAudioProcessorEditor::paint (juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
     g.fillRect(bounds);
-    g.setColour(juce::Colours::lightgoldenrodyellow);
+    g.setColour(myLNF.backGroundColour);
     g.fillRect(bounds);
     getTopLevelComponent()->setName("TremoKitty!");
 }

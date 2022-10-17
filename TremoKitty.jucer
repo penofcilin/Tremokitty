@@ -25,7 +25,7 @@
     <GROUP id="{3B884DAE-C02C-DBC0-880C-C8486B11EBAC}" name="Resources">
       <FILE id="ABQtbn" name="TremoKittyBanner.png" compile="0" resource="1"
             file="Resources/TremoKittyBanner.png"/>
-      <FILE id="DBqUaG" name="BG.png" compile="0" resource="1" file="Resources/BG.png"/>
+      <FILE id="DBqUaG" name="ChristmasBG.png" compile="0" resource="1" file="Resources/ChristmasBG.png"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

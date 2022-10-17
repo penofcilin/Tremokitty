@@ -10,13 +10,15 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "MyLNF.h"
 namespace Gui
 {
     class PresetPanel : public juce::Component, juce::Button::Listener, juce::ComboBox::Listener
     {
     public:
-        PresetPanel(Service::PresetManager& pm) : presetManager(pm)
+        PresetPanel(Service::PresetManager& pm, juce::Gui::MyLNF* lnf) : presetManager(pm)
         {
+            juce::LookAndFeel::setDefaultLookAndFeel(&LNF);
             
             //I decided to get rid of the delete button because its kind of a weird thing to have. You don't want your customer to work really hard on a preset only to nudge the delete button and lose all their progress. Or be on the default and accidentally delete it, etc. And if they really want to, they can go into the preset folder themself and delete the file.
             //configureButton(deleteButton, "Delete Preset"); //Might get rid of this/change at some point
@@ -51,6 +53,7 @@ namespace Gui
 
     private:
         juce::TextButton saveButton, deleteButton, previousPresetButton, nextPresetButton, OpenPresetFolderButton, defaultPresetButton;
+        juce::Gui::MyLNF LNF;
         juce::ComboBox presetList;
         Service::PresetManager& presetManager;
         std::unique_ptr<juce::FileChooser> fileChooser;
