@@ -17,7 +17,7 @@
 //==============================================================================
 /**
 */
-class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Slider::Listener, public juce::ComboBox::Listener
+class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Slider::Listener, public juce::ComboBox::Listener, public juce::Button::Listener
 {
 public:
     TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor&);
@@ -31,6 +31,7 @@ private:
     juce::Gui::MyLNF myLNF;
     juce::ImageComponent tremoKittyBanner;
     juce::ImageComponent background;
+    enum radioButtonIDs{skinButtons = 1};
 
     void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
 
@@ -38,6 +39,7 @@ private:
     juce::Label header;
     juce::ToggleButton MasterBypass;
     Gui::PresetPanel presetPanel;
+    juce::ImageButton defaultSkinButton, halloweenSkinButton, christmasSkinButton, spaceSkinButton;
 
     //Tremolo Section
     juce::Label tremSectionHeader;
@@ -111,13 +113,16 @@ private:
     void createLabel(const juce::String& name, juce::Label& label);
     void createToggleButton(const juce::String& text, juce::ToggleButton& button);
     void sliderValueChanged(juce::Slider* slider) override;
-    void resetEverything();
+    void buttonClicked(juce::Button* button) override;
+    void changeLabelColours();
 
     //Set up functions
     void setUpTremoloSection();
     void setUpPannerSection();
     void setUpFilterSection();
     void setUpModSection();
+
+    void setUpSkinButtons();
 
     //Processor
     TremoKittyAudioProcessor& audioProcessor;

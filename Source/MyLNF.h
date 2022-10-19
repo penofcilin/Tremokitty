@@ -34,7 +34,6 @@ namespace juce
                 
 
                 changeSkin(skinToUse);
-               
             }
 
             void changeSkin(skins skinToUse)
@@ -43,37 +42,61 @@ namespace juce
                 {
                 case(skins::sHalloween):
                     setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colours::orange);
-                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::rebeccapurple);
+                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::black);
                     setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::orange);
                     currentBgImage = halloweenBg;
-                    backGroundColour = juce::Colours::black;
-                    skinDefaultColor = juce::Colours::red;
+                    backGroundColour = juce::Colour::fromRGB(96, 8, 156);
+                    skinDefaultColor = juce::Colours::black;
                     typeFace = "Algerian Regular";
                     textColour = juce::Colours::palevioletred;
+                    setColour(juce::TextButton::ColourIds::textColourOnId, textColour);
+                    setColour(juce::TextButton::ColourIds::textColourOffId, textColour);
+                    setColour(juce::Label::ColourIds::textColourId, textColour);
+                    setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                     break;
                 case(skins::sChristmas):
-                    setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colours::green);
-                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::red);
+                    setColour(juce::Slider::ColourIds::backgroundColourId,juce::Colours::goldenrod);
+                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::green);
                     setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::blue);
                     currentBgImage = christmasBg;
+                    backGroundColour = juce::Colours::red;
+                    skinDefaultColor = juce::Colours::green;
+                    typeFace = "Avant Garde";
+                    textColour = juce::Colours::lightgoldenrodyellow;
+                    setColour(juce::TextButton::ColourIds::textColourOnId, textColour);
+                    setColour(juce::TextButton::ColourIds::textColourOffId, textColour);
+                    setColour(juce::Label::ColourIds::textColourId, textColour);
+                    setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
+                    //setColour(juce::ComboBox::ColourIds::textColourId,)
                     break;
                 case(skins::sSpace):
                     setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colours::white);
-                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::black);
-                    setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::red);
+                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colour::fromRGB(40, 29, 204));
+                    setColour(juce::Slider::ColourIds::thumbColourId, juce::Colour::fromRGB(40, 29, 204));
                     currentBgImage = spaceBg;
+                    backGroundColour = juce::Colours::black;
+                    skinDefaultColor = juce::Colour::fromRGB(40, 29, 204);
                     typeFace = "Avant Garde";
+                    textColour = juce::Colours::white;
+                    setColour(juce::TextButton::ColourIds::textColourOnId, textColour);
+                    setColour(juce::TextButton::ColourIds::textColourOffId, textColour);
+                    setColour(juce::Label::ColourIds::textColourId, textColour);
+                   // setColour(juce::Label::ColourIds::)
+                    setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                     break;
                 default:
-                    setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colours::cyan);
-                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::darkblue);
-                    setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::darkblue);
+                    setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colour::fromRGB(250, 225, 226));
+                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colour::fromRGB(132, 98, 103));
+                    setColour(juce::Slider::ColourIds::thumbColourId, juce::Colour::fromRGB(132, 98, 103));
                     currentBgImage = defaultBg;
-                    backGroundColour = juce::Colours::black;
-                    skinDefaultColor = juce::Colours::darkblue;
+                    backGroundColour = juce::Colour::fromRGB(209, 179, 165);
+                    skinDefaultColor = juce::Colour::fromRGB(156, 93, 112);
                     typeFace = "Calibri";
-                    textColour = juce::Colours::white;
-                    
+                    textColour = juce::Colours::black;
+                    setColour(juce::TextButton::ColourIds::textColourOnId, textColour);
+                    setColour(juce::TextButton::ColourIds::textColourOffId, textColour);
+                    setColour(juce::Label::ColourIds::textColourId, textColour);
+                    setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                 }
             }
 
@@ -241,6 +264,7 @@ namespace juce
                     g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
                 }
             }
+
 
 
 

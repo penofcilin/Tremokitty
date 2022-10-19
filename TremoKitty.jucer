@@ -23,6 +23,14 @@
       <FILE id="qbqlpH" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
     <GROUP id="{3B884DAE-C02C-DBC0-880C-C8486B11EBAC}" name="Resources">
+      <FILE id="N2PnWu" name="christmasSkinButton.png" compile="0" resource="1"
+            file="Resources/christmasSkinButton.png"/>
+      <FILE id="aJ5cAr" name="spaceSkinButton.png" compile="0" resource="1"
+            file="Resources/spaceSkinButton.png"/>
+      <FILE id="NasnWJ" name="halloweenSkinButton.png" compile="0" resource="1"
+            file="Resources/halloweenSkinButton.png"/>
+      <FILE id="VI7B73" name="defaultSkinButton.png" compile="0" resource="1"
+            file="Resources/defaultSkinButton.png"/>
       <FILE id="ABQtbn" name="TremoKittyBanner.png" compile="0" resource="1"
             file="Resources/TremoKittyBanner.png"/>
       <FILE id="DBqUaG" name="ChristmasBG.png" compile="0" resource="1" file="Resources/ChristmasBG.png"/>
