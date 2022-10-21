@@ -163,7 +163,8 @@ void TremoKittyAudioProcessorEditor::setUpFilterSection()
     filterCutoffAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "FILTERCUTOFF", FilterCutoffSlider);
     createLabel("Cutoff", FilterCutoffLabel);
     float startingCutoff = juce::jmap(audioProcessor.apvts.getRawParameterValue("FILTERCUTOFF")->load(), 20.f, 20000.f);
-    FilterCutoffLabel.setText(std::to_string(startingCutoff), juce::NotificationType::dontSendNotification);
+    FilterCutoffLabel.setText("Cutoff = " + std::to_string((int)startingCutoff) + " HZ", juce::NotificationType::dontSendNotification);
+    addAndMakeVisible(FilterCutoffLabel);
 
     //Filter mod rate
     createSlider(FilterModRate);
