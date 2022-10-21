@@ -28,19 +28,15 @@ public:
     void resized() override;
 
 private:
+    //General Elements
     juce::Gui::MyLNF myLNF;
     juce::ImageComponent tremoKittyBanner;
     juce::ImageComponent background;
-    enum radioButtonIDs{skinButtons = 1};
-
-    void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
-
-    //General Elements
     juce::Label header;
     juce::ToggleButton MasterBypass;
     Gui::PresetPanel presetPanel;
-    juce::ImageButton defaultSkinButton, halloweenSkinButton, christmasSkinButton, spaceSkinButton;
-
+    juce::ImageButton defaultSkinButton, halloweenSkinButton, christmasSkinButton, spaceSkinButton, displayKittyButton;
+    
     //Tremolo Section
     juce::Label tremSectionHeader;
     juce::Slider tremRateSlider;
@@ -112,18 +108,21 @@ private:
     void createSlider(juce::Slider& slider);
     void createLabel(const juce::String& name, juce::Label& label);
     void createToggleButton(const juce::String& text, juce::ToggleButton& button);
+    void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
     void sliderValueChanged(juce::Slider* slider) override;
     void buttonClicked(juce::Button* button) override;
     void changeLabelColours();
 
     //Set up functions
+    void loadInitialState();
     void setUpTremoloSection();
     void setUpPannerSection();
     void setUpFilterSection();
     void setUpModSection();
-
     void setUpSkinButtons();
 
+    //Member Variable
+    bool shouldDisplayKitty{ true };
     //Processor
     TremoKittyAudioProcessor& audioProcessor;
 

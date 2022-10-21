@@ -62,6 +62,7 @@ public:
     Service::PresetManager& getPresetManager() { return *presetManager; }
     void changeTremWaveManually();
     juce::AudioProcessorValueTreeState apvts;
+    juce::ApplicationProperties globalProperties;
 
 
     //Some Information Structures

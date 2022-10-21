@@ -30,26 +30,67 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     addAndMakeVisible(tremoKittyBanner);
 
     setUpSkinButtons();
-
+    
     //Header Label
     createLabel("TremoKitty!", header);
     header.setFont(juce::Font("Calibri", 20.f, juce::Font::bold));
     header.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
 
-
     //PresetPanel
     addAndMakeVisible(presetPanel);
 
+    
     //Got rid of the reset button cause you can just select the default preset
     //Got rid of master bypass cause kind of pointless
-    
     setUpTremoloSection();
     setUpPannerSection();
     setUpFilterSection();
     setUpModSection();
     changeLabelColours();
+
+    loadInitialState();
   
     setSize (500, 550);
+}
+
+void TremoKittyAudioProcessorEditor::loadInitialState()
+{
+    shouldDisplayKitty = (bool)audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load();
+    DBG("SHould display = " + std::to_string(audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load()));
+    int skinToLoad = (int)audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->load();
+    DBG(skinToLoad);
+    switch (skinToLoad)
+    {
+    case(0):
+        myLNF.changeSkin(juce::Gui::MyLNF::skins::sDefault);
+        changeLabelColours();
+        break;
+    case(1):
+        myLNF.changeSkin(juce::Gui::MyLNF::skins::sHalloween);
+        changeLabelColours();
+        break;
+    case(2):
+        myLNF.changeSkin(juce::Gui::MyLNF::skins::sChristmas);
+        changeLabelColours();
+        break;
+    case(3):
+        myLNF.changeSkin(juce::Gui::MyLNF::skins::sSpace);
+        changeLabelColours();
+        break;
+    default:
+        DBG("Failed to assign skin.");
+        break;
+    }
+    if (!shouldDisplayKitty)
+    {
+        background.setVisible(false);
+        DBG("SHOULDNT DISPLAY");
+    }
+    else
+    {
+        background.setVisible(true);
+    }
+    repaint();
 }
 
 void TremoKittyAudioProcessorEditor::setUpTremoloSection()
@@ -57,7 +98,6 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
     createLabel("Tremolo", tremSectionHeader);
     tremSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     tremSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
-
 
    //Trem Rate
     createSlider(tremRateSlider);
@@ -82,8 +122,6 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
     createToggleButton("Tremolo Bypass", TremBypass);
     TremBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMBP", TremBypass);
 }
-
-
 
 void TremoKittyAudioProcessorEditor::setUpPannerSection()
 {
@@ -185,24 +223,29 @@ void TremoKittyAudioProcessorEditor::setUpModSection()
 void TremoKittyAudioProcessorEditor::setUpSkinButtons()
 {
     auto dsbi = juce::ImageCache::getFromMemory(BinaryData::defaultSkinButton_png, BinaryData::defaultSkinButton_pngSize);
-    defaultSkinButton.setImages(false, false, false, dsbi, 1.f, juce::Colours::transparentWhite, dsbi, 0.5f, juce::Colours::transparentWhite, dsbi, 0.2f, juce::Colours::transparentBlack);
+    defaultSkinButton.setImages(false, true, true, dsbi, 1.f, juce::Colours::transparentWhite, dsbi, 0.5f, juce::Colours::transparentWhite, dsbi, 0.2f, juce::Colours::transparentBlack);
     addAndMakeVisible(defaultSkinButton);
     defaultSkinButton.addListener(this);
 
     auto hsbi = juce::ImageCache::getFromMemory(BinaryData::halloweenSkinButton_png, BinaryData::halloweenSkinButton_pngSize);
-    halloweenSkinButton.setImages(true, false, true, hsbi, 1.f, juce::Colours::transparentWhite, hsbi, 0.5f, juce::Colours::transparentWhite, hsbi, 0.2f, juce::Colours::transparentBlack);
+    halloweenSkinButton.setImages(false, true, true, hsbi, 1.f, juce::Colours::transparentWhite, hsbi, 0.5f, juce::Colours::transparentWhite, hsbi, 0.2f, juce::Colours::transparentBlack);
     addAndMakeVisible(halloweenSkinButton);
     halloweenSkinButton.addListener(this);
 
     auto csbi = juce::ImageCache::getFromMemory(BinaryData::christmasSkinButton_png, BinaryData::christmasSkinButton_pngSize);
-    christmasSkinButton.setImages(false, false, true, csbi, 1.f, juce::Colours::transparentWhite, csbi, 0.5f, juce::Colours::transparentWhite, csbi, 0.2f, juce::Colours::transparentBlack);
+    christmasSkinButton.setImages(false, true, true, csbi, 1.f, juce::Colours::transparentWhite, csbi, 0.5f, juce::Colours::transparentWhite, csbi, 0.2f, juce::Colours::transparentBlack);
     addAndMakeVisible(christmasSkinButton);
     christmasSkinButton.addListener(this);
 
     auto ssbi = juce::ImageCache::getFromMemory(BinaryData::spaceSkinButton_png, BinaryData::spaceSkinButton_pngSize);
-    spaceSkinButton.setImages(false, false, true, ssbi, 1.f, juce::Colours::transparentWhite, ssbi, 0.5f, juce::Colours::transparentWhite, ssbi, 0.2f, juce::Colours::transparentBlack);
+    spaceSkinButton.setImages(false, true, true, ssbi, 1.f, juce::Colours::transparentWhite, ssbi, 0.5f, juce::Colours::transparentWhite, ssbi, 0.2f, juce::Colours::transparentBlack);
     addAndMakeVisible(spaceSkinButton);
     spaceSkinButton.addListener(this);
+
+    auto kittyImage = juce::ImageCache::getFromMemory(BinaryData::ChristmasBG_png, BinaryData::ChristmasBG_pngSize);
+    displayKittyButton.setImages(false, true, true, kittyImage, 1.f, juce::Colours::transparentWhite, kittyImage, 0.5f, juce::Colours::transparentBlack, kittyImage, 0.25f, juce::Colours::transparentBlack);
+    addAndMakeVisible(displayKittyButton);
+    displayKittyButton.addListener(this);
 }
 
 //DISGUSTING, ABSOLUTELY DISGUSTING, might have to do this for the rest of the modules as well if its' still broken
@@ -236,23 +279,43 @@ void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
 {
     if (button == &defaultSkinButton)
     {
+        audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->store(0);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sDefault);
         changeLabelColours();
     }
     else if (button == &halloweenSkinButton)
     {
+        
+        audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->store(1);
+        DBG("Changed skin! newval = " + std::to_string(audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->load()));
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sHalloween);
         changeLabelColours();
     }
     else if (button == &christmasSkinButton)
     {
+        audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->store(2);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sChristmas);
         changeLabelColours();
     }
     else if (button == &spaceSkinButton)
     {
+        audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->store(3);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sSpace);
         changeLabelColours();
+    }
+    else if (button == &displayKittyButton)
+    {
+        shouldDisplayKitty = !audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load();
+        audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->store(shouldDisplayKitty);
+        DBG("Changed display kitty! New value = " + std::to_string(audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load()));
+        if (!shouldDisplayKitty)
+        {
+            background.setVisible(false);
+        }
+        else
+        {
+            background.setVisible(true);
+        }
     }
     repaint();
 }
@@ -313,6 +376,7 @@ TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
     spaceSkinButton.removeListener(this);
     tremWaveChoice.removeListener(this);
     FilterCutoffSlider.removeListener(this);
+    displayKittyButton.removeListener(this);
 }
 
 //==============================================================================
@@ -406,11 +470,10 @@ void TremoKittyAudioProcessorEditor::resized()
     Modfb.items.add(juce::FlexItem(15, 15, ModBypass));
 
     //Performing Layout
-    
-
     background.setBounds(getLocalBounds());
     tremoKittyBanner.setBounds(threeQuarterArea.removeFromTop(30));
     auto skinButtonBounds = tremoKittyBanner.getBounds();
+    displayKittyButton.setBounds(skinButtonBounds.removeFromLeft(30).reduced(5));
     spaceSkinButton.setBounds(skinButtonBounds.removeFromRight(30).reduced(5));
     christmasSkinButton.setBounds(skinButtonBounds.removeFromRight(30).reduced(5));
     halloweenSkinButton.setBounds(skinButtonBounds.removeFromRight(30).reduced(5));

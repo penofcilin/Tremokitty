@@ -48,11 +48,11 @@ namespace juce
                     backGroundColour = juce::Colour::fromRGB(96, 8, 156);
                     skinDefaultColor = juce::Colours::black;
                     typeFace = "Algerian Regular";
-                    textColour = juce::Colours::palevioletred;
-                    setColour(juce::TextButton::ColourIds::textColourOnId, textColour);
-                    setColour(juce::TextButton::ColourIds::textColourOffId, textColour);
+                    textColour = juce::Colour::fromRGB(207, 2, 43);
                     setColour(juce::Label::ColourIds::textColourId, textColour);
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
+                    setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
+                    setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colours::orange);
                     break;
                 case(skins::sChristmas):
                     setColour(juce::Slider::ColourIds::backgroundColourId,juce::Colours::goldenrod);
@@ -63,11 +63,10 @@ namespace juce
                     skinDefaultColor = juce::Colours::green;
                     typeFace = "Avant Garde";
                     textColour = juce::Colours::lightgoldenrodyellow;
-                    setColour(juce::TextButton::ColourIds::textColourOnId, textColour);
-                    setColour(juce::TextButton::ColourIds::textColourOffId, textColour);
                     setColour(juce::Label::ColourIds::textColourId, textColour);
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
-                    //setColour(juce::ComboBox::ColourIds::textColourId,)
+                    setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
+                    setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colours::blue);
                     break;
                 case(skins::sSpace):
                     setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colours::white);
@@ -78,11 +77,10 @@ namespace juce
                     skinDefaultColor = juce::Colour::fromRGB(40, 29, 204);
                     typeFace = "Avant Garde";
                     textColour = juce::Colours::white;
-                    setColour(juce::TextButton::ColourIds::textColourOnId, textColour);
-                    setColour(juce::TextButton::ColourIds::textColourOffId, textColour);
                     setColour(juce::Label::ColourIds::textColourId, textColour);
-                   // setColour(juce::Label::ColourIds::)
+                    setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
+                    setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colours::black);
                     break;
                 default:
                     setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colour::fromRGB(250, 225, 226));
@@ -93,10 +91,10 @@ namespace juce
                     skinDefaultColor = juce::Colour::fromRGB(156, 93, 112);
                     typeFace = "Calibri";
                     textColour = juce::Colours::black;
-                    setColour(juce::TextButton::ColourIds::textColourOnId, textColour);
-                    setColour(juce::TextButton::ColourIds::textColourOffId, textColour);
                     setColour(juce::Label::ColourIds::textColourId, textColour);
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
+                    setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
+                    setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colour::fromRGB(132, 98, 103));
                 }
             }
 
