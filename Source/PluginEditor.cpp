@@ -48,17 +48,17 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     setUpModSection();
     changeLabelColours();
 
-    loadInitialState();
+    
   
     setSize (500, 550);
+    loadInitialState();
 }
 
 void TremoKittyAudioProcessorEditor::loadInitialState()
 {
-    shouldDisplayKitty = (bool)audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load();
-    DBG("SHould display = " + std::to_string(audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load()));
-    int skinToLoad = (int)audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->load();
-    DBG(skinToLoad);
+    auto settings = audioProcessor.globalProperties.getUserSettings();
+    auto shouldDisplay = settings->getIntValue("DISPLAYKITTY");
+    auto skinToLoad = settings->getIntValue("CURRENTSKIN");
     switch (skinToLoad)
     {
     case(0):
@@ -81,7 +81,7 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
         DBG("Failed to assign skin.");
         break;
     }
-    if (!shouldDisplayKitty)
+    if (shouldDisplay == 0)
     {
         background.setVisible(false);
         DBG("SHOULDNT DISPLAY");
@@ -277,37 +277,35 @@ void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 
 void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
 {
+    auto settings = audioProcessor.globalProperties.getUserSettings();
     if (button == &defaultSkinButton)
     {
-        audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->store(0);
+        settings->setValue("CURRENTSKIN", 0);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sDefault);
         changeLabelColours();
     }
     else if (button == &halloweenSkinButton)
     {
-        
-        audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->store(1);
-        DBG("Changed skin! newval = " + std::to_string(audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->load()));
+        settings->setValue("CURRENTSKIN", 1);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sHalloween);
         changeLabelColours();
     }
     else if (button == &christmasSkinButton)
     {
-        audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->store(2);
+        settings->setValue("CURRENTSKIN", 2);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sChristmas);
         changeLabelColours();
     }
     else if (button == &spaceSkinButton)
     {
-        audioProcessor.apvts.getRawParameterValue("CURRENTSKIN")->store(3);
+        settings->setValue("CURRENTSKIN", 3);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sSpace);
         changeLabelColours();
     }
     else if (button == &displayKittyButton)
     {
         shouldDisplayKitty = !audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load();
-        audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->store(shouldDisplayKitty);
-        DBG("Changed display kitty! New value = " + std::to_string(audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load()));
+        settings->setValue("DISPLAYKITTY", (int)shouldDisplayKitty);
         if (!shouldDisplayKitty)
         {
             background.setVisible(false);

@@ -35,19 +35,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     apvts.addParameterListener("MODWAVETYPE", this);
     apvts.addParameterListener("MODCHOICE", this);
 
-    auto options = juce::PropertiesFile::Options();
-    options.applicationName = "TremoKitty";
-    options.commonToAllUsers = true;
-    options.filenameSuffix = ".kprpt";
-    options.folderName = options.getDefaultFile().getFileName();
-    //If the user is on macosx set the mac osx library else it will assert upon running no bueno
-    if (((juce::SystemStats::getOperatingSystemType() & juce::SystemStats::OperatingSystemType::MacOSX) != 0))
-        options.osxLibrarySubFolder = "Application Support";
-    globalProperties.setStorageParameters(options);
-
-    auto userSettings = globalProperties.getUserSettings();
-    userSettings->setValue("DISPLAYKITTY", 1);
-    userSettings->setValue("CURRENTSKIN", 0);
+    
 
     //Adding listeners to each of the modable parameters- see the enumerator ModParams
     for (int i = 1; i < 7; i++)
@@ -60,6 +48,18 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     shouldPrepare = false;
     presetManager = std::make_unique<Service::PresetManager>(apvts);
     apvts.state = juce::ValueTree("SavedParams");
+
+    auto options = juce::PropertiesFile::Options();
+    options.applicationName = ProjectInfo::projectName;
+    options.commonToAllUsers = true;
+    options.filenameSuffix = ".kprpt";
+    options.folderName = ProjectInfo::projectName;
+    options.osxLibrarySubFolder = "Application Support";
+    globalProperties.setStorageParameters(options);
+
+    auto userSettings = globalProperties.getUserSettings();
+    auto display =  userSettings->getIntValue("DISPLAYKITTY");
+    auto skin = userSettings->getIntValue("CURRENTSKIN");
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
@@ -529,10 +529,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODPARAMPREVIOUSVALUE", "Modded Parameter Pre-modded Value", 0.f, 10.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterBool>("MODRESETSWITCH", "Modded Param Reset Switch", true));
     layout.add(std::make_unique<juce::AudioParameterBool>("MODBP", "Mod LFO Bypass", false));
-
-    //GUI
-    layout.add(std::make_unique<juce::AudioParameterBool>("DISPLAYKITTY", "Display Kitty Logo", true));
-    layout.add(std::make_unique<juce::AudioParameterInt>("CURRENTSKIN", "Current Skin Index", 0, 5, 0));
 
     //Returning every parameter
     return layout;
