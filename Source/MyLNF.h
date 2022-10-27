@@ -25,12 +25,11 @@ namespace juce
 
             MyLNF(skins skinToUse = skins::sDefault)
             {
-                defaultBg = juce::ImageCache::getFromMemory(BinaryData::ChristmasBG_png, BinaryData::ChristmasBG_pngSize);
+                defaultBg = juce::ImageCache::getFromMemory(BinaryData::DefaultBG_png, BinaryData::DefaultBG_pngSize);
                 christmasBg = juce::ImageCache::getFromMemory(BinaryData::ChristmasBG_png, BinaryData::ChristmasBG_pngSize);
-                spaceBg = juce::ImageCache::getFromMemory(BinaryData::ChristmasBG_png, BinaryData::ChristmasBG_pngSize);
-                halloweenBg = juce::ImageCache::getFromMemory(BinaryData::ChristmasBG_png, BinaryData::ChristmasBG_pngSize);
-                /*halloweenBg = juce::ImageCache::getFromMemory(BinaryData::HalloweenBG_png, BinaryData::HalloweenBG_pngSize);
-                spaceBg = juce::ImageCache::getFromMemory(BinaryData::SpaceBG_png, BinaryData::SpaceBG_pngSize);*/
+                spaceBg = juce::ImageCache::getFromMemory(BinaryData::DefaultBG_png, BinaryData::DefaultBG_pngSize);
+                halloweenBg = juce::ImageCache::getFromMemory(BinaryData::HalloweenBG_png, BinaryData::HalloweenBG_pngSize);
+                //spaceBg = juce::ImageCache::getFromMemory(BinaryData::SpaceBG_png, BinaryData::SpaceBG_pngSize);*/
                 
 
                 changeSkin(skinToUse);
@@ -47,26 +46,26 @@ namespace juce
                     currentBgImage = halloweenBg;
                     backGroundColour = juce::Colour::fromRGB(96, 8, 156);
                     skinDefaultColor = juce::Colours::black;
-                    typeFace = "Algerian Regular";
-                    textColour = juce::Colour::fromRGB(207, 2, 43);
+                    typeFace = "Times New Roman";
+                    textColour = juce::Colours::ghostwhite;
                     setColour(juce::Label::ColourIds::textColourId, textColour);
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                     setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
                     setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colours::orange);
                     break;
                 case(skins::sChristmas):
-                    setColour(juce::Slider::ColourIds::backgroundColourId,juce::Colours::goldenrod);
-                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::green);
-                    setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::blue);
+                    setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colour::fromRGB(253, 246, 235));
+                    setColour(juce::Slider::ColourIds::trackColourId, juce::Colour::fromRGB(51, 65, 53));
+                    setColour(juce::Slider::ColourIds::thumbColourId, juce::Colour::fromRGB(51, 65, 53));
                     currentBgImage = christmasBg;
-                    backGroundColour = juce::Colours::red;
-                    skinDefaultColor = juce::Colours::green;
-                    typeFace = "Avant Garde";
-                    textColour = juce::Colours::lightgoldenrodyellow;
+                    backGroundColour = juce::Colour::fromRGB(200, 156, 119);
+                    skinDefaultColor = juce::Colour::fromRGB(122, 10, 25); 
+                    typeFace = "Times New Roman";
+                    textColour = juce::Colours::black;
                     setColour(juce::Label::ColourIds::textColourId, textColour);
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                     setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
-                    setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colours::blue);
+                    setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colour::fromRGB(211, 193, 177));
                     break;
                 case(skins::sSpace):
                     setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colours::white);

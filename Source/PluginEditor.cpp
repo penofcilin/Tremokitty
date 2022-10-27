@@ -11,7 +11,6 @@
 #include <typeinfo>
 
 
-
 //==============================================================================
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager(), &myLNF)
@@ -47,9 +46,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     setUpFilterSection();
     setUpModSection();
     changeLabelColours();
-
     
-  
     setSize (500, 550);
     loadInitialState();
 }
@@ -63,18 +60,22 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
     {
     case(0):
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sDefault);
+        background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
         break;
     case(1):
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sHalloween);
+        background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
         break;
     case(2):
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sChristmas);
+        background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
         break;
     case(3):
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sSpace);
+        background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
         break;
     default:
@@ -279,42 +280,41 @@ void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
 {
     auto settings = audioProcessor.globalProperties.getUserSettings();
+    DBG("passed it");
     if (button == &defaultSkinButton)
     {
+        DBG("");
         settings->setValue("CURRENTSKIN", 0);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sDefault);
+        background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
     }
     else if (button == &halloweenSkinButton)
     {
         settings->setValue("CURRENTSKIN", 1);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sHalloween);
+        background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
     }
     else if (button == &christmasSkinButton)
     {
         settings->setValue("CURRENTSKIN", 2);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sChristmas);
+        background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
     }
     else if (button == &spaceSkinButton)
     {
         settings->setValue("CURRENTSKIN", 3);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sSpace);
+        background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
     }
     else if (button == &displayKittyButton)
     {
-        shouldDisplayKitty = !audioProcessor.apvts.getRawParameterValue("DISPLAYKITTY")->load();
-        settings->setValue("DISPLAYKITTY", (int)shouldDisplayKitty);
-        if (!shouldDisplayKitty)
-        {
-            background.setVisible(false);
-        }
-        else
-        {
-            background.setVisible(true);
-        }
+        shouldDisplayKitty = !settings->getBoolValue("DISPLAYKITTY");
+        settings->setValue("DISPLAYKITTY", shouldDisplayKitty);
+        background.setVisible(shouldDisplayKitty);
     }
     repaint();
 }
@@ -322,9 +322,13 @@ void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
 void TremoKittyAudioProcessorEditor::changeLabelColours()
 {
     tremSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
+    tremSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     panSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
+    panSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     modSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
+    modSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     filterSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
+    filterSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     tremRateLabel.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
     TremDepthLabel.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
     PanRateLabel.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
@@ -481,7 +485,7 @@ void TremoKittyAudioProcessorEditor::resized()
     Tremfb.performLayout(threeQuarterArea.removeFromLeft(threeQuarterArea.proportionOfWidth(0.5)).reduced(4));
     Panfb.performLayout(threeQuarterArea.removeFromRight(threeQuarterArea.getWidth()).reduced(4));
     Filterfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.3f)));
-    Modfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.3f)));
+    Modfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.35f)));
 
     
     
