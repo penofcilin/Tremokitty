@@ -14,7 +14,8 @@
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager(), &myLNF)
 {
-    juce::LookAndFeel::setDefaultLookAndFeel(&myLNF);
+   
+    
     background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
     background.setAlpha(0.1);
     addAndMakeVisible(background);
@@ -48,13 +49,14 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     
     setSize (500, 550);
     loadInitialState();
+    setLookAndFeel(&myLNF);
 }
 
 void TremoKittyAudioProcessorEditor::loadInitialState()
 {
     auto settings = audioProcessor.globalProperties.getUserSettings();
-    auto shouldDisplay = settings->getIntValue("DISPLAYKITTY");
-    auto skinToLoad = settings->getIntValue("CURRENTSKIN");
+    auto shouldNotDisplay = settings->getBoolValue("DONTDISPLAYKITTY");
+    auto skinToLoad = settings->getIntValue("DEFAULTSKIN");
     switch (skinToLoad)
     {
     case(0):
@@ -81,10 +83,9 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
         DBG("Failed to assign skin.");
         break;
     }
-    if (shouldDisplay == 0)
+    if (!shouldNotDisplay == 0)
     {
         background.setVisible(false);
-        DBG("SHOULDNT DISPLAY");
     }
     else
     {
@@ -223,6 +224,11 @@ void TremoKittyAudioProcessorEditor::setUpModSection()
 
 void TremoKittyAudioProcessorEditor::setUpSkinButtons()
 {
+    auto sdsbi = juce::ImageCache::getFromMemory(BinaryData::setDefaultButtonImage_png, BinaryData::setDefaultButtonImage_pngSize);
+    setDefaultSkinButton.setImages(false, true, true, sdsbi, 1.f, juce::Colours::transparentWhite, sdsbi, 0.5f, juce::Colours::transparentWhite, sdsbi, 0.2f, juce::Colours::transparentBlack);
+    addAndMakeVisible(setDefaultSkinButton);
+    setDefaultSkinButton.addListener(this);
+
     auto dsbi = juce::ImageCache::getFromMemory(BinaryData::defaultSkinButton_png, BinaryData::defaultSkinButton_pngSize);
     defaultSkinButton.setImages(false, true, true, dsbi, 1.f, juce::Colours::transparentWhite, dsbi, 0.5f, juce::Colours::transparentWhite, dsbi, 0.2f, juce::Colours::transparentBlack);
     addAndMakeVisible(defaultSkinButton);
@@ -279,41 +285,53 @@ void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
 {
     auto settings = audioProcessor.globalProperties.getUserSettings();
-    DBG("passed it");
     if (button == &defaultSkinButton)
     {
-        DBG("");
-        settings->setValue("CURRENTSKIN", 0);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sDefault);
         background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
     }
     else if (button == &halloweenSkinButton)
     {
-        settings->setValue("CURRENTSKIN", 1);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sHalloween);
         background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
     }
     else if (button == &christmasSkinButton)
     {
-        settings->setValue("CURRENTSKIN", 2);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sChristmas);
         background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
     }
     else if (button == &spaceSkinButton)
     {
-        settings->setValue("CURRENTSKIN", 3);
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sSpace);
         background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         changeLabelColours();
     }
     else if (button == &displayKittyButton)
     {
-        shouldDisplayKitty = !settings->getBoolValue("DISPLAYKITTY");
-        settings->setValue("DISPLAYKITTY", shouldDisplayKitty);
-        background.setVisible(shouldDisplayKitty);
+        shouldNotDisplayKitty = !settings->getBoolValue("DONTDISPLAYKITTY");
+        settings->setValue("DONTDISPLAYKITTY", shouldNotDisplayKitty);
+        background.setVisible(!shouldNotDisplayKitty);
+    }
+    else if (button == &setDefaultSkinButton)
+    {
+        switch (myLNF.currentSkin)
+        {
+        case(juce::Gui::MyLNF::skins::sDefault):
+            settings->setValue("DEFAULTSKIN", 0);
+            break;
+        case(juce::Gui::MyLNF::skins::sHalloween):
+            settings->setValue("DEFAULTSKIN", 1);
+            break;
+        case(juce::Gui::MyLNF::skins::sChristmas):
+            settings->setValue("DEFAULTSKIN", 2);
+            break;
+        case(juce::Gui::MyLNF::skins::sSpace):
+            settings->setValue("DEFAULTSKIN", 3);
+            break;
+        }
     }
     repaint();
 }
@@ -379,6 +397,7 @@ TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
     tremWaveChoice.removeListener(this);
     FilterCutoffSlider.removeListener(this);
     displayKittyButton.removeListener(this);
+    setDefaultSkinButton.removeListener(this);
 }
 
 //==============================================================================
@@ -480,6 +499,7 @@ void TremoKittyAudioProcessorEditor::resized()
     christmasSkinButton.setBounds(skinButtonBounds.removeFromRight(30).reduced(5));
     halloweenSkinButton.setBounds(skinButtonBounds.removeFromRight(30).reduced(5));
     defaultSkinButton.setBounds(skinButtonBounds.removeFromRight(30).reduced(5));
+    setDefaultSkinButton.setBounds(skinButtonBounds.removeFromRight(30).reduced(5));
     presetPanel.setBounds(threeQuarterArea.removeFromTop(area.proportionOfHeight(0.07f)));
     Tremfb.performLayout(threeQuarterArea.removeFromLeft(threeQuarterArea.proportionOfWidth(0.5)).reduced(4));
     Panfb.performLayout(threeQuarterArea.removeFromRight(threeQuarterArea.getWidth()).reduced(4));

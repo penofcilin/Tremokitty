@@ -52,6 +52,7 @@ namespace juce
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                     setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
                     setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colours::orange);
+                    currentSkin = skins::sHalloween;
                     break;
                 case(skins::sChristmas):
                     setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colour::fromRGB(253, 246, 235));
@@ -66,6 +67,7 @@ namespace juce
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                     setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
                     setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colour::fromRGB(211, 193, 177));
+                    currentSkin = skins::sChristmas;
                     break;
                 case(skins::sSpace):
                     setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colours::white);
@@ -80,6 +82,7 @@ namespace juce
                     setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                     setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colours::black);
+                    currentSkin = skins::sSpace;
                     break;
                 default:
                     setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colour::fromRGB(250, 225, 226));
@@ -94,6 +97,7 @@ namespace juce
                     setColour(juce::ToggleButton::ColourIds::textColourId, textColour);
                     setColour(juce::PopupMenu::ColourIds::backgroundColourId, skinDefaultColor);
                     setColour(juce::PopupMenu::ColourIds::highlightedBackgroundColourId, juce::Colour::fromRGB(132, 98, 103));
+                    currentSkin = skins::sDefault;
                 }
             }
 

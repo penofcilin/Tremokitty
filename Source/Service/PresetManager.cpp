@@ -11,7 +11,7 @@
 #include "PresetManager.h"
 namespace Service
 {
-    const juce::File PresetManager::defaultDirectory{ juce::File::getSpecialLocation(juce::File::SpecialLocationType::commonDocumentsDirectory).getChildFile(ProjectInfo::companyName).getChildFile(ProjectInfo::projectName)};
+    const juce::File PresetManager::defaultDirectory{ juce::File::getSpecialLocation(juce::File::SpecialLocationType::userApplicationDataDirectory).getChildFile(ProjectInfo::projectName).getChildFile("Presets")};
     const juce::String PresetManager::extension{ "kty" };
     const juce::String PresetManager::defaultPresetName{ "Default" };
     const juce::String PresetManager::presetNameProperty{ "presetName" };

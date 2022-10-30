@@ -35,7 +35,7 @@ private:
     juce::Label header;
     juce::ToggleButton MasterBypass;
     Gui::PresetPanel presetPanel;
-    juce::ImageButton defaultSkinButton, halloweenSkinButton, christmasSkinButton, spaceSkinButton, displayKittyButton;
+    juce::ImageButton defaultSkinButton, halloweenSkinButton, christmasSkinButton, spaceSkinButton, displayKittyButton, setDefaultSkinButton;
     
     //Tremolo Section
     juce::Label tremSectionHeader;
@@ -122,7 +122,7 @@ private:
     void setUpSkinButtons();
 
     //Member Variable
-    bool shouldDisplayKitty{ true };
+    bool shouldNotDisplayKitty{ false };
     //Processor
     TremoKittyAudioProcessor& audioProcessor;
 
