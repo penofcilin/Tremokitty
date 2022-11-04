@@ -27,9 +27,8 @@ namespace juce
             {
                 defaultBg = juce::ImageCache::getFromMemory(BinaryData::DefaultBG_png, BinaryData::DefaultBG_pngSize);
                 christmasBg = juce::ImageCache::getFromMemory(BinaryData::ChristmasBG_png, BinaryData::ChristmasBG_pngSize);
-                spaceBg = juce::ImageCache::getFromMemory(BinaryData::DefaultBG_png, BinaryData::DefaultBG_pngSize);
                 halloweenBg = juce::ImageCache::getFromMemory(BinaryData::HalloweenBG_png, BinaryData::HalloweenBG_pngSize);
-                //spaceBg = juce::ImageCache::getFromMemory(BinaryData::SpaceBG_png, BinaryData::SpaceBG_pngSize);*/
+                spaceBg = juce::ImageCache::getFromMemory(BinaryData::SpaceBG_png, BinaryData::SpaceBG_pngSize);
                 
 
                 changeSkin(skinToUse);

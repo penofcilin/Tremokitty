@@ -14,8 +14,8 @@
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager(), &myLNF)
 {
-   
-    
+
+
     background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
     background.setAlpha(0.1);
     addAndMakeVisible(background);
@@ -56,7 +56,8 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
 {
     auto settings = audioProcessor.globalProperties.getUserSettings();
     auto shouldNotDisplay = settings->getBoolValue("DONTDISPLAYKITTY");
-    auto skinToLoad = settings->getIntValue("DEFAULTSKIN");
+    auto skinToLoad = settings->getIntValue("DEFAULTSKIN", 0);
+    DBG("TOLOAD = " + std::to_string(skinToLoad));
     switch (skinToLoad)
     {
     case(0):
@@ -317,21 +318,27 @@ void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
     }
     else if (button == &setDefaultSkinButton)
     {
+        
         switch (myLNF.currentSkin)
         {
         case(juce::Gui::MyLNF::skins::sDefault):
             settings->setValue("DEFAULTSKIN", 0);
+            DBG("Default");
             break;
         case(juce::Gui::MyLNF::skins::sHalloween):
             settings->setValue("DEFAULTSKIN", 1);
+            DBG("Halloween");
             break;
         case(juce::Gui::MyLNF::skins::sChristmas):
             settings->setValue("DEFAULTSKIN", 2);
+            DBG("CHristmas");
             break;
         case(juce::Gui::MyLNF::skins::sSpace):
             settings->setValue("DEFAULTSKIN", 3);
+            DBG("Space");
             break;
         }
+        
     }
     repaint();
 }
@@ -389,7 +396,6 @@ void TremoKittyAudioProcessorEditor::createSlider(juce::Slider& slider)
 
 TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
 {
-    juce::LookAndFeel::setDefaultLookAndFeel(nullptr);
     defaultSkinButton.removeListener(this);
     halloweenSkinButton.removeListener(this);
     christmasSkinButton.removeListener(this);
@@ -398,6 +404,7 @@ TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
     FilterCutoffSlider.removeListener(this);
     displayKittyButton.removeListener(this);
     setDefaultSkinButton.removeListener(this);
+    setLookAndFeel(nullptr);
 }
 
 //==============================================================================

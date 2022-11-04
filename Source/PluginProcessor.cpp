@@ -234,10 +234,6 @@ bool TremoKittyAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    //If master bypass is enabled, no processing will occur whatsoever.
-    if (apvts.getRawParameterValue("MASTERBP")->load())
-        return;
-
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -249,7 +245,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     juce::dsp::AudioBlock<float> block(buffer);
 
     //The Mod LFO section is processed first, as it will affect the value of the others.
-    
     float modChoice = apvts.getRawParameterValue("MODCHOICE")->load();
     if (modChoice != 0.f)
     {
@@ -271,22 +266,24 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             //then processing with the gain mod
             //Could literally just be 1.f
             float gain = apvts.getRawParameterValue("GAIN")->load();
+            float f{0};
+            float tremscaler = 1 - tremDepth;
             for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
             {
-                lfoLookupTable[samples] = (tremLFO.processSample(0.f) + 1) * 0.5f;
-                lfoLookupTable[samples] =  gainModFilter.processSample(0, lfoLookupTable[samples]);
+                f = (tremLFO.getNextValue() + 1) * 0.5f;
+                lfoLookupTable[samples] = tremscaler + gainModFilter.processSample(0, f) * tremDepth;
             }
-
+            
             for (int channel = 0; channel < totalNumInputChannels; ++channel)
             {
                 float* channelData = buffer.getWritePointer(channel);
 
                 for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
                 {
-                    channelData[samples] *= (1-tremDepth) + lfoLookupTable[samples] * tremDepth;
+                    channelData[samples] *= lfoLookupTable[samples];
                 }
             }
-        }
+        } // BIG IF
     }//if trembp is false
     else
     {
@@ -405,7 +402,6 @@ void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
     * say the original value is 7. The modscaler will be 0-1 mapped out between 0 minus 7 and 10 minus 7, in other words -7 and 13. Lets say the LFO is giving us a value of 1.0, so the scaler is at the max value. the modscaler will give us 13. Then when we add that to our original value, 7+13 = 10, therefore the max from the LFO will give us the max of the actual value. This is only if the moddepth is fully engaged. If the moddepth is at, say, 0.5, then the range of the modscaler collapses from -7 to 13 to -3.5 to 6.5. This way, the signal is only being modulated from a range that goes from the original value to halfway down to 0, and halfway to the max. In other words it modulates 7 down to 3.5, up to 13.5. And of course, if mod depth is 0, then 0 will be added to the oldvalue, so the parameter will not be being changed at all.
     * The math is pretty much the same for the 0-1 values. Just shrink the formula down.
     */
-
     if(!apvts.getRawParameterValue("MODBP")->load())
         apvts.getRawParameterValue(parameterID)->store(oldValue + (modScaler*modDepth));
     else

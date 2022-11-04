@@ -123,6 +123,7 @@ private:
 
     //Member Variable
     bool shouldNotDisplayKitty{ false };
+    int currentDefaultSkin{ 0 };
     //Processor
     TremoKittyAudioProcessor& audioProcessor;
 

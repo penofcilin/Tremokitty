@@ -23,6 +23,7 @@
       <FILE id="qbqlpH" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
     <GROUP id="{3B884DAE-C02C-DBC0-880C-C8486B11EBAC}" name="Resources">
+      <FILE id="vuJRRb" name="SpaceBG.png" compile="0" resource="1" file="Resources/SpaceBG.png"/>
       <FILE id="NeL3zn" name="setDefaultButtonImage.png" compile="0" resource="1"
             file="Resources/setDefaultButtonImage.png"/>
       <FILE id="MjUHkA" name="DefaultBG.png" compile="0" resource="1" file="Resources/DefaultBG.png"/>

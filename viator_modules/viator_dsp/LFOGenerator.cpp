@@ -3,7 +3,6 @@
 void viator_dsp::LFOGenerator::prepare(const juce::dsp::ProcessSpec &spec)
 {
     sampleRate = spec.sampleRate / spec.maximumBlockSize;
-    
     reset();
 }
 
@@ -34,26 +33,25 @@ void viator_dsp::LFOGenerator::initialise (const std::function<float (float)>& f
     {
         generator = function;
     }
-    waveFunction = function;
 }
 
 float viator_dsp::LFOGenerator::processSample(float newInput)
 {
-    auto increment = juce::MathConstants<float>::twoPi * m_frequency / sampleRate;
+    auto increment = juce::MathConstants<float>::twoPi * NormalizedFrequency;
     return newInput + generator (phase.advance (increment) - juce::MathConstants<float>::pi);
 }
 
-float viator_dsp::LFOGenerator::processSample(float newInput, float mod)
+float viator_dsp::LFOGenerator::getNextValue()
 {
-    auto increment = juce::MathConstants<float>::twoPi * m_frequency / sampleRate;
-    return (newInput + generator(phase.advance(increment) - juce::MathConstants<float>::pi))*mod;
+    auto increment = juce::MathConstants<float>::twoPi * NormalizedFrequency;
+    return generator(phase.advance(increment) - juce::MathConstants<float>::pi);
 }
 
 void viator_dsp::LFOGenerator::setParameter(ParameterId parameter, float parameterValue)
 {
     switch (parameter)
     {
-        case viator_dsp::LFOGenerator::ParameterId::kFrequency: m_frequency = parameterValue; break;
+    case viator_dsp::LFOGenerator::ParameterId::kFrequency: m_frequency = parameterValue; NormalizedFrequency = parameterValue / sampleRate; break;
         case viator_dsp::LFOGenerator::ParameterId::kBypass: m_GlobalBypass = static_cast<bool>(parameterValue); break;
     }
 }
@@ -61,16 +59,6 @@ void viator_dsp::LFOGenerator::setParameter(ParameterId parameter, float paramet
 float viator_dsp::LFOGenerator::getFrequency()
 {
     return m_frequency;
-}
-
-float viator_dsp::LFOGenerator::getNextValue()
-{
-    inc = juce::MathConstants<float>::twoPi * m_frequency / sampleRate;
-    myPhase += inc;
-    if (myPhase > juce::MathConstants<float>::twoPi)
-        myPhase -= juce::MathConstants<float>::twoPi;
-
-    return waveFunction(myPhase);
 }
 
 void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)

@@ -20,9 +20,6 @@ namespace viator_dsp
         
         float processSample(float newInput);
 
-        float processSample(float newInput, float mod);
-
-
         float getNextValue();
             
         enum class ParameterId
@@ -47,20 +44,16 @@ namespace viator_dsp
         void setWaveType(WaveType newWaveType);
         
     private:
-
-        float inc{ 0.f };
-        float myPhase{ 0.f };
-     
-
+    
         float m_frequency;
         float sampleRate;
+        float NormalizedFrequency;
 
         juce::Random rando;
 
         juce::dsp::Phase<float> phase;
         
         std::function<float (float)> generator;
-        std::function<float(float)> waveFunction;
         std::unique_ptr<juce::dsp::LookupTableTransform<float>> lookupTable;
         
         bool m_GlobalBypass {false};
