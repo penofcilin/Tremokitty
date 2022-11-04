@@ -10,25 +10,5 @@
 #include "viator_modules.h"
 
 /** Viator DSP CPP Files*/
-#include "viator_dsp/Distortion.cpp"
-#include "viator_dsp/SVFilter.cpp"
 #include "viator_dsp/LFOGenerator.cpp"
-#include "viator_dsp/MultiBandProcessor.cpp"
-#include "viator_dsp/BitCrusher.cpp"
-#include "viator_dsp/BrickWallLPF.cpp"
 
-/** Viator GUI CPP Files, not included atm*/
-/*
-#include "viator_gui/Widgets/Dial.cpp"
-#include "viator_gui/Widgets/Fader.cpp"
-#include "viator_gui/Widgets/Label.cpp"
-#include "viator_gui/Widgets/LEDButton.cpp"
-#include "viator_gui/Widgets/Menu.cpp"
-#include "viator_gui/Widgets/NumberBox.cpp"
-#include "viator_gui/Widgets/Toggle.cpp"
-#include "viator_gui/Widgets/ToggleButton.cpp"
-#include "viator_gui/Widgets/StyleSheet.cpp"
-#include "viator_gui/Widgets/Menu_Styles.cpp"
-#include "viator_gui/Widgets/FilmStripKnob.cpp"
-#include "viator_gui/Widgets/FilmStripFader.cpp"
-*/

@@ -18,6 +18,7 @@ void viator_dsp::LFOGenerator::reset()
     phase.reset();
 }
 
+//Set Wave Function for LFO
 void viator_dsp::LFOGenerator::initialise (const std::function<float (float)>& function,
                  size_t lookupTableNumPoints)
 {
@@ -31,6 +32,7 @@ void viator_dsp::LFOGenerator::initialise (const std::function<float (float)>& f
     }
     else
     {
+        //This one is the part that I use, simply sets the wavefunction to whatever function is passed as arg
         generator = function;
     }
 }
@@ -67,7 +69,8 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
     {
         case viator_dsp::LFOGenerator::WaveType::kSine:
         {
-            initialise([](float x){return std::sin(x); });
+            //initialise([this](float x){return fastSin(x); });
+            initialise([=](float x) {return  fastSin(x); });
             break;
         }
         case viator_dsp::LFOGenerator::WaveType::kSaw:

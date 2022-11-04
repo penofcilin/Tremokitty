@@ -44,7 +44,8 @@ namespace viator_dsp
         void setWaveType(WaveType newWaveType);
         
     private:
-    
+        FastSin<float, 9> fastSin;
+
         float m_frequency;
         float sampleRate;
         float NormalizedFrequency;
