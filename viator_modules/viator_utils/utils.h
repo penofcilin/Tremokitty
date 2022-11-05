@@ -3,6 +3,7 @@
 
 namespace viator_utils
 {
+
     struct utils
     {
         static constexpr float _piDivisor = 2.0 / juce::MathConstants<float>::pi;

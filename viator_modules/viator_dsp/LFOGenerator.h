@@ -3,6 +3,7 @@
 #define LFOGenerator_h
 
 #include <JuceHeader.h>
+#include <KOModules/Modules/fast_sin.h>
 
 namespace viator_dsp
 {

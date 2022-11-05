@@ -69,8 +69,9 @@ void viator_dsp::LFOGenerator::setWaveType(WaveType newWaveType)
     {
         case viator_dsp::LFOGenerator::WaveType::kSine:
         {
-            //initialise([this](float x){return fastSin(x); });
-            initialise([=](float x) {return  fastSin(x); });
+            //initialise([](float x){return std::sin(x); });
+            //Fastsin is a little faster than std::sin
+            initialise([this](float x) {return  fastSin(x); });
             break;
         }
         case viator_dsp::LFOGenerator::WaveType::kSaw:

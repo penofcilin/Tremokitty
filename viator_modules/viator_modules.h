@@ -21,7 +21,7 @@
 
 /** Viator DSP Headers*/
 #include "viator_dsp/LFOGenerator.h"
-#include "viator_dsp/fast_sin.h"
+
 
 
 /** Viator Utils Headers*/
