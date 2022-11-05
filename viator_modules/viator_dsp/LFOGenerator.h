@@ -3,7 +3,6 @@
 #define LFOGenerator_h
 
 #include <JuceHeader.h>
-#include <KOModules/Modules/fast_sin.h>
 
 namespace viator_dsp
 {
@@ -45,7 +44,6 @@ namespace viator_dsp
         void setWaveType(WaveType newWaveType);
         
     private:
-        FastSin<float, 9> fastSin;
 
         float m_frequency;
         float sampleRate;

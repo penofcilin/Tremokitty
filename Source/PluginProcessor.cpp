@@ -268,11 +268,13 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             float gain = apvts.getRawParameterValue("GAIN")->load();
             float f{0};
             float tremscaler = 1 - tremDepth;
+
             for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
             {
                 f = (tremLFO.getNextValue() + 1) * 0.5f;
                 lfoLookupTable[samples] = tremscaler + gainModFilter.processSample(0, f) * tremDepth;
             }
+
             
             for (int channel = 0; channel < totalNumInputChannels; ++channel)
             {
