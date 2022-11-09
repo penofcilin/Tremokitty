@@ -1,0 +1,4 @@
+Thanks to Landon Viator for creating some DSP modules that really helped me when creating this plugin. 
+https://github.com/landonviator/viatordsp
+
+Special thanks to the guys at The Audio Programmer's discord for their consistent help!
