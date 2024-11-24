@@ -120,9 +120,6 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
     TremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
     addAndMakeVisible(tremWaveChoice);
 
-    //Set up synced part
-    
-
     //Sync button + combobox stuff
     createToggleButton("Tempo Sync", TremSyncButton);
     TremSyncAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMSYNC", TremSyncButton);
@@ -130,8 +127,6 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 
     TremSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMSYNCCHOICE", tremSyncChoice);
     tremSyncChoice.addItemList(KOTempo::getNoteTypesAlternative(), 1);
-
-
     addAndMakeVisible(tremSyncChoice);
 
     createToggleButton("Tremolo Bypass", TremBypass);
@@ -161,6 +156,15 @@ void TremoKittyAudioProcessorEditor::setUpPannerSection()
     PanWaveChoice.addItemList(audioProcessor.WaveTypes, 1);
     addAndMakeVisible(PanWaveChoice);
     PanWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANWAVE", PanWaveChoice);
+
+    //Sync button + combobox stuff
+    createToggleButton("Tempo Sync", PanSyncButton);
+    PanSyncAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "PANSYNC", PanSyncButton);
+    PanSyncButton.addListener(this);
+
+    PanSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANSYNCCHOICE", PanSyncChoice);
+    PanSyncChoice.addItemList(KOTempo::getNoteTypesAlternative(), 1);
+    addAndMakeVisible(PanSyncChoice);
 
     createToggleButton("Pan Bypass", PanBypass);
     PanBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "PANBP", PanBypass);
@@ -306,6 +310,8 @@ void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
     //Do for all sync buttons
     if (button == &TremSyncButton)
         syncButtonClicked(&TremSyncButton);
+    else if (button == &PanSyncButton)
+        syncButtonClicked(&PanSyncButton);
     
 
     if (button == &defaultSkinButton)
@@ -440,6 +446,10 @@ void TremoKittyAudioProcessorEditor::changeLabelColours()
     TremSyncButton.setColour(juce::ToggleButton::ColourIds::textColourId, myLNF.textColour);
     TremSyncButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, myLNF.textColour);
     TremSyncButton.setColour(juce::ToggleButton::ColourIds::tickColourId, myLNF.textColour);
+
+    PanSyncButton.setColour(juce::ToggleButton::ColourIds::textColourId, myLNF.textColour);
+    PanSyncButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, myLNF.textColour);
+    PanSyncButton.setColour(juce::ToggleButton::ColourIds::tickColourId, myLNF.textColour);
 }
 
 void TremoKittyAudioProcessorEditor::createLabel(const juce::String& name, juce::Label& label)
@@ -534,12 +544,11 @@ void TremoKittyAudioProcessorEditor::resized()
     else
         Panfb.items.add(juce::FlexItem(75, 25, PanRateSlider));
 
-    Panfb.items.add(juce::FlexItem(75, 25, PanRateSlider));
-    Panfb.items.add(juce::FlexItem(75, 25, PanRateLabel));
+    Panfb.items.add(juce::FlexItem(75, 15, PanRateLabel));
     Panfb.items.add(juce::FlexItem(75, 25, PanDepthSlider));
-    Panfb.items.add(juce::FlexItem(75, 25, PanDepthLabel));
-    Panfb.items.add(juce::FlexItem(45, 25, PanWaveChoice));
-    Panfb.items.add(juce::FlexItem(45, 45, PanBypass));
+    Panfb.items.add(juce::FlexItem(75, 15, PanDepthLabel));
+    Panfb.items.add(juce::FlexItem(45, 30, PanWaveChoice));
+    Panfb.items.add(juce::FlexItem(19, 19, PanBypass));
 
     //Filter Section
     Filterfb.flexDirection = juce::FlexBox::Direction::column;
