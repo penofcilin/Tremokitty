@@ -11,6 +11,8 @@
 #include <JuceHeader.h>
 #include "Service/PresetManager.h"
 #include <chrono>
+#include "KOLFO.h"
+#include "KOTempo.h"
 
 
 //==============================================================================
@@ -68,7 +70,7 @@ public:
 
     //Some Information Structures
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
-    juce::StringArray WaveTypes{ "Sine", "Saw", "SawDown", "Square" };
+    juce::StringArray WaveTypes{ "Sine", "Cosine", "Saw", "SawDown", "Square" };
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
     enum class modules { tremolo, pan, filter, mod, master };
 
@@ -78,10 +80,14 @@ private:
     juce::dsp::ProcessSpec spec;
 
     //LFO Section, so pretty, all in a row, like red toy soldiers marching through the snow
-    viator_dsp::LFOGenerator tremLFO;
-    viator_dsp::LFOGenerator panLFO;
-    viator_dsp::LFOGenerator filterLFO;
-    viator_dsp::LFOGenerator modLFO;
+    KOLFO tremLFO;
+    KOLFO panLFO;
+    KOLFO filterLFO;
+    KOLFO modLFO;
+
+    KOTempo tempo;
+    juce::AudioPlayHead* playHead;
+    juce::AudioPlayHead::CurrentPositionInfo currentPosition;
 
    //DSP modules, gainModFilter filters out the tremolo LFO to avoid clicking when processing highly transient waveforms like saw and square
     juce::dsp::Gain<float> gainModule;
@@ -105,6 +111,7 @@ private:
     void processMod(const juce::String& parameterID);
     void switchProcessMod();
     void updateModParam(float newValue);
+   // void updateSyncedRate(modules module, int option);
 
     //Used for preparing the filter module.
     bool shouldPrepare;

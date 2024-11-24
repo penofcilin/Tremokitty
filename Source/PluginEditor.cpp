@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin editor.
+    This file contains the motherfuckin editor baby 
 
   ==============================================================================
 */
@@ -14,8 +14,6 @@
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager(), &myLNF)
 {
-
-
     background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
     background.setAlpha(0.1);
     addAndMakeVisible(background);
@@ -38,7 +36,6 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     //PresetPanel
     addAndMakeVisible(presetPanel);
 
-    
     //Got rid of the reset button cause you can just select the default preset
     //Got rid of master bypass cause kind of pointless
     setUpTremoloSection();
@@ -51,6 +48,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     loadInitialState();
     setLookAndFeel(&myLNF);
 }
+
 
 void TremoKittyAudioProcessorEditor::loadInitialState()
 {
@@ -95,8 +93,10 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
     repaint();
 }
 
+
 void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 {
+    //Create section header
     createLabel("Tremolo", tremSectionHeader);
     tremSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     tremSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
@@ -114,15 +114,30 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
     createLabel("tremdepth", TremDepthLabel);
     //TremDepthLabel.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
+    //Set up comboboxes
     tremWaveChoice.addItemList(audioProcessor.WaveTypes, 1);
     tremWaveChoice.addListener(this);
-
-
     TremWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMWAVE", tremWaveChoice);
     addAndMakeVisible(tremWaveChoice);
 
+    //Set up synced part
+    
+
+    //Sync button + combobox stuff
+    createToggleButton("Tempo Sync", TremSyncButton);
+    TremSyncAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMSYNC", TremSyncButton);
+    TremSyncButton.addListener(this);
+
+    TremSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMSYNCCHOICE", tremSyncChoice);
+    tremSyncChoice.addItemList(KOTempo::getNoteTypesAlternative(), 1);
+
+
+    addAndMakeVisible(tremSyncChoice);
+
     createToggleButton("Tremolo Bypass", TremBypass);
     TremBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMBP", TremBypass);
+
+    
 }
 
 void TremoKittyAudioProcessorEditor::setUpPannerSection()
@@ -276,6 +291,7 @@ void TremoKittyAudioProcessorEditor::createToggleButton(const juce::String& text
 
 void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
+    DBG("Hi!");
     if (slider == &FilterCutoffSlider)
     { 
         float newValue = slider->getValue();
@@ -286,6 +302,12 @@ void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
 {
     auto settings = audioProcessor.globalProperties.getUserSettings();
+
+    //Do for all sync buttons
+    if (button == &TremSyncButton)
+        syncButtonClicked(&TremSyncButton);
+    
+
     if (button == &defaultSkinButton)
     {
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sDefault);
@@ -340,7 +362,45 @@ void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
         }
         
     }
+
     repaint();
+}
+
+void TremoKittyAudioProcessorEditor::syncButtonClicked(juce::ToggleButton* button)
+{
+    //Tremsync section
+    if (button == &TremSyncButton)
+    {
+        //If Sync is enabled
+        if (button->getToggleState())
+        {
+            tremRateSlider.setVisible(false);
+            tremSyncChoice.setVisible(true);
+            resized();
+        }
+        else
+        {
+            tremRateSlider.setVisible(true);
+            tremSyncChoice.setVisible(false);
+            resized();
+        }
+    }
+    else if (button == &PanSyncButton)
+    {
+        //If Sync is enabled
+        if (button->getToggleState())
+        {
+            PanRateSlider.setVisible(false);
+            PanSyncChoice.setVisible(true);
+            resized();
+        }
+        else
+        {
+            PanRateSlider.setVisible(true);
+            PanSyncChoice.setVisible(false);
+            resized();
+        }
+    }
 }
 
 void TremoKittyAudioProcessorEditor::changeLabelColours()
@@ -375,6 +435,11 @@ void TremoKittyAudioProcessorEditor::changeLabelColours()
     FilterBypass.setColour(juce::ToggleButton::ColourIds::textColourId, myLNF.textColour);
     FilterBypass.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, myLNF.textColour);
     FilterBypass.setColour(juce::ToggleButton::ColourIds::tickColourId, myLNF.textColour);
+
+    //Do for all sync buttons
+    TremSyncButton.setColour(juce::ToggleButton::ColourIds::textColourId, myLNF.textColour);
+    TremSyncButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, myLNF.textColour);
+    TremSyncButton.setColour(juce::ToggleButton::ColourIds::tickColourId, myLNF.textColour);
 }
 
 void TremoKittyAudioProcessorEditor::createLabel(const juce::String& name, juce::Label& label)
@@ -404,6 +469,8 @@ TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
     FilterCutoffSlider.removeListener(this);
     displayKittyButton.removeListener(this);
     setDefaultSkinButton.removeListener(this);
+    //Do for all sync buttons
+    TremSyncButton.removeListener(this);
     setLookAndFeel(nullptr);
 }
 
@@ -434,7 +501,6 @@ void TremoKittyAudioProcessorEditor::resized()
     auto FilterArea = juce::Rectangle<int>(area.getX(), area.getY() * 0.33);
     auto ModArea = juce::Rectangle<int>(area.getX()/4, area.getY()/4);
     
-
     //Tremolo
     Tremfb.flexDirection = juce::FlexBox::Direction::column;
     Tremfb.flexWrap = juce::FlexBox::Wrap::wrap;
@@ -442,13 +508,19 @@ void TremoKittyAudioProcessorEditor::resized()
     Tremfb.justifyContent = juce::FlexBox::JustifyContent::flexStart;
 
     Tremfb.items.add(juce::FlexItem(100, 25, tremSectionHeader));
-    Tremfb.items.add(juce::FlexItem(75, 25, tremRateSlider));
-    Tremfb.items.add(juce::FlexItem(75, 25, tremRateLabel));
-    Tremfb.items.add(juce::FlexItem(75, 25, tremDepthSlider));
-    Tremfb.items.add(juce::FlexItem(75, 25, TremDepthLabel));
-    Tremfb.items.add(juce::FlexItem(45, 25, tremWaveChoice));
-    Tremfb.items.add(juce::FlexItem(45, 45, TremBypass));
+    Tremfb.items.add(juce::FlexItem(19, 19, TremSyncButton));
+    //If tremrate synced is selected, display the combobox. Otherwise, display the slider.
+    if(TremSyncButton.getToggleState())
+        Tremfb.items.add(juce::FlexItem(75, 25, tremSyncChoice));
+    else
+        Tremfb.items.add(juce::FlexItem(75, 25, tremRateSlider));
 
+    Tremfb.items.add(juce::FlexItem(75, 15, tremRateLabel));
+    Tremfb.items.add(juce::FlexItem(75, 25, tremDepthSlider));
+    Tremfb.items.add(juce::FlexItem(75, 15, TremDepthLabel));
+    Tremfb.items.add(juce::FlexItem(45, 30, tremWaveChoice));
+    Tremfb.items.add(juce::FlexItem(19, 19, TremBypass));
+   
     //Pan Section
     Panfb.flexDirection = juce::FlexBox::Direction::column;
     Panfb.flexWrap = juce::FlexBox::Wrap::wrap;
@@ -456,6 +528,12 @@ void TremoKittyAudioProcessorEditor::resized()
     Panfb.justifyContent = juce::FlexBox::JustifyContent::flexStart;
 
     Panfb.items.add(juce::FlexItem(100, 25, panSectionHeader));
+    Panfb.items.add(juce::FlexItem(19, 19, PanSyncButton));
+    if (PanSyncButton.getToggleState())
+        Panfb.items.add(juce::FlexItem(75, 25, PanSyncChoice));
+    else
+        Panfb.items.add(juce::FlexItem(75, 25, PanRateSlider));
+
     Panfb.items.add(juce::FlexItem(75, 25, PanRateSlider));
     Panfb.items.add(juce::FlexItem(75, 25, PanRateLabel));
     Panfb.items.add(juce::FlexItem(75, 25, PanDepthSlider));
@@ -513,8 +591,6 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.3f)));
     Modfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.35f)));
 
-    
-    
     //Painting the header
     auto newRect = getLocalBounds();
     auto bannerBounds = newRect.removeFromTop(30);

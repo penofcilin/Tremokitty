@@ -5,6 +5,10 @@
               cppLanguageStandard="20" maxBinaryFileSize="20971520">
   <MAINGROUP id="qZML3O" name="TremoKitty">
     <GROUP id="{CF98ECBA-25AC-378B-D540-903DD503CB7C}" name="Source">
+      <FILE id="VBIaBD" name="KOTempo.cpp" compile="1" resource="0" file="Source/KOTempo.cpp"/>
+      <FILE id="tuFq3d" name="KOTempo.h" compile="0" resource="0" file="Source/KOTempo.h"/>
+      <FILE id="UY1bXw" name="KOLFO.h" compile="0" resource="0" file="Source/KOLFO.h"/>
+      <FILE id="CSD2iI" name="KOLFO.cpp" compile="1" resource="0" file="Source/KOLFO.cpp"/>
       <GROUP id="{880E8726-415A-DC57-9B02-DEE1B8E37D2D}" name="Service">
         <FILE id="lOZsSU" name="PresetManager.cpp" compile="1" resource="0"
               file="Source/Service/PresetManager.cpp"/>
@@ -63,7 +67,6 @@
         <MODULEPATH id="juce_graphics" path="../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../JUCE/modules"/>
-        <MODULEPATH id="viator_modules" path="."/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>
@@ -82,6 +85,5 @@
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="viator_modules" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
 </JUCERPROJECT>
