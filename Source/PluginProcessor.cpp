@@ -27,6 +27,11 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     panLFO.setWaveType(KOLFO::WaveType::Sine);
     filterLFO.setWaveType(KOLFO::WaveType::Sine);
     modLFO.setWaveType(KOLFO::WaveType::Sine);
+
+    LFOList.push_back(tremLFO);
+    LFOList.push_back(panLFO);
+    LFOList.push_back(filterLFO);
+    LFOList.push_back(modLFO);
     
     apvts.addParameterListener("TREMWAVE", this);
     apvts.addParameterListener("PANWAVE", this);
@@ -280,10 +285,11 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     {
         float tremDepth = apvts.getRawParameterValue("TREMDEPTH")->load();
         float tremRate;
-        if (apvts.getRawParameterValue("TREMSYNC"))
+        if (apvts.getRawParameterValue("TREMSYNC")->load())
         {
             int option = apvts.getRawParameterValue("TREMSYNCCHOICE")->load();
             tremRate = tempo.getNoteLengthHertz(static_cast<KOTempo::NoteTypes>(option));
+            //Todo: make it sync with actual playhead probably using ppq or time in samples
         }
         else
         {
@@ -396,6 +402,7 @@ void TremoKittyAudioProcessor::playbackStop()
 {
     playbackStopped = true;
 }
+
 
 void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
 {
@@ -513,9 +520,10 @@ void TremoKittyAudioProcessor::setStateInformation(const void* data, int sizeInB
     }
 }
 
-void TremoKittyAudioProcessor::changeTremWaveManually()
+void TremoKittyAudioProcessor::changeTremWaveManually(int index)
 {
-    apvts.getRawParameterValue("TREMWAVE")->store(3.f);
+
+    apvts.getRawParameterValue("TREMWAVE")->store((float)index);
     getWave(modules::tremolo);
     DBG("Manually changed tremwave to square.");
 }
@@ -541,7 +549,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     //Tremolo Section
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.5f), 0.1f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Modulation Waveform", WAVE_TYPES, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Modulation Waveform", juce::StringArray(WAVE_TYPES), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("TREMSYNCCHOICE", "Tremolo Sync Rate Choice", KOTempo::getNoteTypesAlternative(), 3));
     layout.add(std::make_unique < juce::AudioParameterBool>("TREMBP", "Tremolo Bypass", false));
     layout.add(std::make_unique < juce::AudioParameterBool>("TREMSYNC", "Tremolo Sync", false));
@@ -549,7 +557,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     //Panner section
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 7.5f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("PANDEPTH", "Pan Depth", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", WAVE_TYPES, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", juce::StringArray(WAVE_TYPES), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("PANSYNCCHOICE", "Pan Sync Rate Choice", KOTempo::getNoteTypesAlternative(), 3));
     layout.add(std::make_unique < juce::AudioParameterBool>("PANBP", "Pan Bypass", false));
     layout.add(std::make_unique < juce::AudioParameterBool>("PANSYNC", "Pan Sync", false));
@@ -559,7 +567,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", juce::NormalisableRange<float>(0.f, 1.f, 0.001f, 0.35), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", juce::NormalisableRange<float>(0.f, 1.f, 0.00001f, 0.35f), 0.9f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", juce::NormalisableRange<float>(0.7f, 10.f, 0.05, 0.9), (1 / sqrt(2))));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", WAVE_TYPES, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray(WAVE_TYPES), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERTYPE", "Filter Type", juce::StringArray("Low Pass", "High Pass", "Band Pass"), 0));
     layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBP", "Filter Bypass", false));
     layout.add(std::make_unique < juce::AudioParameterBool>("FILTERSYNC", "Filter Sync", false));
@@ -567,7 +575,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     //ModLFO Section
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFORATE", "Mod LFO Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFODEPTH", "Mod LFO Depth", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("MODWAVETYPE", "Mod LFO Wave Type", juce::StringArray("Sine", "Cosine",  "Saw", "SawDown", "Square"), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("MODWAVETYPE", "Mod LFO Wave Type", juce::StringArray(WAVE_TYPES), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODCHOICE", "Mod LFO Parameter Choice", juce::StringArray("None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("LASTMODDEDPARAM", "The String Name of the last parameter that was modded", juce::StringArray("None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Mod Rate", "Filter Mod Depth"), 0));
     layout.add(std::make_unique<juce::AudioParameterFloat>("MODPARAMPREVIOUSVALUE", "Modded Parameter Pre-modded Value", 0.f, 10.f, 0.f));
@@ -583,137 +591,52 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 void TremoKittyAudioProcessor::getWave(modules module)
 {
     int index;
-
+    int i = 0;
+    int size = juce::StringArray(WAVE_TYPES).size();
+    
     switch (module)
     {
     case(modules::tremolo):
         index = apvts.getRawParameterValue("TREMWAVE")->load();
-        switch (index)
+        for (i = 0; i < size; i++)
         {
-        case 0:
-            tremLFO.setWaveType(KOLFO::WaveType::Sine);
-            apvts.getParameter("TREMWAVE")->setValue(0);
-            break;
-        case 1:
-            tremLFO.setWaveType(KOLFO::WaveType::Cosine);
-            apvts.getParameter("TREMWAVE")->setValue(1);
-            break;
-        case 2:
-            tremLFO.setWaveType(KOLFO::WaveType::NegativeCosine);
-            apvts.getParameter("TREMWAVE")->setValue(2);
-            break;
-        case 3:
-            tremLFO.setWaveType(KOLFO::WaveType::Saw);
-            apvts.getParameter("TREMWAVE")->setValue(3);
-            break;
-        case 4:
-           tremLFO.setWaveType(KOLFO::WaveType::SawDown);
-            apvts.getParameter("TREMWAVE")->setValue(4);
-            break;
-        case 5:
-            tremLFO.setWaveType(KOLFO::WaveType::Square);
-            apvts.getParameter("TREMWAVE")->setValue(5);
-            break;
-        default:
-            DBG("There was an issue with reassigning wavetype");
-            break;
+            if (index == i)
+            {
+                tremLFO.setWaveType(KOLFO::WaveType(i));
+                apvts.getParameter("TREMWAVE")->setValue(i);
+            }
         }
      //If it's pan
     case(modules::pan):
         index = apvts.getRawParameterValue("PANWAVE")->load();
-        switch (index)
+        for (i = 0; i < size; i++)
         {
-        case 0:
-            panLFO.setWaveType(KOLFO::WaveType::Sine);
-            apvts.getParameter("PANWAVE")->setValue(0);
-            break;
-        case 1:
-            panLFO.setWaveType(KOLFO::WaveType::Cosine);
-            apvts.getParameter("PANWAVE")->setValue(1);
-            break;
-        case 2:
-            panLFO.setWaveType(KOLFO::WaveType::NegativeCosine);
-            apvts.getParameter("PANWAVE")->setValue(2);
-            break;
-        case 3:
-            panLFO.setWaveType(KOLFO::WaveType::Saw);
-            apvts.getParameter("PANWAVE")->setValue(3);
-            break;
-        case 4:
-            panLFO.setWaveType(KOLFO::WaveType::SawDown);
-            apvts.getParameter("PANWAVE")->setValue(4);
-            break;
-        case 5:
-            panLFO.setWaveType(KOLFO::WaveType::Square);
-            apvts.getParameter("PANWAVE")->setValue(5);
-            break;
-        default:
-            DBG("There was an issue with reassigning wavetype");
+            if (index == i)
+            {
+                panLFO.setWaveType(KOLFO::WaveType(i));
+                apvts.getParameter("PANWAVE")->setValue(i);
+            }
         }
     case(modules::filter):
         index = apvts.getRawParameterValue("FILTERWAVE")->load();
-        switch (index)
+        for (i = 0; i < size; i++)
         {
-        case 0:
-            filterLFO.setWaveType(KOLFO::WaveType::Sine);
-            apvts.getParameter("FILTERWAVE")->setValue(0);
-            break;
-        case 1:
-            filterLFO.setWaveType(KOLFO::WaveType::Cosine);
-            apvts.getParameter("FILTERWAVE")->setValue(1);
-            break;
-        case 2:
-            filterLFO.setWaveType(KOLFO::WaveType::NegativeCosine);
-            apvts.getParameter("FILTERWAVE")->setValue(2);
-            break;
-        case 3:
-            filterLFO.setWaveType(KOLFO::WaveType::Saw);
-            apvts.getParameter("FILTERWAVE")->setValue(3);
-            break;
-        case 4:
-            filterLFO.setWaveType(KOLFO::WaveType::SawDown);
-            apvts.getParameter("FILTERWAVE")->setValue(4);
-            break;
-        case 5:
-            filterLFO.setWaveType(KOLFO::WaveType::Square);
-            apvts.getParameter("FILTERWAVE")->setValue(5);
-            break;
-        default:
-            DBG("There was an issue with reassigning wavetype");
+            if (index == i)
+            {
+                filterLFO.setWaveType(KOLFO::WaveType(i));
+                apvts.getParameter("FILTERWAVE")->setValue(i);
+            }
         }
-        break;
     case(modules::mod):
         index = apvts.getRawParameterValue("MODWAVETYPE")->load();
-        switch (index)
+        for (i = 0; i < size; i++)
         {
-        case 0:
-            modLFO.setWaveType(KOLFO::WaveType::Sine);
-            apvts.getParameter("MODWAVETYPE")->setValue(0);
-            break;
-        case 1:
-            modLFO.setWaveType(KOLFO::WaveType::Cosine);
-            apvts.getParameter("MODWAVETYPE")->setValue(1);
-            break;
-        case 2:
-            modLFO.setWaveType(KOLFO::WaveType::NegativeCosine);
-            apvts.getParameter("MODWAVETYPE")->setValue(2);
-            break;
-        case 3:
-            modLFO.setWaveType(KOLFO::WaveType::Saw);
-            apvts.getParameter("MODWAVETYPE")->setValue(3);
-            break;
-        case 4:
-            modLFO.setWaveType(KOLFO::WaveType::SawDown);
-            apvts.getParameter("MODWAVETYPE")->setValue(4);
-            break;
-        case 5:
-            modLFO.setWaveType(KOLFO::WaveType::Square);
-            apvts.getParameter("MODWAVETYPE")->setValue(5);
-            break;
-        default:
-            DBG("There was an issue with reassigning wavetype");
+            if (index == i)
+            {
+                modLFO.setWaveType(KOLFO::WaveType(i));
+                apvts.getParameter("MODWAVETYPE")->setValue(i);
+            }
         }
-        break;
     }
 }
 
