@@ -14,6 +14,8 @@
 #include "KOLFO.h"
 #include "KOTempo.h"
 
+#define WAVE_TYPES  juce::StringArray("Sine", "Cosine", "NegativeCosine",  "Saw", "SawDown", "Square")
+
 
 //==============================================================================
 /**
@@ -67,10 +69,9 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::ApplicationProperties globalProperties;
 
-
     //Some Information Structures
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
-    juce::StringArray WaveTypes{ "Sine", "Cosine", "Saw", "SawDown", "Square" };
+    juce::StringArray WaveTypes{ "Sine", "Cosine", "NegativeCosine", "Saw", "SawDown", "Square" };
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
     enum class modules { tremolo, pan, filter, mod, master };
 
@@ -85,6 +86,7 @@ private:
     KOLFO filterLFO;
     KOLFO modLFO;
 
+    //Tempo object
     KOTempo tempo;
     juce::AudioPlayHead* playHead;
     juce::AudioPlayHead::CurrentPositionInfo currentPosition;
@@ -111,10 +113,12 @@ private:
     void processMod(const juce::String& parameterID);
     void switchProcessMod();
     void updateModParam(float newValue);
-   // void updateSyncedRate(modules module, int option);
+    void playbackStart();
+    void playbackStop();
 
     //Used for preparing the filter module.
     bool shouldPrepare;
+    bool playbackStopped{ true };
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoKittyAudioProcessor)

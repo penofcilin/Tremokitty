@@ -62,6 +62,11 @@ void  KOLFO::setWaveType(WaveType newWaveType)
         initialise([](float x) {return std::cos(x); });
         break;
     }
+    case KOLFO::WaveType::NegativeCosine:
+    {
+        initialise([](float x) {return (std::cos(x) * -1.f); });
+        break;
+    }
     case  KOLFO::WaveType::Saw:
     {
         initialise([](float x) {return x / juce::MathConstants<float>::pi; });
