@@ -14,7 +14,7 @@
 #include "KOLFO.h"
 #include "KOTempo.h"
 
-#define WAVE_TYPES  juce::StringArray("Sine", "Cosine", "NegativeCosine",  "Saw", "SawDown", "Square")
+#define WAVE_TYPES  "Sine", "Cosine", "NegativeCosine",  "Saw", "SawDown", "Square", "InverseSquare"
 
 
 //==============================================================================
@@ -65,13 +65,13 @@ public:
 
     //My Public Members
     Service::PresetManager& getPresetManager() { return *presetManager; }
-    void changeTremWaveManually();
+    void changeTremWaveManually(int index);
     juce::AudioProcessorValueTreeState apvts;
     juce::ApplicationProperties globalProperties;
 
     //Some Information Structures
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
-    juce::StringArray WaveTypes{ "Sine", "Cosine", "NegativeCosine", "Saw", "SawDown", "Square" };
+    juce::StringArray WaveTypes{ WAVE_TYPES };
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
     enum class modules { tremolo, pan, filter, mod, master };
 
@@ -85,6 +85,8 @@ private:
     KOLFO panLFO;
     KOLFO filterLFO;
     KOLFO modLFO;
+
+    std::vector<KOLFO> LFOList;
 
     //Tempo object
     KOTempo tempo;

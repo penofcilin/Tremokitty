@@ -82,6 +82,11 @@ void  KOLFO::setWaveType(WaveType newWaveType)
         initialise([](float x) {return x < 0.0f ? -1.0f : 1.0f; });
         break;
     }
+    case  KOLFO::WaveType::InverseSquare:
+    {
+        initialise([](float x) {return x < 0.0f ? 1.0f : -1.0f; });
+        break;
+    }
     /*case  KOLFO::WaveType::Random:
     {
         initialise([&](float x) {return (x * rando.nextFloat()); });

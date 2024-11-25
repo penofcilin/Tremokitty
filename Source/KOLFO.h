@@ -38,7 +38,7 @@ public:
         Positive cosine starts off at 1, so thats maximum modulation.
         Negative cosine starts at -1, so on a scale of 0 to 1, that's no modulation.
     */
-    enum class WaveType
+    enum WaveType
     {
         Sine = 0,
         Cosine = 1,
@@ -46,6 +46,7 @@ public:
         Saw = 3,
         SawDown = 4,
         Square = 5,
+        InverseSquare = 6
         //Random is scary because it will pop and crack like crazy if done wrong
     };
 

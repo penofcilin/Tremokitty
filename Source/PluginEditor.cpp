@@ -36,7 +36,6 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     //PresetPanel
     addAndMakeVisible(presetPanel);
 
-    //Got rid of the reset button cause you can just select the default preset
     //Got rid of master bypass cause kind of pointless
     setUpTremoloSection();
     setUpPannerSection();
@@ -124,8 +123,9 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
     TremSyncAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMSYNC", TremSyncButton);
     TremSyncButton.addListener(this);
 
-    TremSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMSYNCCHOICE", tremSyncChoice);
+    
     tremSyncChoice.addItemList(KOTempo::getNoteTypesAlternative(), 1);
+    TremSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMSYNCCHOICE", tremSyncChoice);
     addAndMakeVisible(tremSyncChoice);
 
     createToggleButton("Tremolo Bypass", TremBypass);
@@ -278,8 +278,8 @@ void TremoKittyAudioProcessorEditor::setUpSkinButtons()
 void TremoKittyAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
 {
     float index = comboBoxThatHasChanged->getSelectedItemIndex();
-    if (index == 3)
-        audioProcessor.changeTremWaveManually();
+    if (index == 5 || index == 6)
+        audioProcessor.changeTremWaveManually(index);
 }
 
 void TremoKittyAudioProcessorEditor::createToggleButton(const juce::String& text, juce::ToggleButton& button)
@@ -489,7 +489,7 @@ void TremoKittyAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillRect(bounds);
     g.setColour(myLNF.backGroundColour);
     g.fillRect(bounds);
-    getTopLevelComponent()->setName("TremoKitty!");
+    getTopLevelComponent()->setName("TremoKitty");
 }
 
 void TremoKittyAudioProcessorEditor::resized()
@@ -595,8 +595,8 @@ void TremoKittyAudioProcessorEditor::resized()
     presetPanel.setBounds(threeQuarterArea.removeFromTop(area.proportionOfHeight(0.07f)));
     Tremfb.performLayout(threeQuarterArea.removeFromLeft(threeQuarterArea.proportionOfWidth(0.5)).reduced(4));
     Panfb.performLayout(threeQuarterArea.removeFromRight(threeQuarterArea.getWidth()).reduced(4));
-    Filterfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.3f)));
     Modfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.35f)));
+    Filterfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.3f)));
 
     //Painting the header
     auto newRect = getLocalBounds();
