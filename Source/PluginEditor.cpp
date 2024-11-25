@@ -93,7 +93,6 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
     repaint();
 }
 
-
 void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 {
     //Create section header
@@ -295,7 +294,6 @@ void TremoKittyAudioProcessorEditor::createToggleButton(const juce::String& text
 
 void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
-    DBG("Hi!");
     if (slider == &FilterCutoffSlider)
     { 
         float newValue = slider->getValue();
