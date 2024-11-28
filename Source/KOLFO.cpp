@@ -25,6 +25,12 @@ void  KOLFO::initialise(const std::function<float(float)>& function)
         generator = function;
 }
 
+
+void KOLFO::advancePhase(float increment)
+{
+    phase.advance(increment);
+}
+
 //Returns the next value the LFO will spit out, which will always be a value between -1 and 1. Basically gives you the current y position of the wave.
 //Some helpful stuff: std::rect() will make it a value between 0 and 1, which is useful for many operations. Adding 1 and dividing by 2 will do the same thing
 //For instance LFO range is -1 to 1, add 1 to that its 0 to 2, times 0.5 its 0 to 1
@@ -32,7 +38,7 @@ void  KOLFO::initialise(const std::function<float(float)>& function)
 //if you don't do that, it will give you weird values because the buffer loop runs for each channel, which messes with the continuity of the wave
 float  KOLFO::getNextValue()
 {
-    auto increment = juce::MathConstants<float>::twoPi * NormalizedFrequency;
+    float increment = juce::MathConstants<float>::twoPi * NormalizedFrequency;
     return generator(phase.advance(increment) - juce::MathConstants<float>::pi);
 }
 
@@ -40,7 +46,8 @@ float  KOLFO::getNextValue()
 //If you don't set samplerate correctly, this won't work right
 void KOLFO::setFrequency(float newFrequency)
 {
-    m_frequency = newFrequency; NormalizedFrequency = newFrequency/ sampleRate;
+    m_frequency = newFrequency; 
+    NormalizedFrequency = newFrequency / sampleRate;
 }
 
 float  KOLFO::getFrequency()

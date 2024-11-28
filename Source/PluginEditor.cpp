@@ -95,7 +95,7 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
 void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 {
     //Create section header
-    createLabel("Tremolo", tremSectionHeader);
+    createLabel("Trem Section", tremSectionHeader);
     tremSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     tremSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
@@ -123,15 +123,12 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
     TremSyncAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMSYNC", TremSyncButton);
     TremSyncButton.addListener(this);
 
-    
     tremSyncChoice.addItemList(KOTempo::getNoteTypesAlternative(), 1);
     TremSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "TREMSYNCCHOICE", tremSyncChoice);
     addAndMakeVisible(tremSyncChoice);
 
     createToggleButton("Tremolo Bypass", TremBypass);
     TremBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "TREMBP", TremBypass);
-
-    
 }
 
 void TremoKittyAudioProcessorEditor::setUpPannerSection()
@@ -161,8 +158,8 @@ void TremoKittyAudioProcessorEditor::setUpPannerSection()
     PanSyncAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "PANSYNC", PanSyncButton);
     PanSyncButton.addListener(this);
 
-    PanSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANSYNCCHOICE", PanSyncChoice);
     PanSyncChoice.addItemList(KOTempo::getNoteTypesAlternative(), 1);
+    PanSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "PANSYNCCHOICE", PanSyncChoice);
     addAndMakeVisible(PanSyncChoice);
 
     createToggleButton("Pan Bypass", PanBypass);
@@ -208,6 +205,15 @@ void TremoKittyAudioProcessorEditor::setUpFilterSection()
     FilterWaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERWAVE", FilterWaveChoice);
     addAndMakeVisible(FilterWaveChoice);
 
+    //Sync button + combobox stuff
+    createToggleButton("Tempo Sync", FilterSyncButton);
+    FilterSyncAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "FILTERSYNC", FilterSyncButton);
+    FilterSyncButton.addListener(this);
+
+    FilterSyncChoice.addItemList(KOTempo::getNoteTypesAlternative(), 1);
+    FilterSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "FILTERSYNCCHOICE", FilterSyncChoice);
+    addAndMakeVisible(FilterSyncChoice);
+
 
     //Filter type Combobox
     FilterType.addItem("Low Pass", 1);
@@ -239,6 +245,15 @@ void TremoKittyAudioProcessorEditor::setUpModSection()
     addAndMakeVisible(ModLFOModOptions);
     createToggleButton("Mod LFO Bypass", ModBypass);
     ModBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "MODBP", ModBypass);
+
+    //Sync button + combobox stuff
+    createToggleButton("Tempo Sync", ModSyncButton);
+    ModSyncAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "MODSYNC", ModSyncButton);
+    ModSyncButton.addListener(this);
+
+    ModSyncChoice.addItemList(KOTempo::getNoteTypesAlternative(), 1);
+    ModSyncChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODSYNCCHOICE", ModSyncChoice);
+    addAndMakeVisible(ModSyncChoice);
 }
 
 void TremoKittyAudioProcessorEditor::setUpSkinButtons()
@@ -310,6 +325,10 @@ void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
         syncButtonClicked(&TremSyncButton);
     else if (button == &PanSyncButton)
         syncButtonClicked(&PanSyncButton);
+    else if (button == &FilterSyncButton)
+        syncButtonClicked(&FilterSyncButton);
+    else if (button = &ModSyncButton)
+        syncButtonClicked(&ModSyncButton);
     
 
     if (button == &defaultSkinButton)
@@ -405,6 +424,38 @@ void TremoKittyAudioProcessorEditor::syncButtonClicked(juce::ToggleButton* butto
             resized();
         }
     }
+    else if (button == &FilterSyncButton)
+    {
+        //If Sync is enabled
+        if (button->getToggleState())
+        {
+            FilterModRate.setVisible(false);
+            FilterSyncChoice.setVisible(true);
+            resized();
+        }
+        else
+        {
+            FilterModRate.setVisible(true);
+            FilterSyncChoice.setVisible(false);
+            resized();
+        }
+    }
+    else
+    {
+        //If Sync is enabled
+        if (button->getToggleState())
+        {
+            ModLFORateSlider.setVisible(false);
+            ModSyncChoice.setVisible(true);
+            resized();
+        }
+        else
+        {
+            ModLFORateSlider.setVisible(true);
+            ModSyncChoice.setVisible(false);
+            resized();
+        }
+    }
 }
 
 void TremoKittyAudioProcessorEditor::changeLabelColours()
@@ -448,6 +499,14 @@ void TremoKittyAudioProcessorEditor::changeLabelColours()
     PanSyncButton.setColour(juce::ToggleButton::ColourIds::textColourId, myLNF.textColour);
     PanSyncButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, myLNF.textColour);
     PanSyncButton.setColour(juce::ToggleButton::ColourIds::tickColourId, myLNF.textColour);
+
+    FilterSyncButton.setColour(juce::ToggleButton::ColourIds::textColourId, myLNF.textColour);
+    FilterSyncButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, myLNF.textColour);
+    FilterSyncButton.setColour(juce::ToggleButton::ColourIds::tickColourId, myLNF.textColour);
+
+    ModSyncButton.setColour(juce::ToggleButton::ColourIds::textColourId, myLNF.textColour);
+    ModSyncButton.setColour(juce::ToggleButton::ColourIds::tickDisabledColourId, myLNF.textColour);
+    ModSyncButton.setColour(juce::ToggleButton::ColourIds::tickColourId, myLNF.textColour);
 }
 
 void TremoKittyAudioProcessorEditor::createLabel(const juce::String& name, juce::Label& label)
@@ -477,8 +536,18 @@ TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
     FilterCutoffSlider.removeListener(this);
     displayKittyButton.removeListener(this);
     setDefaultSkinButton.removeListener(this);
+
     //Do for all sync buttons
     TremSyncButton.removeListener(this);
+    PanSyncButton.removeListener(this);
+    FilterSyncButton.removeListener(this);
+    ModSyncButton.removeListener(this);
+
+    tremSyncChoice.removeListener(this);
+    PanSyncChoice.removeListener(this);
+    FilterSyncChoice.removeListener(this);
+    ModSyncChoice.removeListener(this);
+
     setLookAndFeel(nullptr);
 }
 
@@ -534,7 +603,6 @@ void TremoKittyAudioProcessorEditor::resized()
     Panfb.flexWrap = juce::FlexBox::Wrap::wrap;
     Panfb.alignContent = juce::FlexBox::AlignContent::stretch;
     Panfb.justifyContent = juce::FlexBox::JustifyContent::flexStart;
-
     Panfb.items.add(juce::FlexItem(100, 25, panSectionHeader));
     Panfb.items.add(juce::FlexItem(19, 19, PanSyncButton));
     if (PanSyncButton.getToggleState())
@@ -555,9 +623,13 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.justifyContent = juce::FlexBox::JustifyContent::center;
 
     Filterfb.items.add(juce::FlexItem(100, 25, filterSectionHeader));
+    Filterfb.items.add(juce::FlexItem(19, 19, FilterSyncButton));
     Filterfb.items.add(juce::FlexItem(45, 25, FilterCutoffSlider));
     Filterfb.items.add(juce::FlexItem(25, 15, FilterCutoffLabel));
-    Filterfb.items.add(juce::FlexItem(45, 25, FilterModRate));
+    if (FilterSyncButton.getToggleState())
+        Filterfb.items.add(juce::FlexItem(45, 25, FilterSyncChoice));
+    else
+        Filterfb.items.add(juce::FlexItem(45, 25, FilterModRate));
     Filterfb.items.add(juce::FlexItem(25, 25, FilterModLabel));
     Filterfb.items.add(juce::FlexItem(45, 25, FilterModAmount));
     Filterfb.items.add(juce::FlexItem(25, 25, FilterModAmountLabel));
@@ -574,7 +646,13 @@ void TremoKittyAudioProcessorEditor::resized()
     Modfb.justifyContent = juce::FlexBox::JustifyContent::center;
 
     Modfb.items.add(juce::FlexItem(75, 25, modSectionHeader));
-    Modfb.items.add(juce::FlexItem(35, 25, ModLFORateSlider));
+    Modfb.items.add(juce::FlexItem(19, 19, ModSyncButton));
+
+    if(ModSyncButton.getToggleState())
+        Modfb.items.add(juce::FlexItem(35, 25, ModSyncChoice));
+    else
+        Modfb.items.add(juce::FlexItem(35, 25, ModLFORateSlider));
+
     Modfb.items.add(juce::FlexItem(35, 25, ModLFORateLabel));
     Modfb.items.add(juce::FlexItem(35, 25, ModLFODepthSlider));
     Modfb.items.add(juce::FlexItem(35, 25, ModLFODepthLabel));

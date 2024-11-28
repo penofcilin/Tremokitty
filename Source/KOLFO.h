@@ -22,13 +22,16 @@ class KOLFO
 public:
     std::function<float(float)> generator;
     
+    //Get the LFO ready with a spec object
     void prepare(const juce::dsp::ProcessSpec& spec);
 
+    //Get the LFO ready with a custom sample rate
     void prepare(const float customSampleRate);
 
     //Resets the phase of the wave
     void reset();
 
+    //Returns the next value the oscillator will 'spit out'
     float getNextValue();
 
     //The available waveform types. Note if you're like me and didn't take trig until you're 22 these might be confusing,
@@ -50,9 +53,14 @@ public:
         //Random is scary because it will pop and crack like crazy if done wrong
     };
 
+    //Set the frequency of the oscillator in hz.
     void setFrequency(float newFrequency);
+    //returns the current frequency of the oscillator
     float getFrequency();
+    //Sets the wavetype for the oscillator.
     void setWaveType(WaveType newWaveType);
+    //Meant to jump the wave ahead to some point in it's phase. Note that phase is a value between 0 and 2 pi.
+    void advancePhase(float increment);
 
 private:
     //Initialize sets the waveform of the LFO. setWaveType should be used publicly.

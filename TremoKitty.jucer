@@ -2,7 +2,8 @@
 
 <JUCERPROJECT id="GRGKvp" name="TremoKitty" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="KOAudio"
-              cppLanguageStandard="20" maxBinaryFileSize="20971520">
+              cppLanguageStandard="20" maxBinaryFileSize="20971520" version="1.1.0"
+              pluginVST3Category="Modulation">
   <MAINGROUP id="qZML3O" name="TremoKitty">
     <GROUP id="{CF98ECBA-25AC-378B-D540-903DD503CB7C}" name="Source">
       <FILE id="VBIaBD" name="KOTempo.cpp" compile="1" resource="0" file="Source/KOTempo.cpp"/>

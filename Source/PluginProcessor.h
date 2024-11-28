@@ -86,6 +86,7 @@ private:
     KOLFO filterLFO;
     KOLFO modLFO;
 
+    //A list of the LFOs.
     std::vector<KOLFO> LFOList;
 
     //Tempo object
@@ -109,13 +110,16 @@ private:
     std::unique_ptr<Service::PresetManager> presetManager;
 
    //Some Member Functions
+
     void getFilterType(bool shouldPrepare);
     void getWave(modules module);
     void parameterChanged(const juce::String& parameterID, float newValue) override;
     void processMod(const juce::String& parameterID);
     void switchProcessMod();
     void updateModParam(float newValue);
-    void playbackStart();
+    //This function will change the LFOs phase to match the current position of the playhead. For instance if the playhead is on the second quarter note of a bar and the sync choice is set to "whole", the LFO's phase will be advanced to halfway through it's period.
+    void resetLFOPhase(KOLFO& LFO, juce::String parameterID);
+    void playbackStart(juce::AudioPlayHead::CurrentPositionInfo& currentPosition);
     void playbackStop();
 
     //Used for preparing the filter module.
