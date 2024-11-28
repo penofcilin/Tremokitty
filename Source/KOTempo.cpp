@@ -89,7 +89,7 @@ float KOTempo::getNoteLengthHertz(NoteTypes type)
 }
 
 //returns the length of a note in samples, ie a whole note at 60 bpm at a 44100 samplerate will be 44100 samples long.
-float KOTempo::getNoteLengthSamples(NoteTypes type)
+double KOTempo::getNoteLengthSamples(NoteTypes type)
 {
     // Convert bpm to beats per second
     double beatsPerSecond = BPM / 60.0;
@@ -101,13 +101,13 @@ float KOTempo::getNoteLengthSamples(NoteTypes type)
     double noteDuration = 0;
     switch (type) {
     case NoteTypes::Whole:
-        noteDuration = beatDuration * 4;
+        noteDuration = beatDuration * 4.0;
         break;
     case NoteTypes::Half:
-        noteDuration = beatDuration * 2;
+        noteDuration = beatDuration * 2.0;
         break;
     case NoteTypes::DottedHalf:
-        noteDuration = beatDuration * 3;
+        noteDuration = beatDuration * 3.0;
         break;
     case NoteTypes::Quarter:
         noteDuration = beatDuration;
@@ -119,22 +119,22 @@ float KOTempo::getNoteLengthSamples(NoteTypes type)
         noteDuration = beatDuration * 2.0 / 3.0;
         break;
     case NoteTypes::Eighth:
-        noteDuration = beatDuration / 2;
+        noteDuration = beatDuration / 2.0;
         break;
     case NoteTypes::DottedEighth:
         noteDuration = beatDuration * 3.0 / 4.0;
         break;
     case NoteTypes::TripletEighth:
-        noteDuration = beatDuration / 3;
+        noteDuration = beatDuration / 3.0;
         break;
     case NoteTypes::Sixteenth:
-        noteDuration = beatDuration / 4;
+        noteDuration = beatDuration / 4.0;
         break;
     case NoteTypes::DottedSixteenth:
         noteDuration = beatDuration * 3.0 / 8.0;
         break;
     case NoteTypes::TripletSixteenth:
-        noteDuration = beatDuration / 6;
+        noteDuration = beatDuration / 6.0;
         break;
     default:
         DBG("not given valid NoteType in getNoteLengthHertz");
@@ -202,3 +202,7 @@ float KOTempo::getNoteLengthMS(NoteTypes type)
     return round(noteDuration * 1000);
 }
 
+float KOTempo::getSampleRate()
+{
+    return sampleRate;
+}
