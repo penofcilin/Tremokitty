@@ -87,7 +87,6 @@ void TremoKittyAudioProcessor::parameterChanged(const juce::String& parameterID,
 {
     if (parameterID == "TREMWAVE")
     {
-        DBG("Tremwave has chnaged" + std::to_string(newValue));
         getWave(modules::tremolo);
     }
     else if (parameterID == "PANWAVE")
@@ -613,7 +612,6 @@ void TremoKittyAudioProcessor::changeTremWaveManually(int index)
 {
     apvts.getRawParameterValue("TREMWAVE")->store((float)index);
     getWave(modules::tremolo);
-    DBG("Manually changed tremwave to square.");
 }
 
 //==============================================================================
