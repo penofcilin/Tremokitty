@@ -95,7 +95,7 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
 void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 {
     //Create section header
-    createLabel("Trem Section", tremSectionHeader);
+    createLabel("Trem Sec", tremSectionHeader);
     tremSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     tremSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
@@ -165,7 +165,6 @@ void TremoKittyAudioProcessorEditor::setUpPannerSection()
     createToggleButton("Pan Bypass", PanBypass);
     PanBypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "PANBP", PanBypass);
     PanBypass.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
-
 }
 
 void TremoKittyAudioProcessorEditor::setUpFilterSection()

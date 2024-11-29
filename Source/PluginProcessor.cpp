@@ -22,7 +22,8 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     ), apvts(*this, nullptr, "apvts", createParameters())
 #endif
 {
-    
+    playHead = nullptr;
+
     tremLFO.setWaveType(KOLFO::WaveType::Sine);
     panLFO.setWaveType(KOLFO::WaveType::Sine);
     filterLFO.setWaveType(KOLFO::WaveType::Sine);
@@ -200,20 +201,25 @@ void TremoKittyAudioProcessor::changeProgramName (int index, const juce::String&
 //==============================================================================
 void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    //Set up spec
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
 
-    tempo.setSampleRate(sampleRate);
-
-    gainModule.prepare(spec);
-    tremLFO.prepare(sampleRate);
-    filterLFO.prepare(spec);
-    panLFO.prepare(spec);
-    modLFO.prepare(spec);
-
     //Allocating memory for our lookuptable vector
     lfoLookupTable.resize(samplesPerBlock);
+
+    //Set up lfotempo object
+    tempo.setSampleRate(sampleRate);
+
+    //Set up LFOs
+    tremLFO.prepare(sampleRate);
+    panLFO.prepare(sampleRate);
+    filterLFO.prepare(sampleRate);
+    modLFO.prepare(sampleRate);
+
+    //Set up gain module
+    gainModule.prepare(spec);
 
     //The filter for our tremolo LFO
     gainModFilter.prepare(spec);
@@ -223,13 +229,14 @@ void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     //Pan Module
     panner.prepare(spec);
     panner.setRule(juce::dsp::PannerRule::sin3dB);
+
     //Filter Module
     filter.prepare(spec);
     shouldPrepare = true;
     filterLFOFilter.prepare(spec);
     filterLFOFilter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     //Doesn't seem to be really necessary
-    filterLFOFilter.setCutoffFrequency(2000.f);
+    filterLFOFilter.setCutoffFrequency(3000.f);
 }
 
 void TremoKittyAudioProcessor::releaseResources()
@@ -294,8 +301,8 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     }
     else
         tempo.setBPM(120.f);
+        
     
-
     //The Mod LFO section is processed first, as it will affect the value of the others.
     float modChoice = apvts.getRawParameterValue("MODCHOICE")->load();
     if (modChoice != 0.f)
@@ -315,12 +322,13 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         {
             int option = apvts.getRawParameterValue("TREMSYNCCHOICE")->load();
             tremRate = tempo.getNoteLengthHertz(static_cast<KOTempo::NoteTypes>(option));
-            //Todo: make it sync with actual playhead probably using ppq or time in samples
         }
         else
         {
             tremRate = apvts.getRawParameterValue("TREMRATE")->load();
         }
+
+
         if (tremRate != 0.f || (ModParams[apvts.getRawParameterValue("MODCHOICE")->load()] == "TREMRATE"))
         {
             tremLFO.setFrequency(tremRate);
@@ -355,7 +363,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         gainModule.process(juce::dsp::ProcessContextReplacing<float>(block));
     }
 
-
     //==Panning section==
     //Setting the pan rate
     float panDepth = apvts.getRawParameterValue("PANDEPTH")->load();
@@ -370,10 +377,12 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     panLFO.setFrequency(panRate);
 
+    float newPanVal = 0;
+
     //Add panning functionality
     if (panDepth != 0.f)
     {
-        float newPanVal = panLFO.getNextValue();
+        newPanVal = panLFO.getNextValue(block.getNumSamples());
         panner.setPan(newPanVal * panDepth);
     }
     else
@@ -383,7 +392,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     if (!apvts.getRawParameterValue("PANBP")->load())
         panner.process(juce::dsp::ProcessContextReplacing<float>(block));
-
 
     //Filter Section
     if (!apvts.getRawParameterValue("FILTERBP")->load())
@@ -409,7 +417,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         if (filterModLevel > 0)
         {
             //Value between -1 and 1
-            float lfoResult = filterLFOFilter.processSample(0, filterLFO.getNextValue());
+            float lfoResult = filterLFOFilter.processSample(0, filterLFO.getNextValue(block.getNumSamples()));
             float filterModder =  lfoResult * filterModLevel * 19980;
             
             float finalCutoff = (filterCutoffInHertz + filterModder);
@@ -456,6 +464,9 @@ void TremoKittyAudioProcessor::playbackStart(juce::AudioPlayHead::CurrentPositio
 
 void TremoKittyAudioProcessor::resetLFOPhase(KOLFO& LFO, juce::String parameterID)
 {
+    if (playHead == nullptr)
+        return;
+
     //The number of quarter notes since the last bar started
     double currentPhase = currentPosition.ppqPosition - currentPosition.ppqPositionOfLastBarStart;
     //Convert to samples

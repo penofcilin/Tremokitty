@@ -8,7 +8,6 @@
 
 #include "KOTempo.h"
 
-//Returns a string containing all the possible note types
 juce::StringArray KOTempo::getNoteTypes()
 {
     return juce::StringArray{ "Whole", "Half", "Dotted Half", "Quarter", "Dotted Quarter", "Triplet Quarter", "Eighth", "Dotted Eighth", "Triplet Eighth", "Sixteenth", "Dotted Sixteenth", "Triplet Sixteenth" };
@@ -19,32 +18,19 @@ juce::StringArray KOTempo::getNoteTypesAlternative()
     return juce::StringArray{ "1", "1/2", ".1/2", "1/4", ".1/4", "T1/4", "1/8", ".1/8", "T1/8", "1/16", ".1/16", "T1/16",};
 }
 
-// Returns a string returning each of the note types, without modifications. Free indicates that there is no connection to the beat, I.e for a freerunning LFO.
 juce::StringArray KOTempo::getStraightNoteTypes()
 {
     return juce::StringArray("Free", "Whole", "Half", "Quarter", "Eighth", "Sixteenth");
 }
 
-//Returns a string array with all the modded kinds of notes. Straight indicates the note is not modded.
 juce::StringArray KOTempo::getModdedNoteTypes()
 {
     return juce::StringArray("Straight", "Dotted Half", "Dotted Quarter", "Triplet Quarter", "Dotted Eighth", "Triplet Eighth", "Dotted Sixteenth", "Triplet Sixteenth");
 }
 
-//Sets the BPM for the module. If this isn't set, then the get methods won't work properly.
-void KOTempo::setBPM(float bpm)
-{
-    BPM = bpm;
-}
-
-void KOTempo::setSampleRate(float samplerate)
-{
-    sampleRate = samplerate;
-}
-
 float KOTempo::getNoteLengthHertz(NoteTypes type)
 {
-    switch (type) 
+    switch (type)
     {
     case NoteTypes::Whole:
         return BPM / 240;
@@ -88,7 +74,6 @@ float KOTempo::getNoteLengthHertz(NoteTypes type)
     }
 }
 
-//returns the length of a note in samples, ie a whole note at 60 bpm at a 44100 samplerate will be 44100 samples long.
 double KOTempo::getNoteLengthSamples(NoteTypes type)
 {
     // Convert bpm to beats per second
@@ -145,7 +130,6 @@ double KOTempo::getNoteLengthSamples(NoteTypes type)
     return round(noteDuration * sampleRate);
 }
 
-//Returns the length of a note in milliseconds
 float KOTempo::getNoteLengthMS(NoteTypes type)
 {
     // Convert bpm to beats per second
@@ -202,7 +186,22 @@ float KOTempo::getNoteLengthMS(NoteTypes type)
     return round(noteDuration * 1000);
 }
 
+void KOTempo::setSampleRate(float samplerate)
+{
+    sampleRate = samplerate;
+}
+
 float KOTempo::getSampleRate()
 {
     return sampleRate;
+}
+
+void KOTempo::setBPM(float bpm)
+{
+    BPM = bpm;
+}
+
+float KOTempo::getBPM()
+{
+    return BPM;
 }
