@@ -230,16 +230,36 @@ void TremoKittyAudioProcessorEditor::setUpModSection()
     createLabel("Mod", modSectionHeader);
     modSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     modSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
+
     createSlider(ModLFORateSlider);
     ModLFORateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "MODLFORATE", ModLFORateSlider);
+
     createLabel("Mod LFO Rate", ModLFORateLabel);
     ModLFOModOptions.addItemList(audioProcessor.ModParams, 1);
     ModLFOModdedParameterAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODCHOICE", ModLFOModOptions);
+
+    if (audioProcessor.apvts.getRawParameterValue("TREMSYNC")->load())
+    {
+        int id = audioProcessor.ModParams.indexOf("TREMRATE") + 1;
+        ModLFOModOptions.setItemEnabled(id, false);
+    }
+    if (audioProcessor.apvts.getRawParameterValue("PANSYNC")->load())
+    {
+        int id = audioProcessor.ModParams.indexOf("PANRATE") + 1;
+        ModLFOModOptions.setItemEnabled(id, false);
+    }
+    if (audioProcessor.apvts.getRawParameterValue("FILTERSYNC")->load())
+    {
+        int id = audioProcessor.ModParams.indexOf("FILTERRATE") + 1;
+        ModLFOModOptions.setItemEnabled(id, false);
+    }
+
     createSlider(ModLFODepthSlider);
     createLabel("Mod LFO Depth", ModLFODepthLabel);
     ModLFODepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "MODLFODEPTH", ModLFODepthSlider);
     ModLFOWaveType.addItemList(audioProcessor.WaveTypes, 1);
     ModLFOWaveTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "MODWAVETYPE", ModLFOWaveType);
+
     addAndMakeVisible(ModLFOWaveType);
     addAndMakeVisible(ModLFOModOptions);
     createToggleButton("Mod LFO Bypass", ModBypass);
@@ -390,59 +410,80 @@ void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
 
 void TremoKittyAudioProcessorEditor::syncButtonClicked(juce::ToggleButton* button)
 {
+    bool toggled = button->getToggleState();
+
     //Tremsync section
     if (button == &TremSyncButton)
     {
         //If Sync is enabled
-        if (button->getToggleState())
+        if (toggled)
         {
             tremRateSlider.setVisible(false);
             tremSyncChoice.setVisible(true);
+
+            int id = audioProcessor.ModParams.indexOf("TREMRATE") + 1;
+            ModLFOModOptions.setItemEnabled(id, false);
+
             resized();
         }
         else
         {
             tremRateSlider.setVisible(true);
             tremSyncChoice.setVisible(false);
+
+            int id = audioProcessor.ModParams.indexOf("TREMRATE") + 1;
+            ModLFOModOptions.setItemEnabled(id, true);
             resized();
         }
     }
     else if (button == &PanSyncButton)
     {
         //If Sync is enabled
-        if (button->getToggleState())
+        if (toggled)
         {
             PanRateSlider.setVisible(false);
             PanSyncChoice.setVisible(true);
+
+            int id = audioProcessor.ModParams.indexOf("PANRATE") + 1;
+            ModLFOModOptions.setItemEnabled(id, false);
             resized();
         }
         else
         {
             PanRateSlider.setVisible(true);
             PanSyncChoice.setVisible(false);
+
+            int id = audioProcessor.ModParams.indexOf("PANRATE") + 1;
+            ModLFOModOptions.setItemEnabled(id,true);
             resized();
         }
     }
     else if (button == &FilterSyncButton)
     {
         //If Sync is enabled
-        if (button->getToggleState())
+        if (toggled)
         {
             FilterModRate.setVisible(false);
             FilterSyncChoice.setVisible(true);
+
+            int id = audioProcessor.ModParams.indexOf("FILTERRATE") + 1;
+            ModLFOModOptions.setItemEnabled(id, false);
             resized();
         }
         else
         {
             FilterModRate.setVisible(true);
             FilterSyncChoice.setVisible(false);
+
+            int id = audioProcessor.ModParams.indexOf("FILTERRATE") + 1;
+            ModLFOModOptions.setItemEnabled(id, true);
             resized();
         }
     }
     else
     {
         //If Sync is enabled
-        if (button->getToggleState())
+        if (toggled)
         {
             ModLFORateSlider.setVisible(false);
             ModSyncChoice.setVisible(true);

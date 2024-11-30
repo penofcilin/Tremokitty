@@ -35,11 +35,15 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     LFOList.push_back(modLFO);
     
     apvts.addParameterListener("TREMWAVE", this);
+    apvts.addParameterListener("TREMBP", this);
     apvts.addParameterListener("PANWAVE", this);
+    apvts.addParameterListener("PANBP", this);
     apvts.addParameterListener("FILTERTYPE", this);
     apvts.addParameterListener("FILTERWAVE", this);
+    apvts.addParameterListener("FILTERBP", this);
     apvts.addParameterListener("MODWAVETYPE", this);
     apvts.addParameterListener("MODCHOICE", this);
+    apvts.addParameterListener("MODBP", this);
 
     //Syncing stuff
     apvts.addParameterListener("TREMSYNC", this);
@@ -124,6 +128,34 @@ void TremoKittyAudioProcessor::parameterChanged(const juce::String& parameterID,
     else if (parameterID == "MODSYNCCHOICE" || (parameterID == "MODSYNC" && newValue == 1.f))
     {
         resetLFOPhase(modLFO, "MODSYNCCHOICE");
+    }
+    else if (parameterID == "TREMBP")
+    {
+        if (apvts.getRawParameterValue("TREMSYNC")->load() && newValue == 0.f)
+        {
+            resetLFOPhase(tremLFO, "TREMSYNCCHOICE");
+        }
+    }
+    else if (parameterID == "PANBP")
+    {
+        if (apvts.getRawParameterValue("PANSYNC")->load() && newValue == 0.f)
+        {
+            resetLFOPhase(panLFO, "PANSYNCCHOICE");
+        }
+    }
+    else if (parameterID == "FILTERBP")
+    {
+        if (apvts.getRawParameterValue("FILTERSYNC")->load() && newValue == 0.f)
+        {
+            resetLFOPhase(filterLFO, "FILTERSYNCCHOICE");
+        }
+    }
+    else if (parameterID == "MODBP")
+    {
+        if (apvts.getRawParameterValue("MODSYNC")->load() && newValue == 0.f)
+        {
+            resetLFOPhase(modLFO, "MODSYNCCHOICE");
+        }
     }
     else
     {
@@ -303,12 +335,11 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         
     
     //The Mod LFO section is processed first, as it will affect the value of the others.
-    float modChoice = apvts.getRawParameterValue("MODCHOICE")->load();
-    if (modChoice != 0.f)
+    int modChoice = static_cast<int>(apvts.getRawParameterValue("MODCHOICE")->load());
+    if (modChoice != 0)
     {
         //Calls the function with the name of the thing you want to actually modify
-        int index = (int)modChoice;
-        processMod(ModParams[index]);
+        processMod(ModParams[modChoice], block.getNumSamples());
     }
 
     //Tremolo Section
@@ -492,16 +523,29 @@ void TremoKittyAudioProcessor::playbackStop()
     playbackStopped = true;
 }
 
-void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
+void TremoKittyAudioProcessor::processMod(const juce::String& parameterID, float bufferSize)
 {
-    float modFrequency = apvts.getRawParameterValue("MODLFORATE")->load();
-    float modDepth = apvts.getRawParameterValue("MODLFODEPTH")->load();
-    float paramMaxValue;
+    //Set up tempo sync
+    float modFrequency;
+    if (apvts.getRawParameterValue("MODSYNC")->load())
+    {
+        int option = apvts.getRawParameterValue("MODSYNCCHOICE")->load();
+        modFrequency = tempo.getNoteLengthHertz(static_cast<KOTempo::NoteTypes>(option));
+    }
+    else
+        modFrequency = apvts.getRawParameterValue("MODLFORATE")->load();
+    
     modLFO.setFrequency(modFrequency);
+  
+    //Assign depth
+    float modDepth;
     if (modFrequency == 0)
         modDepth = 0.f;
- 
+    else
+        modDepth = apvts.getRawParameterValue("MODLFODEPTH")->load();
+    
     //Determining the max value of our modded parameter based on whether it's a rate or depth parameter. (Rates are always 0-10. depth is 0-1).
+    float paramMaxValue;
     if (parameterID.contains("TREMRATE"))
     {
         paramMaxValue = 20.f;
@@ -514,22 +558,22 @@ void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
     {
         paramMaxValue = 1.f;
     }
-    
+
     //Saving the value before mod of our nice little eensie weensie mod value for later so we can use it and shit
     //Will only save the first time, wont save again until process mod is stopped (when the mod parameter is changed to None)
     bool setDefaultParam = apvts.getRawParameterValue("MODRESETSWITCH")->load();
     if (setDefaultParam)
     {
         auto oldVal = apvts.getRawParameterValue(parameterID)->load();
-        apvts.getRawParameterValue("MODPARAMPREVIOUSVALUE")->store(oldVal);
+        apvts.getRawParameterValue("MODPARAMPRIORVALUE")->store(oldVal);
         apvts.getRawParameterValue("MODRESETSWITCH")->store(0.f);
         //Should store the index of the last modded parameter
         apvts.getRawParameterValue("LASTMODDEDPARAM")->store(ModParams.indexOf(parameterID));
     }
     
     //Mod scaler is a value between 1 and 0, times the modDepth of 0 to 1.
-    float modScaler = ((modLFO.getNextValue() + 1) * 0.5);
-    auto oldValue = apvts.getRawParameterValue("MODPARAMPREVIOUSVALUE")->load();
+    float modScaler = ((modLFO.getNextValue(bufferSize) + 1) * 0.5);
+    auto oldValue = apvts.getRawParameterValue("MODPARAMPRIORVALUE")->load();
     if (paramMaxValue > 5.f)
     {
         //if oldvalue is 10, the LFO will be mapped from 0-1 to -10 to 10. I.E if the LFO gives 1, the modscaler gives 10. If the LFO gives 0, the modscaler gives -10.
@@ -540,9 +584,9 @@ void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
         //If the oldvalue is 0.5, the lfo will be mapped between 0-1 to -0.5 to 0.5. Therefore if the LFO gives 1, the modscaler gives 0.5. so our original value 0.5+ the lfo mod 0.5 will put us up to 1, the max value. 
         modScaler = juce::jmap(modScaler, 0 - oldValue, 1 - oldValue);
     }
-    //Storing the oldvalue +the modscaler * modDepth. Lets do the math
+    //Storing the oldvalue + the modscaler * modDepth. Lets do the math
     /*values between 0 and 10:
-    * say the original value is 7. The modscaler will be 0-1 mapped out between 0 minus 7 and 10 minus 7, in other words -7 and 13. Lets say the LFO is giving us a value of 1.0, so the scaler is at the max value. the modscaler will give us 13. Then when we add that to our original value, 7+13 = 10, therefore the max from the LFO will give us the max of the actual value. This is only if the moddepth is fully engaged. If the moddepth is at, say, 0.5, then the range of the modscaler collapses from -7 to 13 to -3.5 to 6.5. This way, the signal is only being modulated from a range that goes from the original value to halfway down to 0, and halfway to the max. In other words it modulates 7 down to 3.5, up to 13.5. And of course, if mod depth is 0, then 0 will be added to the oldvalue, so the parameter will not be being changed at all.
+    * say the original value is 7. The modscaler will be 0-1 mapped out between 0 minus 7 and 10 minus 7, in other words -7 and 13. Lets say the LFO is giving us a value of 1.0, so the scaler is at the max value. the modscaler will give us 13. Then when we add that to our original value, 7+13 = 10, therefore the max from the LFO will give us the max of the actual value. This is only if the moddepth is fully engaged. If the moddepth is at, say, 0.5, then the range of the modscaler collapses from -7 to 13 to -3.5 to 6.5. This way, the signal is only being modulated from a range that goes from the original value to halfway down to 0, and halfway to the max. In other words it modulates 7 down to 3.5, up to 13.5. And of course, if mod depth is 0, then 0 will be added to the oldvalue, so the parameter will not be changed at all.
     * The math is pretty much the same for the 0-1 values. Just shrink the formula down.
     */
     if(!apvts.getRawParameterValue("MODBP")->load())
@@ -553,7 +597,7 @@ void TremoKittyAudioProcessor::processMod(const juce::String& parameterID)
     }
 }
 
-//Changes the parameter that is being modded
+//Changes the parameter that is being modded, called when the mod param option is changed.
 void TremoKittyAudioProcessor::switchProcessMod()
 {
     int oldParamIndex = apvts.getRawParameterValue("LASTMODDEDPARAM")->load();
@@ -561,7 +605,7 @@ void TremoKittyAudioProcessor::switchProcessMod()
     //sets the modded parameter id back to its original value
     if (ParameterID != "None")
     {
-        float oldValue = (apvts.getRawParameterValue("MODPARAMPREVIOUSVALUE")->load());
+        float oldValue = apvts.getRawParameterValue("MODPARAMPRIORVALUE")->load();
         apvts.getRawParameterValue(ParameterID)->store(oldValue);
     }
     apvts.getRawParameterValue("MODRESETSWITCH")->store(true);
@@ -569,7 +613,7 @@ void TremoKittyAudioProcessor::switchProcessMod()
 
 void TremoKittyAudioProcessor::updateModParam(float newValue)
 {
-    apvts.getRawParameterValue("MODPARAMPREVIOUSVALUE")->store(newValue);
+    apvts.getRawParameterValue("MODPARAMPRIORVALUE")->store(newValue);
 }
 
 //==============================================================================
@@ -666,7 +710,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODCHOICE", "Mod LFO Parameter Choice", juce::StringArray("None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("LASTMODDEDPARAM", "The String Name of the last parameter that was modded", juce::StringArray("None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Mod Rate", "Filter Mod Depth"), 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>("MODSYNCCHOICE", "Pan Sync Rate Choice", KOTempo::getNoteTypesAlternative(), 3));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("MODPARAMPREVIOUSVALUE", "Modded Parameter Pre-modded Value", 0.f, 10.f, 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("MODPARAMPRIORVALUE", "Modded Parameter Pre-modded Value", 0.f, 10.f, 0.f));
     layout.add(std::make_unique<juce::AudioParameterBool>("MODRESETSWITCH", "Modded Param Reset Switch", true));
     layout.add(std::make_unique<juce::AudioParameterBool>("MODBP", "Mod LFO Bypass", false));
     layout.add(std::make_unique < juce::AudioParameterBool>("MODSYNC", "Mod Sync", false));
@@ -695,7 +739,6 @@ void TremoKittyAudioProcessor::getWave(modules module)
             }
         }
         break;
-     //If it's pan
     case(modules::pan):
         index = apvts.getRawParameterValue("PANWAVE")->load();
         for (i = 0; i < size; i++)
