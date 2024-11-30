@@ -95,7 +95,7 @@ void TremoKittyAudioProcessorEditor::loadInitialState()
 void TremoKittyAudioProcessorEditor::setUpTremoloSection()
 {
     //Create section header
-    createLabel("Trem Sec", tremSectionHeader);
+    createLabel("Tremolo", tremSectionHeader);
     tremSectionHeader.setFont(juce::Font(myLNF.typeFace, 35, juce::Font::bold));
     tremSectionHeader.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
@@ -346,11 +346,9 @@ void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
         syncButtonClicked(&PanSyncButton);
     else if (button == &FilterSyncButton)
         syncButtonClicked(&FilterSyncButton);
-    else if (button = &ModSyncButton)
+    else if (button == &ModSyncButton)
         syncButtonClicked(&ModSyncButton);
-    
-
-    if (button == &defaultSkinButton)
+    else if (button == &defaultSkinButton)
     {
         myLNF.changeSkin(juce::Gui::MyLNF::skins::sDefault);
         background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
@@ -615,8 +613,9 @@ void TremoKittyAudioProcessorEditor::resized()
 
     auto TremArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.63);
     auto PanArea = juce::Rectangle<int>(area.getX() / 2, area.getY() * 0.63);
+    auto ModArea = juce::Rectangle<int>(area.getX() / 4, area.getY() / 4);
     auto FilterArea = juce::Rectangle<int>(area.getX(), area.getY() * 0.33);
-    auto ModArea = juce::Rectangle<int>(area.getX()/4, area.getY()/4);
+    
     
     //Tremolo
     Tremfb.flexDirection = juce::FlexBox::Direction::column;
@@ -656,6 +655,28 @@ void TremoKittyAudioProcessorEditor::resized()
     Panfb.items.add(juce::FlexItem(45, 30, PanWaveChoice));
     Panfb.items.add(juce::FlexItem(19, 19, PanBypass));
 
+    
+    //Mod Section
+    Modfb.flexDirection = juce::FlexBox::Direction::column;
+    Modfb.flexWrap = juce::FlexBox::Wrap::wrap;
+    Modfb.alignContent = juce::FlexBox::AlignContent::stretch;
+    Modfb.justifyContent = juce::FlexBox::JustifyContent::center;
+
+    Modfb.items.add(juce::FlexItem(75, 25, modSectionHeader));
+    Modfb.items.add(juce::FlexItem(19, 19, ModSyncButton));
+
+    if(ModSyncButton.getToggleState())
+        Modfb.items.add(juce::FlexItem(35, 25, ModSyncChoice));
+    else
+        Modfb.items.add(juce::FlexItem(35, 25, ModLFORateSlider));
+
+    Modfb.items.add(juce::FlexItem(35, 25, ModLFORateLabel));
+    Modfb.items.add(juce::FlexItem(35, 25, ModLFODepthSlider));
+    Modfb.items.add(juce::FlexItem(35, 25, ModLFODepthLabel));
+    Modfb.items.add(juce::FlexItem(35, 25, ModLFOModOptions));
+    Modfb.items.add(juce::FlexItem(35, 25, ModLFOWaveType));
+    Modfb.items.add(juce::FlexItem(15, 15, ModBypass));
+
     //Filter Section
     Filterfb.flexDirection = juce::FlexBox::Direction::column;
     Filterfb.flexWrap = juce::FlexBox::Wrap::wrap;
@@ -679,27 +700,6 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.items.add(juce::FlexItem(45, 25, FilterWaveChoice));
     Filterfb.items.add(juce::FlexItem(25, 25, FilterBypass));
 
-    //Mod Section
-    Modfb.flexDirection = juce::FlexBox::Direction::column;
-    Modfb.flexWrap = juce::FlexBox::Wrap::wrap;
-    Modfb.alignContent = juce::FlexBox::AlignContent::stretch;
-    Modfb.justifyContent = juce::FlexBox::JustifyContent::center;
-
-    Modfb.items.add(juce::FlexItem(75, 25, modSectionHeader));
-    Modfb.items.add(juce::FlexItem(19, 19, ModSyncButton));
-
-    if(ModSyncButton.getToggleState())
-        Modfb.items.add(juce::FlexItem(35, 25, ModSyncChoice));
-    else
-        Modfb.items.add(juce::FlexItem(35, 25, ModLFORateSlider));
-
-    Modfb.items.add(juce::FlexItem(35, 25, ModLFORateLabel));
-    Modfb.items.add(juce::FlexItem(35, 25, ModLFODepthSlider));
-    Modfb.items.add(juce::FlexItem(35, 25, ModLFODepthLabel));
-    Modfb.items.add(juce::FlexItem(35, 25, ModLFOModOptions));
-    Modfb.items.add(juce::FlexItem(35, 25, ModLFOWaveType));
-    Modfb.items.add(juce::FlexItem(15, 15, ModBypass));
-
     //Performing Layout
     background.setBounds(getLocalBounds());
     tremoKittyBanner.setBounds(threeQuarterArea.removeFromTop(30));
@@ -713,8 +713,9 @@ void TremoKittyAudioProcessorEditor::resized()
     presetPanel.setBounds(threeQuarterArea.removeFromTop(area.proportionOfHeight(0.07f)));
     Tremfb.performLayout(threeQuarterArea.removeFromLeft(threeQuarterArea.proportionOfWidth(0.5)).reduced(4));
     Panfb.performLayout(threeQuarterArea.removeFromRight(threeQuarterArea.getWidth()).reduced(4));
-    Modfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.35f)));
     Filterfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.3f)));
+    Modfb.performLayout(area.removeFromBottom(area.proportionOfHeight(0.35f)));
+    
 
     //Painting the header
     auto newRect = getLocalBounds();
