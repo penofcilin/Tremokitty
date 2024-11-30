@@ -62,7 +62,6 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
 
-
     //My Public Members
     Service::PresetManager& getPresetManager() { return *presetManager; }
     void changeTremWaveManually(int index);
@@ -114,7 +113,7 @@ private:
     void getFilterType(bool shouldPrepare);
     void getWave(modules module);
     void parameterChanged(const juce::String& parameterID, float newValue) override;
-    void processMod(const juce::String& parameterID);
+    void processMod(const juce::String& parameterID, float bufferSize);
     void switchProcessMod();
     void updateModParam(float newValue);
     //This function will change the LFOs phase to match the current position of the playhead. For instance if the playhead is on the second quarter note of a bar and the sync choice is set to "whole", the LFO's phase will be advanced to halfway through it's period.
