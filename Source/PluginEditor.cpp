@@ -103,13 +103,13 @@ void TremoKittyAudioProcessorEditor::setUpTremoloSection()
     createSlider(tremRateSlider);
     tremRateSlider.setRange(0.f, 20.f, 10.f);
     tremRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMRATE", tremRateSlider);
-    createLabel("tremrate", tremRateLabel);
+    createLabel("Rate", tremRateLabel);
     //tremRateLabel.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
     //Trem Depth
     createSlider(tremDepthSlider);
     tremDepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TREMDEPTH", tremDepthSlider);
-    createLabel("tremdepth", TremDepthLabel);
+    createLabel("Depth", TremDepthLabel);
     //TremDepthLabel.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
     //Set up comboboxes
@@ -140,12 +140,12 @@ void TremoKittyAudioProcessorEditor::setUpPannerSection()
     createSlider(PanRateSlider);
     PanRateSlider.setRange(0.f, 10.f, 10.f);
     panRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "PANRATE", PanRateSlider);
-    createLabel("Pan Rate", PanRateLabel);
+    createLabel("Rate", PanRateLabel);
     PanRateLabel.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
     createSlider(PanDepthSlider);
     panDepthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "PANDEPTH", PanDepthSlider);
-    createLabel("Pan Depth", PanDepthLabel);
+    createLabel("Depth", PanDepthLabel);
     PanDepthLabel.setColour(juce::Label::ColourIds::textColourId, myLNF.textColour);
 
     //pan wave combobox
@@ -186,13 +186,13 @@ void TremoKittyAudioProcessorEditor::setUpFilterSection()
     createSlider(FilterModRate);
     FilterModRate.setRange(0.f, 10.f, 10.f);
     filterModRateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "FILTERRATE", FilterModRate);
-    createLabel("Mod Rate", FilterModLabel);
+    createLabel("Filter Mod Rate", FilterModLabel);
 
     //Filter mod level
     createSlider(FilterModAmount);
     FilterModAmount.setRange(0.f, 1.f, 0.f);
     filterModAmountAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "FILTERMODLEVEL", FilterModAmount);
-    createLabel("Mod Level", FilterModAmountLabel);
+    createLabel("Filter Mod Depth", FilterModAmountLabel);
 
     //Filter resonance
     createSlider(FilterResonanceSlider);
@@ -670,9 +670,9 @@ void TremoKittyAudioProcessorEditor::resized()
     else
         Modfb.items.add(juce::FlexItem(35, 25, ModLFORateSlider));
 
-    Modfb.items.add(juce::FlexItem(35, 25, ModLFORateLabel));
+    Modfb.items.add(juce::FlexItem(25, 20, ModLFORateLabel));
     Modfb.items.add(juce::FlexItem(35, 25, ModLFODepthSlider));
-    Modfb.items.add(juce::FlexItem(35, 25, ModLFODepthLabel));
+    Modfb.items.add(juce::FlexItem(25, 20, ModLFODepthLabel));
     Modfb.items.add(juce::FlexItem(35, 25, ModLFOModOptions));
     Modfb.items.add(juce::FlexItem(35, 25, ModLFOWaveType));
     Modfb.items.add(juce::FlexItem(15, 15, ModBypass));
@@ -684,21 +684,22 @@ void TremoKittyAudioProcessorEditor::resized()
     Filterfb.justifyContent = juce::FlexBox::JustifyContent::center;
 
     Filterfb.items.add(juce::FlexItem(100, 25, filterSectionHeader));
-    Filterfb.items.add(juce::FlexItem(19, 19, FilterSyncButton));
-    Filterfb.items.add(juce::FlexItem(45, 25, FilterCutoffSlider));
-    Filterfb.items.add(juce::FlexItem(25, 15, FilterCutoffLabel));
+    Filterfb.items.add(juce::FlexItem(18, 18, FilterBypass));
+    Filterfb.items.add(juce::FlexItem(18, 18, FilterSyncButton));
+    Filterfb.items.add(juce::FlexItem(35, 25, FilterCutoffSlider));
+    Filterfb.items.add(juce::FlexItem(20, 15, FilterCutoffLabel));
     if (FilterSyncButton.getToggleState())
-        Filterfb.items.add(juce::FlexItem(45, 25, FilterSyncChoice));
+        Filterfb.items.add(juce::FlexItem(35, 25, FilterSyncChoice));
     else
-        Filterfb.items.add(juce::FlexItem(45, 25, FilterModRate));
-    Filterfb.items.add(juce::FlexItem(25, 25, FilterModLabel));
-    Filterfb.items.add(juce::FlexItem(45, 25, FilterModAmount));
-    Filterfb.items.add(juce::FlexItem(25, 25, FilterModAmountLabel));
+        Filterfb.items.add(juce::FlexItem(35, 25, FilterModRate));
+    Filterfb.items.add(juce::FlexItem(20, 20, FilterModLabel));
+    Filterfb.items.add(juce::FlexItem(35, 25, FilterModAmount));
+    Filterfb.items.add(juce::FlexItem(20, 20, FilterModAmountLabel));
     Filterfb.items.add(juce::FlexItem(45, 25, FilterResonanceSlider));
     Filterfb.items.add(juce::FlexItem(25, 25, FilterResonanceLabel));
     Filterfb.items.add(juce::FlexItem(45, 25, FilterType));
     Filterfb.items.add(juce::FlexItem(45, 25, FilterWaveChoice));
-    Filterfb.items.add(juce::FlexItem(25, 25, FilterBypass));
+    
 
     //Performing Layout
     background.setBounds(getLocalBounds());
