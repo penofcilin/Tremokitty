@@ -8,11 +8,19 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <juce_gui_extra/juce_gui_extra.h>
 
 
 //==============================================================================
 TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager(), &myLNF)
+    : AudioProcessorEditor (&p), audioProcessor (p), presetPanel(p.getPresetManager(), &myLNF), 
+        webView(juce::WebBrowserComponent::Options{}.withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
+                        .withWinWebView2Options(juce::WebBrowserComponent::Options::WinWebView2{}
+                        .withUserDataFolder(juce::File::getSpecialLocation(juce::File::tempDirectory))
+                        .withBackgroundColour(juce::Colours::white))
+                       .withResourceProvider([this](const auto& url) {return getResource(url); })
+                       .withNativeIntegrationEnabled()
+                        )
 {
     background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
     background.setAlpha(0.1);

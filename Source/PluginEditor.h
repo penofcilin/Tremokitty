@@ -28,6 +28,11 @@ public:
     void resized() override;
 
 private:
+    using Resource = juce::WebBrowserComponent::Resource;
+    std::optional<Resource> getResource(const juce::String& url);
+    //webviews Testing section
+    juce::WebBrowserComponent webView;
+
     //General Elements
     juce::Gui::MyLNF myLNF;
     juce::ImageComponent tremoKittyBanner;

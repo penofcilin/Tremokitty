@@ -3,7 +3,7 @@
 <JUCERPROJECT id="GRGKvp" name="TremoKitty" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="KOAudio"
               cppLanguageStandard="20" maxBinaryFileSize="20971520" version="1.1.0"
-              pluginVST3Category="Modulation">
+              pluginVST3Category="Modulation" pluginCode="TMKT">
   <MAINGROUP id="qZML3O" name="TremoKitty">
     <GROUP id="{CF98ECBA-25AC-378B-D540-903DD503CB7C}" name="Source">
       <FILE id="VBIaBD" name="KOTempo.cpp" compile="1" resource="0" file="Source/KOTempo.cpp"/>
@@ -46,7 +46,9 @@
       <FILE id="DBqUaG" name="ChristmasBG.png" compile="0" resource="1" file="Resources/ChristmasBG.png"/>
     </GROUP>
   </MAINGROUP>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"
+               JUCE_WEB_BROWSER="1" JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING="1"
+               JUCE_USE_WIN_WEBVIEW2="1" JUCE_ENABLE_LIVE_CONSTANT_EDITOR="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
