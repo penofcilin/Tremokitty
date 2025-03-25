@@ -29,7 +29,7 @@ TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor (TremoKittyAudioP
     setUpSkinButtons();
     
     //Header Label
-    createLabel("TremoKitty!", header);
+    createLabel("Its working", header);
     header.setFont(juce::Font("Calibri", 20.f, juce::Font::bold));
     header.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
 
