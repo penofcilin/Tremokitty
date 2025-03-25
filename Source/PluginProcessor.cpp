@@ -624,7 +624,7 @@ bool TremoKittyAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* TremoKittyAudioProcessor::createEditor()
 {
-    return new TremoKittyAudioProcessorEditor (*this);
+    return new kitty_editor::TremoKittyAudioProcessorEditor (*this);
     //return new juce::GenericAudioProcessorEditor(*this);
 }
 
