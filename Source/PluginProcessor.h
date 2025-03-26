@@ -39,6 +39,10 @@ public:
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
+    void processBlockBypassed(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages) override; // doesnt seem to work
+
+    bool validatePosition(); //If the current playhead position is not equal to the next expected position of the playhead, either from the plugin being put to sleep and then woken up later, or from the playhead being manually moved, recalculate the phase of each LFO.
+
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -117,13 +121,18 @@ private:
     void switchProcessMod();
     void updateModParam(float newValue);
     //This function will change the LFOs phase to match the current position of the playhead. For instance if the playhead is on the second quarter note of a bar and the sync choice is set to "whole", the LFO's phase will be advanced to halfway through it's period.
-    void resetLFOPhase(KOLFO& LFO, juce::String parameterID);
-    void playbackStart(juce::AudioPlayHead::CurrentPositionInfo& currentPosition);
+    void resetLFOPhase(KOLFO& LFO, const juce::String& parameterID);
+    void resetAllLFOPhases();
+    void playbackStart(const int bufferSamples);
     void playbackStop();
 
     //Used for preparing the filter module.
     bool shouldPrepare;
     bool playbackStopped{ true };
+    bool bypassed{ false };
+
+    int64_t nextExpectedPlaybackSample;
+
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TremoKittyAudioProcessor)

@@ -315,6 +315,11 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     /*My Stuff Starts Here*/
     juce::dsp::AudioBlock<float> block(buffer);
 
+    if (bypassed)
+    {
+        bypassed = false;
+    }
+
     //Set up the Tempo obj, will only get set up when playhead is available ie in a daw
     playHead = this->getPlayHead();
     if (playHead)
@@ -325,10 +330,18 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
         //If audio is playing and the playback stopped field is equal to true, indicating that we have not called the playback start method yet
         if (currentPosition.isPlaying && playbackStopped)
-            playbackStart(currentPosition);
+            playbackStart(buffer.getNumSamples());
         //If audio is not playing and playback stopped field is false, meaning playback has stopped but we haven't called the playback stop function yet
         else if (!currentPosition.isPlaying && !playbackStopped)
             playbackStop();
+
+        //If were in an unexpected position, from either effect bypassed or playhead moving around, reset all LFO phases.
+        if (currentPosition.isPlaying && currentPosition.timeInSamples != nextExpectedPlaybackSample)
+        {
+            resetAllLFOPhases();
+            DBG("Detected an unexpected time thing, resetingg lFOS");
+        }
+         nextExpectedPlaybackSample = currentPosition.timeInSamples + buffer.getNumSamples();
     }
     else
         tempo.setBPM(120.f);
@@ -357,7 +370,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         {
             tremRate = apvts.getRawParameterValue("TREMRATE")->load();
         }
-
 
         if (tremRate != 0.f || (ModParams[apvts.getRawParameterValue("MODCHOICE")->load()] == "TREMRATE"))
         {
@@ -469,30 +481,26 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     }
 }
 
-//Will advance synced LFOs to their proper starting position given the current position info, or just reset them regularly.
-void TremoKittyAudioProcessor::playbackStart(juce::AudioPlayHead::CurrentPositionInfo& currentPosition)
+void TremoKittyAudioProcessor::processBlockBypassed(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages)
 {
-    if (apvts.getRawParameterValue("TREMSYNC")->load())
+    if (!bypassed)
     {
-        resetLFOPhase(tremLFO, "TREMSYNCCHOICE");
+        bypassed = true;
+        playbackStop();
     }
-    if (apvts.getRawParameterValue("PANSYNC")->load())
-    {
-        resetLFOPhase(panLFO, "PANSYNCCHOICE");
-    }
-    if (apvts.getRawParameterValue("FILTERSYNC")->load())
-    {
-        resetLFOPhase(filterLFO, "FILTERSYNCCHOICE");
-    }
-    if (apvts.getRawParameterValue("MODSYNC")->load())
-    {
-        resetLFOPhase(modLFO, "MODSYNCCHOICE");
-    }
+}
+
+//Will advance synced LFOs to their proper starting position given the current position info, or just reset them regularly.
+void TremoKittyAudioProcessor::playbackStart(const int bufferSamples)
+{
+    nextExpectedPlaybackSample = currentPosition.timeInSamples+bufferSamples;
+
+    resetAllLFOPhases();
 
     playbackStopped = false;
 }
 
-void TremoKittyAudioProcessor::resetLFOPhase(KOLFO& LFO, juce::String parameterID)
+void TremoKittyAudioProcessor::resetLFOPhase(KOLFO& LFO, const juce::String& parameterID)
 {
     if (playHead == nullptr)
         return;
@@ -516,6 +524,26 @@ void TremoKittyAudioProcessor::resetLFOPhase(KOLFO& LFO, juce::String parameterI
     float increment = juce::MathConstants<float>::twoPi * ratio;
 
     LFO.advancePhase(increment);
+}
+
+void TremoKittyAudioProcessor::resetAllLFOPhases()
+{
+    if (apvts.getRawParameterValue("TREMSYNC")->load())
+    {
+        resetLFOPhase(tremLFO, "TREMSYNCCHOICE");
+    }
+    if (apvts.getRawParameterValue("PANSYNC")->load())
+    {
+        resetLFOPhase(panLFO, "PANSYNCCHOICE");
+    }
+    if (apvts.getRawParameterValue("FILTERSYNC")->load())
+    {
+        resetLFOPhase(filterLFO, "FILTERSYNCCHOICE");
+    }
+    if (apvts.getRawParameterValue("MODSYNC")->load())
+    {
+        resetLFOPhase(modLFO, "MODSYNCCHOICE");
+    }
 }
 
 void TremoKittyAudioProcessor::playbackStop()
