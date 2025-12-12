@@ -698,50 +698,165 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    //Misc
-    layout.add(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", 0.f, 1.f, 1.f));
-    layout.add(std::make_unique < juce::AudioParameterBool>("MASTERBP", "Master Bypass", false));
-    //this guy is not used, but needs to be here or the presets load incorrectly. Actually, the presets wont load at all.
-    layout.add(std::make_unique<juce::AudioParameterInt>("PRESETINDEX", "Preset Index", 0, 100000, 0));
+    // Misc
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("GAIN", 1), "Gain",
+        0.f, 1.f, 1.f));
 
-    //Tremolo Section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("TREMRATE", "Tremolo Rate", juce::NormalisableRange<float>(0.f, 20.f, 0.01, 0.5f), 0.1f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("TREMDEPTH", "Tremolo Depth", 0.f, 1.f, 0.5f));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("TREMWAVE", "Tremolo Modulation Waveform", juce::StringArray(WAVE_TYPES), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("TREMSYNCCHOICE", "Tremolo Sync Rate Choice", KOTempo::getNoteTypesAlternative(), 3));
-    layout.add(std::make_unique < juce::AudioParameterBool>("TREMBP", "Tremolo Bypass", false));
-    layout.add(std::make_unique < juce::AudioParameterBool>("TREMSYNC", "Tremolo Sync", false));
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("MASTERBP", 1), "Master Bypass",
+        false));
 
-    //Panner section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PANRATE", "Pan Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 7.5f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PANDEPTH", "Pan Depth", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("PANWAVE", "Pan Mod Waveform", juce::StringArray(WAVE_TYPES), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("PANSYNCCHOICE", "Pan Sync Rate Choice", KOTempo::getNoteTypesAlternative(), 3));
-    layout.add(std::make_unique < juce::AudioParameterBool>("PANBP", "Pan Bypass", false));
-    layout.add(std::make_unique < juce::AudioParameterBool>("PANSYNC", "Pan Sync", false));
+    layout.add (std::make_unique<juce::AudioParameterInt>(
+        juce::ParameterID("PRESETINDEX", 1), "Preset Index",
+        0, 100000, 0));
 
-    //Filter section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRATE", "Filter Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERMODLEVEL", "Filter Mod Level", juce::NormalisableRange<float>(0.f, 1.f, 0.001f, 0.35), 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", juce::NormalisableRange<float>(0.f, 1.f, 0.00001f, 0.35f), 0.9f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", juce::NormalisableRange<float>(0.7f, 10.f, 0.05, 0.9), (1 / sqrt(2))));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERWAVE", "Filter Mod Waveform", juce::StringArray(WAVE_TYPES), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERTYPE", "Filter Type", juce::StringArray("Low Pass", "High Pass", "Band Pass"), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("FILTERSYNCCHOICE", "Filter Sync Rate Choice", KOTempo::getNoteTypesAlternative(), 3));
-    layout.add(std::make_unique<juce::AudioParameterBool>("FILTERBP", "Filter Bypass", false));
-    layout.add(std::make_unique < juce::AudioParameterBool>("FILTERSYNC", "Filter Sync", false));
 
-    //ModLFO Section
-    layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFORATE", "Mod LFO Rate", juce::NormalisableRange<float>(0.f, 10.f, 0.01, 0.5f), 0.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("MODLFODEPTH", "Mod LFO Depth", 0.f, 1.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("MODWAVETYPE", "Mod LFO Wave Type", juce::StringArray(WAVE_TYPES), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("MODCHOICE", "Mod LFO Parameter Choice", juce::StringArray("None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("LASTMODDEDPARAM", "The String Name of the last parameter that was modded", juce::StringArray("None", "Trem Rate", "Trem Depth", "Pan Rate", "Pan Depth", "Filter Mod Rate", "Filter Mod Depth"), 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>("MODSYNCCHOICE", "Pan Sync Rate Choice", KOTempo::getNoteTypesAlternative(), 3));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("MODPARAMPRIORVALUE", "Modded Parameter Pre-modded Value", 0.f, 10.f, 0.f));
-    layout.add(std::make_unique<juce::AudioParameterBool>("MODRESETSWITCH", "Modded Param Reset Switch", true));
-    layout.add(std::make_unique<juce::AudioParameterBool>("MODBP", "Mod LFO Bypass", false));
-    layout.add(std::make_unique < juce::AudioParameterBool>("MODSYNC", "Mod Sync", false));
+    // Tremolo Section
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("TREMRATE", 1), "Tremolo Rate",
+        juce::NormalisableRange<float>(0.f, 20.f, 0.01f, 0.5f),
+        0.1f));
+
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("TREMDEPTH", 1), "Tremolo Depth",
+        0.f, 1.f, 0.5f));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("TREMWAVE", 1), "Tremolo Modulation Waveform",
+        juce::StringArray(WAVE_TYPES), 0));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("TREMSYNCCHOICE", 1), "Tremolo Sync Rate Choice",
+        KOTempo::getNoteTypesAlternative(), 3));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("TREMBP", 1), "Tremolo Bypass",
+        false));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("TREMSYNC", 1), "Tremolo Sync",
+        false));
+
+
+    // Panner Section
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("PANRATE", 1), "Pan Rate",
+        juce::NormalisableRange<float>(0.f, 10.f, 0.01f, 0.5f),
+        7.5f));
+
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("PANDEPTH", 1), "Pan Depth",
+        0.f, 1.f, 0.f));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("PANWAVE", 1), "Pan Mod Waveform",
+        juce::StringArray(WAVE_TYPES), 0));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("PANSYNCCHOICE", 1), "Pan Sync Rate Choice",
+        KOTempo::getNoteTypesAlternative(), 3));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("PANBP", 1), "Pan Bypass",
+        false));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("PANSYNC", 1), "Pan Sync",
+        false));
+
+
+    // Filter Section
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("FILTERRATE", 1), "Filter Rate",
+        juce::NormalisableRange<float>(0.f, 10.f, 0.01f, 0.5f),
+        0.f));
+
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("FILTERMODLEVEL", 1), "Filter Mod Level",
+        juce::NormalisableRange<float>(0.f, 1.f, 0.001f, 0.35f),
+        0.f));
+
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("FILTERCUTOFF", 1), "Filter Cutoff",
+        juce::NormalisableRange<float>(0.f, 1.f, 0.00001f, 0.35f),
+        0.9f));
+
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("FILTERRES", 1), "Filter Resonance",
+        juce::NormalisableRange<float>(0.7f, 10.f, 0.05f, 0.9f),
+        1.0f / std::sqrt(2.0f)));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("FILTERWAVE", 1), "Filter Mod Waveform",
+        juce::StringArray(WAVE_TYPES), 0));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("FILTERTYPE", 1), "Filter Type",
+        juce::StringArray("Low Pass", "High Pass", "Band Pass"), 0));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("FILTERSYNCCHOICE", 1), "Filter Sync Rate Choice",
+        KOTempo::getNoteTypesAlternative(), 3));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("FILTERBP", 1), "Filter Bypass",
+        false));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("FILTERSYNC", 1), "Filter Sync",
+        false));
+
+
+    // Mod LFO Section
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("MODLFORATE", 1), "Mod LFO Rate",
+        juce::NormalisableRange<float>(0.f, 10.f, 0.01f, 0.5f),
+        0.f));
+
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("MODLFODEPTH", 1), "Mod LFO Depth",
+        0.f, 1.f, 0.f));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("MODWAVETYPE", 1), "Mod LFO Wave Type",
+        juce::StringArray(WAVE_TYPES), 0));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("MODCHOICE", 1), "Mod LFO Parameter Choice",
+        juce::StringArray("None", "TREMRATE", "TREMDEPTH",
+                          "PANRATE", "PANDEPTH",
+                          "FILTERRATE", "FILTERMODLEVEL"),
+        0));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("LASTMODDEDPARAM", 1), "The String Name of the last parameter that was modded",
+        juce::StringArray("None", "Trem Rate", "Trem Depth",
+                          "Pan Rate", "Pan Depth",
+                          "Filter Mod Rate", "Filter Mod Depth"),
+        0));
+
+    layout.add (std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID("MODSYNCCHOICE", 1), "Mod Sync Rate Choice",
+        KOTempo::getNoteTypesAlternative(), 3));
+
+    layout.add (std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("MODPARAMPRIORVALUE", 1), "Modded Parameter Pre-modded Value",
+        0.f, 10.f, 0.f));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("MODRESETSWITCH", 1), "Modded Param Reset Switch",
+        true));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("MODBP", 1), "Mod LFO Bypass",
+        false));
+
+    layout.add (std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("MODSYNC", 1), "Mod Sync",
+        false));
+
+
 
     //Returning every parameter
     return layout;

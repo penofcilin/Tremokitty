@@ -63,6 +63,7 @@ double KOLFO::getSampleRate()
     return sampleRate;
 }
 
+//This function returns an anonymous wave function
 void  KOLFO::setWaveType(WaveType newWaveType)
 {
     switch (newWaveType)
