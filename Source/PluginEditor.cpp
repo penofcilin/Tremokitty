@@ -123,11 +123,35 @@ namespace kitty_editor
     //Webview changes
     auto TremoKittyAudioProcessorEditor::getResource(const juce::String& url) -> std::optional<Resource>
     {
-        static const auto resourceFileRoot = juce::File{ R"(C:\Users\Levi\Documents\JUCE projects\TremoKitty\Tremokitty\Source\ui\public)" };
+        juce::String dir;
 
-        const auto resourceToRetrieve = url == "/" ? "index.html" : url.fromFirstOccurrenceOf("/", false, false);
+        #if JUCE_WINDOWS
+            dir = R"(C:\Users\Levi\Documents\JUCE projects\TremoKitty\Tremokitty\Source\ui\public)";
+        #elif JUCE_MAC
+            dir = "/Users/levi/Tremokitty/Source/ui/public";
+        #else
+            DBG("Unsupported platform");
+        #endif
+
+            
+        static const auto resourceFileRoot = juce::File{dir};
+
+        auto resourceToRetrieve = url;
+
+        // Strip scheme (e.g. juce-resource://root)
+        resourceToRetrieve = resourceToRetrieve.fromFirstOccurrenceOf("://", false, false);
+
+        // Strip leading slash
+        resourceToRetrieve = resourceToRetrieve.fromFirstOccurrenceOf("/", false, false);
+
+        // Default document
+        if (resourceToRetrieve.isEmpty())
+            resourceToRetrieve = "index.html";
+
 
         const auto resource = resourceFileRoot.getChildFile(resourceToRetrieve).createInputStream();
+        DBG("WebView URL: " + url);
+        DBG("Resolved resource: " + resourceToRetrieve);
 
         if (resource)
         {
