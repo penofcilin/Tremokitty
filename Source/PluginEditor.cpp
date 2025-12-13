@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#define TREMOKITTY_DEV_UI 1
 
 namespace kitty_editor
 {
@@ -65,11 +66,14 @@ namespace kitty_editor
 
         addAndMakeVisible(webView);
 
-        webView.goToURL(webView.getResourceProviderRoot());
+        #if TREMOKITTY_DEV_UI
+            webView.goToURL("http://localhost:5173");
+        #else
+            webView.goToURL(webView.getResourceProviderRoot());
+        #endif
 
-        addAndMakeVisible(runJavaScriptButton);
 
-        runJavaScriptButton.onClick = [this]() {
+        /*runJavaScriptButton.onClick = [this]() {
             constexpr auto JAVASCRIPT_TO_RUN{ "console.log(\"Hello from C++!\")" };
             webView.evaluateJavascript(
                 JAVASCRIPT_TO_RUN,
@@ -81,10 +85,10 @@ namespace kitty_editor
                     }
                 }
             );
-            };
+            };*/
 
         setResizable(true, true);
-        setSize(400, 300);
+        setSize(600, 580);
 
         //background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
         //background.setAlpha(0.1);
@@ -226,7 +230,6 @@ namespace kitty_editor
     void TremoKittyAudioProcessorEditor::resized()
     {
         auto bounds = getLocalBounds();
-        webView.setBounds(bounds.removeFromRight(getWidth() / 2));
-        runJavaScriptButton.setBounds(bounds.removeFromTop(50).reduced(5));
+        webView.setBounds(bounds);
     }
 } //namespace
