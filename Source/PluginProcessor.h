@@ -13,6 +13,7 @@
 #include <chrono>
 #include "KOLFO.h"
 #include "KOTempo.h"
+#include "ParameterIDs.h"
 
 #define WAVE_TYPES  "Sine", "Cosine", "NegativeCosine",  "Saw", "SawDown", "Square", "InverseSquare"
 

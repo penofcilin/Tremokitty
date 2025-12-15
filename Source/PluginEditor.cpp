@@ -69,11 +69,10 @@ namespace kitty_editor
                            juce::WebBrowserComponent::NativeFunctionCompletion completion) {
                                testNativeFunction(args, std::move(completion)); }
                             )
-                .withEventListener(
-                    "exampleReactEvent", 
-                                [this](juce::var object) {
-                                    DBG("A event was emitted in the frontend! heres the obejct passed: " + object.getProperty("emittedCount", 0).toString());
-                                })
+                .withEventListener("SliderChanged",
+                                   [this](juce::var info) {
+                                       sliderChanged(info);
+                                   })
                             )
     {
         juce::ignoreUnused(audioProcessor);
@@ -184,6 +183,26 @@ namespace kitty_editor
 
         DBG("Pressed a javascript button bro: " + concatenatedArgs);
         completion("Native function callback: OK!");
+    }
+
+    void TremoKittyAudioProcessorEditor::sliderChanged(juce::var info)
+    {
+        const int sliderID = (int) info.getProperty("sliderID", 0);
+        float newValue = info.getProperty("newValue", -1); //if something goes wrong, hopefully this will crash it while in development. Could make it 0, but that will probably get confusing.
+
+        if (sliderID > PARAMETER_COUNT) {
+            DBG("Invalid param!");
+            return;
+        }
+
+        juce::String sliderIDString = parameterIDStrings[sliderID];
+
+        DBG("You just changed the: " + juce::String(parameterIDStrings[sliderID]));
+        DBG("The new value should be: " + juce::String(newValue));
+
+         audioProcessor.apvts.getRawParameterValue(parameterIDStrings[sliderID])->store(newValue);
+         float newstored = audioProcessor.apvts.getRawParameterValue(parameterIDStrings[sliderID])->load();
+         DBG("The parameter within APVTS is now: " + juce::String(newstored));
     }
 
     //DISGUSTING, ABSOLUTELY DISGUSTING, might have to do this for the rest of the modules as well if its' still broken

@@ -13,6 +13,7 @@
 #include "PluginProcessor.h"
 #include "PresetPanel.h"
 #include "MyLNF.h"
+#include "ParameterIDs.h"
 #define modules TremoKittyAudioProcessor::modules
 
 namespace kitty_editor {
@@ -34,37 +35,8 @@ namespace kitty_editor {
         juce::TextButton runJavaScriptButton{ "Run some JS" };
 
         
-        //Attachments
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremRateAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tremDepthAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panRateAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panDepthAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModRateAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterResonanceAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterModAmountAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterCutoffAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ModLFORateAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ModLFODepthAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> MasterBypassAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> TremBypassAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> PanBypassAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> FilterBypassAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> ModBypassAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> TremWaveAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> PanWaveAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterWaveAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterTypeAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModLFOWaveTypeAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModLFOModdedParameterAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> TremSyncAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> PanSyncAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> FilterSyncAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> ModSyncAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> TremSyncChoiceAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> PanSyncChoiceAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterSyncChoiceAttachment;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModSyncChoiceAttachment;
+        //Frontend Events
+        void sliderChanged(juce::var info);
 
         void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
         void sliderValueChanged(juce::Slider* slider) override;

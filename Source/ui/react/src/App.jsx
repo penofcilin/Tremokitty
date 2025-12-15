@@ -1,12 +1,12 @@
 import { useState } from "react";
 import * as Juce from "../juce/index.js";
-import "./App.css";
+import * as bridge from "./Utilities/juceBridge.js";
 
 //Load initlization data from juce
 const data = window.__JUCE__.initialisationData;
 const appID = data.pluginName;
 
-let emittedCount = 0;
+let parameterName = 1;
 
 //CPP -> JS 2: Event listening
 window.__JUCE__.backend.addEventListener("ExampleEvent", (objectFromCPP) => {
@@ -25,9 +25,9 @@ const testNativeFunction = () => {
 
 //JS -> CPP option 2: emit an event to the JUCE backend
 const emitJuceEvent = () => {
-  emittedCount++;
-  window.__JUCE__.backend.emitEvent("exampleReactEvent", {
-    emittedCount: emittedCount, //json property
+  parameterName++;
+  window.__JUCE__.backend.emitEvent("sliderChanged", {
+    emittedCount: parameterName, //json property
   });
 };
 
@@ -47,7 +47,9 @@ function Card() {
       <div className="card">
         <button onClick={testNativeFunction}>Call a c++ function</button>
       </div>
-      <button onClick={emitJuceEvent}>Emit a juce Event</button>
+      <button onClick={() => bridge.emitSliderEvent(parameterName++, 0.78)}>
+        Emit a sliderChanged Event
+      </button>
     </>
   );
 }
