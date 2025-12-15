@@ -1,35 +1,54 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import * as Juce from "../juce/index.js";
 import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0);
-  document.addEventListener("contextmenu", (e) => e.preventDefault()); //Prevent context menu from opening on right click
+//Load initlization data from juce
+const data = window.__JUCE__.initialisationData;
+const appID = data.pluginName;
 
+let emittedCount = 0;
+
+//CPP -> JS 2: Event listening
+window.__JUCE__.backend.addEventListener("ExampleEvent", (objectFromCPP) => {
+  console.log("object from cpp: " + objectFromCPP);
+});
+
+//JS -> CPP option 1: Get a native CPP function from juce
+const testNativeFunction = () => {
+  console.log("hi!");
+
+  //Call the native function, do something with it's result
+  Juce.getNativeFunction("testNativeFunction")(1, 2).then((result) => {
+    console.log(result);
+  });
+};
+
+//JS -> CPP option 2: emit an event to the JUCE backend
+const emitJuceEvent = () => {
+  emittedCount++;
+  window.__JUCE__.backend.emitEvent("exampleReactEvent", {
+    emittedCount: emittedCount, //json property
+  });
+};
+
+function App() {
+  //document.addEventListener("contextmenu", (e) => e.preventDefault()); //Prevent context menu from opening on right click
   return (
-    <body>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + Trad</h1>
+    <div>
+      <Card />
+    </div>
+  );
+}
+
+function Card() {
+  return (
+    <>
+      <h1>{appID}</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+        <button onClick={testNativeFunction}>Call a c++ function</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </body>
+      <button onClick={emitJuceEvent}>Emit a juce Event</button>
+    </>
   );
 }
 

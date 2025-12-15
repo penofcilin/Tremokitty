@@ -53,14 +53,28 @@ namespace kitty_editor
     }
     
     TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor(TremoKittyAudioProcessor& p)
-        : AudioProcessorEditor(&p), audioProcessor(p),
-          webView(juce::WebBrowserComponent::Options{}.withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
-                        .withWinWebView2Options(juce::WebBrowserComponent::Options::WinWebView2{}
-                        .withUserDataFolder(juce::File::getSpecialLocation(juce::File::tempDirectory))
-                        .withBackgroundColour(juce::Colours::white))
-                        .withResourceProvider([this](const auto& url) {return getResource(url); })
-                        .withNativeIntegrationEnabled()
-        )
+        : AudioProcessorEditor(&p),
+        audioProcessor(p),
+        webView(juce::WebBrowserComponent::Options{}
+                .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
+                .withWinWebView2Options(juce::WebBrowserComponent::Options::WinWebView2{}
+                .withUserDataFolder(juce::File::getSpecialLocation(juce::File::tempDirectory))
+                .withBackgroundColour(juce::Colours::white))
+                .withResourceProvider([this](const auto& url) {return getResource(url); })
+                .withNativeIntegrationEnabled()
+                .withInitialisationData("pluginName", "DevKitty101")
+                .withNativeFunction(
+                    juce::Identifier{ "testNativeFunction" },
+                    [this](const juce::Array<juce::var>& args,
+                           juce::WebBrowserComponent::NativeFunctionCompletion completion) {
+                               testNativeFunction(args, std::move(completion)); }
+                            )
+                .withEventListener(
+                    "exampleReactEvent", 
+                                [this](juce::var object) {
+                                    DBG("A event was emitted in the frontend! heres the obejct passed: " + object.getProperty("emittedCount", 0).toString());
+                                })
+                            )
     {
         juce::ignoreUnused(audioProcessor);
 
@@ -72,56 +86,19 @@ namespace kitty_editor
             webView.goToURL(webView.getResourceProviderRoot());
         #endif
 
+            // CPP -> js 1: Webview Evaluate Javascript
+            constexpr auto js = "console.log(\"hello from cpp!\")";
+            webView.evaluateJavascript(js,
+                                       [](juce::WebBrowserComponent::EvaluationResult result) {
+                                           if (const auto* resultPtr = result.getResult())
+                                               DBG("Evaluation result in cpp: " + resultPtr->toString());
+                                           else 
+                                               DBG("Evaluation failed");
+                                       });
 
-        /*runJavaScriptButton.onClick = [this]() {
-            constexpr auto JAVASCRIPT_TO_RUN{ "console.log(\"Hello from C++!\")" };
-            webView.evaluateJavascript(
-                JAVASCRIPT_TO_RUN,
-                [](juce::WebBrowserComponent::EvaluationResult result)
-                {
-                    if (const auto* resultPtr = result.getResult())
-                    {
-                        std::cout << "javascript evaluation result: " << resultPtr->toString() << std::endl;
-                    }
-                }
-            );
-            };*/
 
-        setResizable(true, true);
+        setResizable(false,false);
         setSize(600, 580);
-
-        //background.setImage(myLNF.currentBgImage, juce::RectanglePlacement::stretchToFit);
-        //background.setAlpha(0.1);
-        //addAndMakeVisible(background);
-
-        ////Getting the header rectangle image
-        //auto kittyImage = juce::ImageCache::getFromMemory(BinaryData::TremoKittyBanner_png, BinaryData::TremoKittyBanner_pngSize);
-        //if (!kittyImage.isNull())
-        //    tremoKittyBanner.setImage(kittyImage, juce::RectanglePlacement::stretchToFit);
-        //else
-        //    jassert(!kittyImage.isNull());
-        //addAndMakeVisible(tremoKittyBanner);
-
-        //setUpSkinButtons();
-
-        ////Header Label
-        //createLabel("TremoKitty!", header);
-        //header.setFont(juce::Font("Calibri", 20.f, juce::Font::bold));
-        //header.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
-
-        ////PresetPanel
-        //addAndMakeVisible(presetPanel);
-
-        ////Got rid of master bypass cause kind of pointless
-        //setUpTremoloSection();
-        //setUpPannerSection();
-        //setUpFilterSection();
-        //setUpModSection();
-        //changeLabelColours();
-
-        //setSize(500, 550);
-        //loadInitialState();
-        //setLookAndFeel(&myLNF);
     }
 
     //Webview changes
@@ -192,6 +169,21 @@ namespace kitty_editor
         else
         {
         }
+    }
+
+    //This function is called by the GUI.
+    void TremoKittyAudioProcessorEditor::testNativeFunction(const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion)
+    {
+        juce::String concatenatedArgs;
+        for (const auto& arg : args) {
+            concatenatedArgs += arg.toString();
+        }
+
+        // CPP -> JS 2: emit event
+        webView.emitEventIfBrowserIsVisible("ExampleEvent", 42);
+
+        DBG("Pressed a javascript button bro: " + concatenatedArgs);
+        completion("Native function callback: OK!");
     }
 
     //DISGUSTING, ABSOLUTELY DISGUSTING, might have to do this for the rest of the modules as well if its' still broken

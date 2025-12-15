@@ -66,7 +66,6 @@ namespace kitty_editor {
         std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> FilterSyncChoiceAttachment;
         std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ModSyncChoiceAttachment;
 
-
         void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
         void sliderValueChanged(juce::Slider* slider) override;
         void buttonClicked(juce::Button* button) override;
@@ -74,6 +73,8 @@ namespace kitty_editor {
 
         //Set up functions
         void loadInitialState();
+
+        void testNativeFunction(const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion);
 
         //Member Variable
         bool shouldNotDisplayKitty{ false };
