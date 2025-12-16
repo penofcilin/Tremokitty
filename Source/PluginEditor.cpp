@@ -187,22 +187,14 @@ namespace kitty_editor
 
     void TremoKittyAudioProcessorEditor::sliderChanged(juce::var info)
     {
-        const int sliderID = (int) info.getProperty("sliderID", 0);
+        const juce::String& sliderID =  info.getProperty("sliderID", 0).toString();
         float newValue = info.getProperty("newValue", -1); //if something goes wrong, hopefully this will crash it while in development. Could make it 0, but that will probably get confusing.
 
-        if (sliderID > PARAMETER_COUNT) {
-            DBG("Invalid param!");
-            return;
-        }
 
-        juce::String sliderIDString = parameterIDStrings[sliderID];
-
-        DBG("You just changed the: " + juce::String(parameterIDStrings[sliderID]));
-        DBG("The new value should be: " + juce::String(newValue));
-
-         audioProcessor.apvts.getRawParameterValue(parameterIDStrings[sliderID])->store(newValue);
-         float newstored = audioProcessor.apvts.getRawParameterValue(parameterIDStrings[sliderID])->load();
-         DBG("The parameter within APVTS is now: " + juce::String(newstored));
+         audioProcessor.apvts.getRawParameterValue(sliderID)->store(newValue);
+         float storedVal = audioProcessor.apvts.getRawParameterValue(sliderID)->load();
+         juce::String output = juce::String("Your slider is called " + sliderID + " and it's new value stored in apvts is " + juce::String(storedVal));
+         DBG(output);
     }
 
     //DISGUSTING, ABSOLUTELY DISGUSTING, might have to do this for the rest of the modules as well if its' still broken

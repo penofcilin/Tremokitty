@@ -13,7 +13,6 @@
 #include "PluginProcessor.h"
 #include "PresetPanel.h"
 #include "MyLNF.h"
-#include "ParameterIDs.h"
 #define modules TremoKittyAudioProcessor::modules
 
 namespace kitty_editor {
