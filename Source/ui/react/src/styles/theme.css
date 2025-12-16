@@ -1,0 +1,23 @@
+:root {
+  --bg-primary: #d8b9a7;
+  --bg-secondary: #c9a392;
+  --bg-dark: #2a1f22;
+
+  --accent-primary: #9b5d6e;
+  --accent-hover: #b06f80;
+  --accent-active: #844b5b;
+
+  --control-track: #ead7cf;
+  --control-fill: #9b5d6e;
+  --control-thumb: #6e3f4a;
+  --control-disabled: #b8a5a0;
+
+  --text-primary: #1f1417;
+  --text-secondary: #4a3439;
+  --text-muted: #7a5a60;
+  --text-inverted: #f4ece8;
+
+  --success: #7a9b83;
+  --warning: #c9a15c;
+  --error: #b55a5a;
+}

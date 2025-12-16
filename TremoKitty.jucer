@@ -6,20 +6,7 @@
               pluginVST3Category="Modulation" pluginCode="TMKT">
   <MAINGROUP id="qZML3O" name="TremoKitty">
     <GROUP id="{CF98ECBA-25AC-378B-D540-903DD503CB7C}" name="Source">
-      <GROUP id="{AC541E04-FD18-0E43-5D6F-4BB4A6D251C6}" name="ui">
-        <GROUP id="{7D39EC96-8D7F-14DA-2B69-D5D7ED3CF7BE}" name="public">
-          <GROUP id="{DAD18EDA-213E-BACD-3BB0-84E1295C421D}" name="js">
-            <GROUP id="{C1577317-6BE7-1894-1A94-9F02EC40A10D}" name="juce">
-              <FILE id="oLjc0Q" name="check_native_interop.js" compile="0" resource="1"
-                    file="Source/ui/public/js/juce/check_native_interop.js"/>
-              <FILE id="K7UNME" name="index.js" compile="0" resource="1" file="Source/ui/public/js/juce/index.js"/>
-            </GROUP>
-            <FILE id="Ciz0Wq" name="index.js" compile="0" resource="1" file="Source/ui/public/js/index.js"/>
-          </GROUP>
-          <FILE id="lJlEcb" name="index.html" compile="0" resource="1" file="Source/ui/public/index.html"/>
-          <FILE id="QEneQP" name="style.css" compile="0" resource="1" file="Source/ui/public/style.css"/>
-        </GROUP>
-      </GROUP>
+      <GROUP id="{AC541E04-FD18-0E43-5D6F-4BB4A6D251C6}" name="ui"/>
       <FILE id="VBIaBD" name="KOTempo.cpp" compile="1" resource="0" file="Source/KOTempo.cpp"/>
       <FILE id="tuFq3d" name="KOTempo.h" compile="0" resource="0" file="Source/KOTempo.h"/>
       <FILE id="UY1bXw" name="KOLFO.h" compile="0" resource="0" file="Source/KOLFO.h"/>
