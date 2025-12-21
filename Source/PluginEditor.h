@@ -16,36 +16,29 @@
 #define modules TremoKittyAudioProcessor::modules
 
 namespace kitty_editor {
-    class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Slider::Listener, public juce::ComboBox::Listener, public juce::Button::Listener
+    class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor
     {
     public:
         TremoKittyAudioProcessorEditor(TremoKittyAudioProcessor&);
         ~TremoKittyAudioProcessorEditor() override;
 
-
         void resized() override;
 
     private:
+        //webviews Testing section
         using Resource = juce::WebBrowserComponent::Resource;
         std::optional<Resource> getResource(const juce::String& url);
-        //webviews Testing section
+       
         juce::WebBrowserComponent webView;
 
-        juce::TextButton runJavaScriptButton{ "Run some JS" };
-
-        
         //Frontend Events
         void sliderChanged(juce::var info);
-
-        void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
-        void sliderValueChanged(juce::Slider* slider) override;
-        void buttonClicked(juce::Button* button) override;
-        void changeLabelColours();
-
-        //Set up functions
-        void loadInitialState();
+        void dropdownCommit(juce::var info);
+        void buttonClicked(juce::var info);
 
         void testNativeFunction(const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion);
+
+        juce::Array<juce::var> convertPresetNames(juce::StringArray& names);
 
         //Member Variable
         bool shouldNotDisplayKitty{ false };

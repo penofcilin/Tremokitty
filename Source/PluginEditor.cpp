@@ -62,7 +62,7 @@ namespace kitty_editor
                 .withBackgroundColour(juce::Colours::white))
                 .withResourceProvider([this](const auto& url) {return getResource(url); })
                 .withNativeIntegrationEnabled()
-                .withInitialisationData("pluginName", "DevKitty101")
+                .withInitialisationData("Presets", convertPresetNames(p.PresetNames))
                 .withNativeFunction(
                     juce::Identifier{ "testNativeFunction" },
                     [this](const juce::Array<juce::var>& args,
@@ -73,6 +73,14 @@ namespace kitty_editor
                                    [this](juce::var info) {
                                        sliderChanged(info);
                                    })
+                .withEventListener("DropdownCommit",
+                                    [this](juce::var info) {
+                                        dropdownCommit(info);
+                                    })
+                .withEventListener("ButtonClicked",
+                                    [this](juce::var info) {
+                                        buttonClicked(info);
+                                    })
                             )
     {
         juce::ignoreUnused(audioProcessor);
@@ -94,7 +102,6 @@ namespace kitty_editor
                                            else 
                                                DBG("Evaluation failed");
                                        });
-
 
         setResizable(false,false);
         setSize(600, 580);
@@ -142,34 +149,6 @@ namespace kitty_editor
         return std::nullopt;
     }
 
-    void TremoKittyAudioProcessorEditor::loadInitialState()
-    {
-        auto settings = audioProcessor.globalProperties.getUserSettings();
-        auto shouldNotDisplay = settings->getBoolValue("DONTDISPLAYKITTY");
-        auto skinToLoad = settings->getIntValue("DEFAULTSKIN", 0);
-        DBG("TOLOAD = " + std::to_string(skinToLoad));
-        switch (skinToLoad)
-        {
-        case(0):
-            break;
-        case(1):
-            break;
-        case(2):
-            break;
-        case(3):
-            break;
-        default:
-            DBG("Failed to assign skin.");
-            break;
-        }
-        if (!shouldNotDisplay == 0)
-        {
-        }
-        else
-        {
-        }
-    }
-
     //This function is called by the GUI.
     void TremoKittyAudioProcessorEditor::testNativeFunction(const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion)
     {
@@ -185,6 +164,16 @@ namespace kitty_editor
         completion("Native function callback: OK!");
     }
 
+    juce::Array<juce::var> TremoKittyAudioProcessorEditor::convertPresetNames(juce::StringArray& names)
+    {
+        juce::Array<juce::var> presetVars;
+
+        for (const auto& name : names)
+            presetVars.add(name);
+
+        return presetVars;
+    }
+
     void TremoKittyAudioProcessorEditor::sliderChanged(juce::var info)
     {
         const juce::String& sliderID =  info.getProperty("sliderID", 0).toString();
@@ -197,33 +186,43 @@ namespace kitty_editor
          DBG(output);
     }
 
+    void TremoKittyAudioProcessorEditor::dropdownCommit(juce::var info)
+    {
+        const juce::String& dropdownID = info.getProperty("dropdownID", "Null").toString();
+        const int newValue = info.getProperty("newValue", -1); //Choices are stored as integers
+
+        audioProcessor.apvts.getRawParameterValue(dropdownID)->store(newValue);
+
+        float storedVal = audioProcessor.apvts.getRawParameterValue(dropdownID)->load();
+        juce::String output = juce::String("Your dropdown is called " + dropdownID + " and it's new value stored in apvts is " + juce::String(storedVal));
+        DBG(output);
+
+    }
+
+    //Handle each button on it's own
+    void TremoKittyAudioProcessorEditor::buttonClicked(juce::var info)
+    {
+        const juce::String& buttonID = info.getProperty("buttonID", "null").toString();
+        const int isCheckBox = info.getProperty("isCheckBox", -1);
+
+        //If it's a togglebutton easy as shit, just store the inverse of the current parameter
+        if (isCheckBox) {
+            audioProcessor.apvts.getRawParameterValue(buttonID)->store(!audioProcessor.apvts.getRawParameterValue(buttonID)->load());
+        }
+
+        //todo: write explicit handlers for each unique button
+        if (buttonID == "SAVEPRESETBUTTON")
+            DBG("Opening preset saving thingamabob");
+    }
+
     //DISGUSTING, ABSOLUTELY DISGUSTING, might have to do this for the rest of the modules as well if its' still broken
-    void TremoKittyAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
+    /*void TremoKittyAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
     {
         float index = comboBoxThatHasChanged->getSelectedItemIndex();
         if (index == 5 || index == 6)
             audioProcessor.changeTremWaveManually(index);
-    }
+    }*/
 
-    void TremoKittyAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
-    {
-       /* if (slider == &FilterCutoffSlider)
-        {
-            float newValue = slider->getValue();
-            FilterCutoffLabel.setText("Cutoff = " + (std::to_string((int)juce::jmap(newValue, 20.f, 20000.f))) + " HZ", juce::NotificationType::dontSendNotification);
-        }*/
-    }
-
-    void TremoKittyAudioProcessorEditor::buttonClicked(juce::Button* button)
-    {
-        auto settings = audioProcessor.globalProperties.getUserSettings();
-
-    }
-
-    void TremoKittyAudioProcessorEditor::changeLabelColours()
-    {
-       
-    }
 
     TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
     {

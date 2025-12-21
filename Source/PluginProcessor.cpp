@@ -79,6 +79,8 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     auto userSettings = globalProperties.getUserSettings();
     auto display =  userSettings->getBoolValue("DONTDISPLAYKITTY");
     auto skin = userSettings->getIntValue("DEFAULTSKIN");
+
+    PresetNames = presetManager->getAllPresets();
 }
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
@@ -653,7 +655,6 @@ bool TremoKittyAudioProcessor::hasEditor() const
 juce::AudioProcessorEditor* TremoKittyAudioProcessor::createEditor()
 {
     return new kitty_editor::TremoKittyAudioProcessorEditor (*this);
-    //return new juce::GenericAudioProcessorEditor(*this);
 }
 
 void TremoKittyAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
