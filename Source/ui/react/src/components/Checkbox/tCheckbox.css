@@ -1,0 +1,16 @@
+.checkBox,
+.tLabel {
+  cursor: pointer;
+}
+.checkBox:hover {
+  filter: brightness(0.92);
+}
+.checkBox:active {
+  transform: scale(0.9);
+  filter: brightness(0.8);
+}
+
+.tLabel:active {
+  transform: scale(0.9);
+  filter: brightness(0.8);
+}

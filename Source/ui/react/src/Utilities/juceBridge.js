@@ -1,4 +1,4 @@
-//This file will handle the interaction between the juce backend and the react frontend. Any emission of events, any native function calls, anything like that goes through a function in this file.
+//This file will handle the interaction between the juce backend and the react frontend. Any emission of events, any native function calls, anything like that goes through a function in this file. Also contains some general information about CPP backend stuff, like parameterIDs, wavetypes, other elementIDs.
 
 import * as Juce from "../../juce/index.js";
 

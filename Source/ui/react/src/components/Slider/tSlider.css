@@ -1,0 +1,64 @@
+/* Root */
+.tSlider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 20px;
+}
+
+/* Track (neutral surface) */
+.tSliderTrack {
+  position: relative;
+  flex-grow: 1;
+  height: 10px;
+  background: var(--gray-6);
+  border-radius: var(--radius-4);
+}
+
+.tSlider:active .tSliderThumb {
+  transform: scale(1.2);
+}
+
+/* Filled range (accent) */
+.tSliderRange {
+  position: absolute;
+  height: 100%;
+  background: var(--accent-9);
+  border-radius: inherit;
+}
+
+/* Thumb */
+.tSliderThumb {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: var(--accent-11);
+  border-radius: 50%;
+
+  transition: box-shadow 150ms ease, transform 120ms ease, width 120ms ease,
+    height 120ms ease, background-color 120ms ease;
+}
+
+/* Hover bloom */
+.tSliderThumb:hover {
+  box-shadow: 0 0 0 9px color-mix(in srgb, var(--accent-9));
+}
+
+.tSlider:hover .tSliderTrack,
+.tSlider:hover .tSliderRange,
+.tSlider:hover .tSliderThumb {
+  filter: brightness(0.96);
+  cursor: grab;
+}
+
+.tSlider:active .tSliderTrack,
+.tSlider:active .tSliderRange,
+.tSlider:active .tSliderThumb {
+  cursor: grabbing;
+}
+
+.tSliderThumb:active {
+  outline: none;
+  transform: scale(0.9);
+}

@@ -1,7 +1,8 @@
-import { emitButtonEvent } from "../utilities/juceBridge.js";
-import { Checkbox, Flex, Text } from "@radix-ui/themes";
+import { emitButtonEvent } from "../../utilities/juceBridge.js";
+import { Checkbox, Text } from "@radix-ui/themes";
+import "./TCheckbox.css";
 
-export default function TCheckBox({
+export default function TCheckbox({
   label,
   id,
   size = 2,
@@ -10,8 +11,9 @@ export default function TCheckBox({
 }) {
   return (
     <div>
-      <Text as="label" weight={weight} size={size}>
+      <Text className="tLabel" as="label" weight={weight} size={size}>
         <Checkbox
+          className="checkBox"
           size={size}
           variant={variant}
           onClick={() => {

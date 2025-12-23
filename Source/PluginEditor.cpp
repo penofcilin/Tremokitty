@@ -208,6 +208,7 @@ namespace kitty_editor
         //If it's a togglebutton easy as shit, just store the inverse of the current parameter
         if (isCheckBox) {
             audioProcessor.apvts.getRawParameterValue(buttonID)->store(!audioProcessor.apvts.getRawParameterValue(buttonID)->load());
+            DBG("Toggled " + buttonID + " new value: " + juce::String(audioProcessor.apvts.getRawParameterValue(buttonID)->load()));
         }
 
         //todo: write explicit handlers for each unique button

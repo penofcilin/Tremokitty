@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { emitDropdownEvent } from "../utilities/juceBridge.js";
-import { DropdownMenu, Button, Heading } from "@radix-ui/themes";
+import { emitDropdownEvent } from "../../utilities/juceBridge.js";
+import { DropdownMenu, Button } from "@radix-ui/themes";
+import "./TDropdown.css";
 
 export default function TDropdown({
   id,
@@ -13,9 +14,9 @@ export default function TDropdown({
 
   return (
     <div>
-      <DropdownMenu.Root>
+      <DropdownMenu.Root className="dropdownRoot">
         <DropdownMenu.Trigger>
-          <Button variant="soft">
+          <Button className="triggerButton" variant="soft">
             {value}
             <DropdownMenu.TriggerIcon />
           </Button>
@@ -24,6 +25,7 @@ export default function TDropdown({
         <DropdownMenu.Content size={size} variant={variant}>
           {options.map((choice, index) => (
             <DropdownMenu.Item
+              className="dropdownItem"
               key={choice}
               onSelect={() => {
                 setValue(choice);

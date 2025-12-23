@@ -1,8 +1,8 @@
 // src/components/Slider.jsx
 import { useState } from "react";
-import { emitSliderEvent } from "../utilities/juceBridge.js";
-import { Slider } from "@radix-ui/themes";
-import "../styles/slider.css";
+import { emitSliderEvent } from "../../utilities/juceBridge.js";
+import * as Slider from "@radix-ui/react-slider";
+import "./tSlider.css";
 
 export default function TSlider({
   id, // ParameterID.X
@@ -10,8 +10,6 @@ export default function TSlider({
   max = 1,
   step = 0.01,
   defaultValue = 0.5,
-  size = 3,
-  variant = "soft",
 }) {
   const [value, setValue] = useState([defaultValue]);
 
@@ -21,15 +19,18 @@ export default function TSlider({
   };
 
   return (
-    <Slider
+    <Slider.Root
+      className="tSlider"
       value={value}
       min={min}
       max={max}
       step={step}
-      size={size}
-      variant={variant}
       onValueChange={handleChange}
-      className="tSlider"
-    />
+    >
+      <Slider.Track className="tSliderTrack">
+        <Slider.Range className="tSliderRange" />
+      </Slider.Track>
+      <Slider.Thumb className="tSliderThumb" />
+    </Slider.Root>
   );
 }
