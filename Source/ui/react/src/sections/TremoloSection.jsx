@@ -10,8 +10,8 @@ import {
   TToggleGroup,
 } from "../components";
 
-export default function TremoloSection(data) {
-  const presets = data.data.Presets[0];
+export default function TremoloSection({ data, style }) {
+  const presets = data.Presets[0];
   const fieldFormat = [
     {
       name: "PresetName", // REQUIRED (form key)
@@ -36,7 +36,7 @@ export default function TremoloSection(data) {
 
   return (
     <div>
-      <Flex direction="column" gap="3" width="250px">
+      <Flex direction="column" width="250px" style={style}>
         <Box
           p="2"
           display="inline-block"

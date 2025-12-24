@@ -32,4 +32,17 @@
 
   /* Typography */
   --font-sans: "arial";
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-radix-theme] {
+  background: black;
+}
+
+body {
+  margin: 0;
 }

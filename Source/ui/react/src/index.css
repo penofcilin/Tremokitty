@@ -1,6 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/*this is the old index.css file. We're currently using styles/theme.css for our main css*/
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import TremoloSection from "./sections/TremoloSection.jsx";
-import { Theme, ThemePanel } from "@radix-ui/themes";
+import { TremoloSection, HeaderSection } from "./sections";
+import { Flex, Theme, ThemePanel } from "@radix-ui/themes";
 import "./styles/fonts.css";
 
 //Load initlization data from juce
@@ -16,10 +16,18 @@ function App() {
       radius="full"
       fontFamily="sans"
     >
-      <div>
-        <TremoloSection data={data} />
-      </div>
-      <ThemePanel />
+      <Flex
+        direction="column"
+        style={{
+          margin: 0,
+          padding: 0,
+          width: "100vw",
+          height: "100vh",
+        }}
+      >
+        <HeaderSection />
+        <TremoloSection data={data} style={{ marginTop: "5px" }} />
+      </Flex>
     </Theme>
   );
 }
