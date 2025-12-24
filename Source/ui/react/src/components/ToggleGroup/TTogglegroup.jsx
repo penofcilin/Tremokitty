@@ -8,6 +8,7 @@ export default function TToggleGroup({
   options = [],
   ariaLabel = "Toggle group",
   onChange,
+  vertical = false,
 }) {
   const handleChange = (newValue) => {
     if (newValue == null) return; // prevent deselection
@@ -28,6 +29,7 @@ export default function TToggleGroup({
       value={value}
       onValueChange={handleChange}
       aria-label={ariaLabel}
+      orientation={"vertical"}
     >
       {options.map((opt) => (
         <ToggleGroup.Item

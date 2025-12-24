@@ -72,6 +72,7 @@ export default function TremoloSection(data) {
             id={ParameterID.TREMWAVE}
             value={waveType}
             onChange={setWaveType}
+            vertical={true}
             options={[
               {
                 value: "Sine",
