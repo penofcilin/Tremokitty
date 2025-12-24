@@ -1,27 +1,32 @@
+import * as Checkbox from "@radix-ui/react-checkbox";
+import { CheckIcon } from "@radix-ui/react-icons";
 import { emitButtonEvent } from "../../utilities/juceBridge.js";
-import { Checkbox, Text } from "@radix-ui/themes";
 import "./TCheckbox.css";
 
 export default function TCheckbox({
   label,
   id,
-  size = 2,
-  variant = "surface",
+  icon,
+  size = 2, // you can map this to CSS if you want
   weight = "medium",
 }) {
   return (
-    <div>
-      <Text className="tLabel" as="label" weight={weight} size={size}>
-        <Checkbox
-          className="checkBox"
-          size={size}
-          variant={variant}
-          onClick={() => {
-            emitButtonEvent(id, 1);
+    <div className="tCheckboxWrapper">
+      <label className="tCheckboxLabel">
+        <Checkbox.Root
+          className="tCheckboxRoot"
+          id={id}
+          onCheckedChange={(checked) => {
+            emitButtonEvent(id, checked ? 1 : 0);
           }}
-        ></Checkbox>
-        {label}
-      </Text>
+        >
+          <Checkbox.Indicator className="tCheckboxIndicator">
+            <CheckIcon />
+          </Checkbox.Indicator>
+        </Checkbox.Root>
+
+        <span className="tCheckboxText">{label}</span>
+      </label>
     </div>
   );
 }

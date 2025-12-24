@@ -1,16 +1,91 @@
-.checkBox,
-.tLabel {
+/* Wrapper */
+.tCheckboxWrapper {
+  display: inline-flex;
+}
+
+/* Label wraps checkbox + text so clicking text toggles */
+.tCheckboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
+  user-select: none;
+  font-weight: bold;
 }
-.checkBox:hover {
-  filter: brightness(0.92);
+
+/* Checkbox box */
+.tCheckboxRoot {
+  width: 19px;
+  height: 19px;
+  border-radius: var(--radius-2);
+  background-color: var(--gray-1);
+  border: 1px solid var(--gray-7);
+  margin-top: 5px;
+  margin-right: -5px;
+
+  transition: background-color 150ms ease, border-color 150ms ease;
 }
-.checkBox:active {
+
+/* Hover */
+.tCheckboxRoot:hover {
+  background-color: var(--gray-2);
+  border-color: var(--gray-8);
+  filter: brightness(0.95);
+}
+/* Focus ring (keyboard accessibility) */
+.tCheckboxRoot:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-7);
+}
+/* Checked state */
+.tCheckboxRoot[data-state="checked"] {
+  width: 19px;
+  height: 19px;
+  background-color: var(--accent-primary);
+  border-color: var(--accent-outline);
+}
+
+.tCheckboxRoot:active {
   transform: scale(0.9);
   filter: brightness(0.8);
 }
 
-.tLabel:active {
+/* Indicator (checkmark container) */
+.tCheckboxIndicator {
+  color: var(--accent-contrast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tCheckboxIndicator:active {
   transform: scale(0.9);
-  filter: brightness(0.8);
+}
+
+/* Smooth checkmark animation */
+.tCheckboxIndicator svg {
+  width: 14px;
+  height: 14px;
+  animation: checkbox-pop 120ms ease-out;
+}
+
+/* Label text */
+.tCheckboxText {
+  color: var(--gray-12);
+  line-height: 1;
+  margin-top: 5px;
+  margin-right: 10px; /*<-get rid of this later, used for 
+  markup*/
+}
+
+/* Subtle pop animation like Radix demo */
+@keyframes checkbox-pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
