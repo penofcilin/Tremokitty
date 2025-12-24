@@ -35,6 +35,8 @@ namespace kitty_editor {
         void sliderChanged(juce::var info);
         void dropdownCommit(juce::var info);
         void buttonClicked(juce::var info);
+        void formSubmitted(juce::var info);
+        void toggleGroupChanged(juce::var info);
 
         void testNativeFunction(const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion);
 

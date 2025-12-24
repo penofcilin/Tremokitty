@@ -1,6 +1,14 @@
-import { ParameterID, ElementID } from "../utilities/juceBridge.js";
+import { useState } from "react";
+import { ParameterID, WaveTypes } from "../utilities/juceBridge.js";
+import { ReloadIcon, PersonIcon, SunIcon } from "@radix-ui/react-icons";
 import { Box, Flex, Heading } from "@radix-ui/themes";
-import { TSlider, TDropdown, TButton, TCheckbox, TDialog } from "../components";
+import {
+  TSlider,
+  TDropdown,
+  TCheckbox,
+  TDialog,
+  TToggleGroup,
+} from "../components";
 
 export default function TremoloSection(data) {
   const presets = data.data.Presets[0];
@@ -14,7 +22,6 @@ export default function TremoloSection(data) {
       description: "Shown publicly",
       required: false,
     },
-
     {
       name: "Category", // REQUIRED (form key)
       label: "Category", // REQUIRED (visible label)
@@ -25,17 +32,19 @@ export default function TremoloSection(data) {
       required: false,
     },
   ];
+  const [waveType, setWaveType] = useState(WaveTypes[0]);
+
   return (
     <div>
-      <Flex direction="column" gap="3">
+      <Flex direction="column" gap="3" width="250px">
         <Box
           p="2"
-          width="250px"
-          height="235px"
-          style={{ backgroundColor: "pink" }}
+          display="inline-block"
+          style={{ backgroundColor: "pink", borderRadius: "14px" }}
         >
           <Heading>Tremolo Section</Heading>
           <TDialog
+            id="savePresetForm"
             header="Save Preset"
             description=""
             fields={fieldFormat}
@@ -47,12 +56,40 @@ export default function TremoloSection(data) {
             min={0}
             max={20}
             step={0.011}
-            defaultValue={0.5}
+            defaultValue={10}
             size="3"
             variant="soft"
+            tooltip={{
+              enabled: true,
+            }}
           ></TSlider>
 
           <Heading>Presets</Heading>
+          <TDropdown id="presetDropdown" options={presets}></TDropdown>
+
+          <Heading>Wave Type</Heading>
+          <TToggleGroup
+            id={ParameterID.TREMWAVE}
+            value={waveType}
+            onChange={setWaveType}
+            options={[
+              {
+                value: "Sine",
+                label: "Sine",
+                icon: <ReloadIcon></ReloadIcon>,
+              },
+              {
+                value: "Saw",
+                label: "Saw",
+                icon: <PersonIcon></PersonIcon>,
+              },
+              {
+                value: "Square",
+                label: "Square",
+                icon: <SunIcon></SunIcon>,
+              },
+            ]}
+          ></TToggleGroup>
 
           <TCheckbox label="Bypass Tremolo" id={ParameterID.TREMBP}></TCheckbox>
         </Box>

@@ -46,19 +46,25 @@ input {
 /* Title */
 .DialogTitle {
   margin: 0;
-  font-weight: 500;
-  color: var(--mauve-12);
-  font-size: 17px;
+  font-weight: bold;
+  font-size: 20px;
   font-family: var(--font-sans);
-  font-size: var(--font-size-5);
   line-height: var(--line-height-5);
-  font-weight: var(--font-weight-medium);
-  color: var(--mauve-12);
+  padding: 5px;
+}
+
+.HeaderContainer {
+  background-color: var(--accent-primary);
+  display: inline-flex;
+  padding: 5px;
+  margin-bottom: 10px;
+  border-radius: 9px;
 }
 
 /* Description */
 .DialogDescription {
   margin: 10px 0 20px;
+
   color: var(--mauve-11);
   font-size: 15px;
   line-height: 1.5;
@@ -79,6 +85,7 @@ input {
 /* Label */
 .Label {
   font-size: 15px;
+  font-weight: bold;
   color: var(--bg-black);
   width: 90px;
   text-align: right;
@@ -98,7 +105,7 @@ input {
 }
 
 .Input:focus {
-  box-shadow: 0 0 0 2px var(--bg-secondary);
+  box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
 /* Buttons */
@@ -118,13 +125,20 @@ input {
   color: var(--text-inverted);
 }
 
-.Button:hover {
+.Button:active {
+  transform: scale(0.9);
+  filter: brightness(0.5);
+}
+
+.Button:hover:not(:active) {
   filter: brightness(0.8);
 }
 
 .Button.save {
-  background-color: var(--bg-secondary);
+  background-color: var(--accent-primary);
   color: var(--bg-black);
+  font-weight: bold;
+  font-family: var(--font-sans);
 }
 
 .Button.save:hover {
@@ -144,11 +158,11 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--violet-11);
+  color: var(--accent-primary);
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: var(--mauve-3);
+  background-color: var(--bg-primary);
   cursor: pointer;
 }
 

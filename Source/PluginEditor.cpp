@@ -81,6 +81,14 @@ namespace kitty_editor
                                     [this](juce::var info) {
                                         buttonClicked(info);
                                     })
+                .withEventListener("FormSubmitted",
+                                    [this](juce::var info) {
+                                        formSubmitted(info);
+                                   })
+                .withEventListener("TogglegroupChanged",
+                                    [this](juce::var info) {
+                                        toggleGroupChanged(info);
+                                    })
                             )
     {
         juce::ignoreUnused(audioProcessor);
@@ -212,8 +220,38 @@ namespace kitty_editor
         }
 
         //todo: write explicit handlers for each unique button
-        if (buttonID == "SAVEPRESETBUTTON")
-            DBG("Opening preset saving thingamabob");
+    }
+
+    void TremoKittyAudioProcessorEditor::formSubmitted(juce::var info)
+    {
+        const auto& formID = info.getProperty("formID", "null").toString();
+        juce::var dataVar = info.getProperty("data", "null");
+        auto* dataObj = dataVar.getDynamicObject();
+
+
+        if (formID == "savePresetForm") {
+            for (const auto& entry : dataObj->getProperties())
+            {
+                juce::String key = entry.name.toString();
+                juce::String value = entry.value.toString();
+
+                DBG(key + " = " + value);
+            }
+
+        }
+            
+    }
+
+    void TremoKittyAudioProcessorEditor::toggleGroupChanged(juce::var info)
+    {
+        const auto& groupID = info.getProperty("togglegroupID", "null").toString();
+        juce::var newVal = info.getProperty("newValue", "null");
+        DBG("Togled: " + groupID + juce::String(newVal.toString()));
+
+
+        //Store value. In theory, pass an integer index reflecting choice. For instance click on sine in react -> 0 is passed, apvts gets the tremwave parameter, and sets it to the same index, which should be the same. Later on may need to change this, if miscellaneous togglegroups are incorporated (misc meaning the group does not reflect the state of some parameter).
+        audioProcessor.apvts.getRawParameterValue(groupID)->store(newVal);
+
     }
 
     //DISGUSTING, ABSOLUTELY DISGUSTING, might have to do this for the rest of the modules as well if its' still broken

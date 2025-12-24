@@ -85,3 +85,17 @@ export function emitButtonEvent(buttonID, isCheckBox) {
     isCheckBox: isCheckBox,
   });
 }
+
+export function emitFormEvent(formID, data) {
+  window.__JUCE__.backend.emitEvent("FormSubmitted", {
+    formID: formID,
+    data: data,
+  });
+}
+
+export function emitTogglegroupEvent(togglegroupID, newValue) {
+  window.__JUCE__.backend.emitEvent("TogglegroupChanged", {
+    togglegroupID: togglegroupID,
+    newValue: newValue,
+  });
+}

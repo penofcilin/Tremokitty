@@ -1,0 +1,11 @@
+.TooltipContent {
+  background-color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 15px;
+  font-family: var(--font-sans);
+}
+
+.TooltipArrow {
+  fill: white;
+}

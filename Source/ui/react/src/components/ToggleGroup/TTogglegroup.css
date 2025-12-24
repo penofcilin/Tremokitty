@@ -1,0 +1,82 @@
+/* TToggleGroup.css */
+
+/* reset (match Radix demo intent, but scoped) */
+.ToggleGroup,
+.ToggleGroupItem {
+  all: unset;
+  box-sizing: border-box;
+}
+
+/* Root */
+.ToggleGroup {
+  display: inline-flex;
+  background-color: var(--bg-secondary);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 1px;
+
+  box-shadow: 0 2px 10px var(--bg-dark);
+}
+
+/* Items */
+.ToggleGroupItem {
+  height: 34px;
+  width: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  line-height: 1;
+
+  color: var(--text-secondary);
+  background-color: var(--bg-primary);
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: background-color 120ms ease, color 120ms ease, transform 80ms ease;
+}
+
+/* Rounded ends (API behavior) */
+.ToggleGroupItem:first-child {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.ToggleGroupItem:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+/* Hover */
+.ToggleGroupItem:hover {
+  background-color: var(--accent-hover);
+  color: var(--text-inverted);
+}
+
+/* Active / selected */
+.ToggleGroupItem[data-state="on"] {
+  background-color: var(--accent-primary);
+  color: var(--text-inverted);
+}
+
+/* Pressed */
+.ToggleGroupItem:active {
+  transform: scale(0.95);
+}
+
+/* Focus (keyboard accessibility) */
+.ToggleGroupItem:focus-visible {
+  position: relative;
+  box-shadow: 0 0 0 2px var(--accent-active);
+}
+
+/* Disabled */
+.ToggleGroupItem:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background-color: var(--control-disabled);
+  color: var(--text-muted);
+}

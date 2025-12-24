@@ -12,7 +12,7 @@
   position: relative;
   flex-grow: 1;
   height: 10px;
-  background: var(--gray-6);
+  background: var(--bg-white);
   border-radius: var(--radius-4);
 }
 
@@ -24,7 +24,7 @@
 .tSliderRange {
   position: absolute;
   height: 100%;
-  background: var(--accent-9);
+  background: var(--accent-primary);
   border-radius: inherit;
 }
 
@@ -33,7 +33,7 @@
   display: block;
   width: 16px;
   height: 16px;
-  background: var(--accent-11);
+  background: var(--accent-primary);
   border-radius: 50%;
 
   transition: box-shadow 150ms ease, transform 120ms ease, width 120ms ease,

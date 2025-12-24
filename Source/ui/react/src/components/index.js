@@ -1,5 +1,7 @@
-export { default as TSlider } from "./Slider/tSlider";
-export { default as TDropdown } from "./Dropdown/tDropdown";
-export { default as TButton } from "./Button/tButton";
-export { default as TCheckbox } from "./Checkbox/tCheckbox";
-export { default as TDialog } from "./Dialog/tDialog";
+export { default as TSlider } from "./Slider/TSlider";
+export { default as TDropdown } from "./Dropdown/TDropdown";
+export { default as TButton } from "./Button/TButton";
+export { default as TCheckbox } from "./Checkbox/TCheckbox";
+export { default as TDialog } from "./Dialog/TDialog";
+export { default as TTooltip } from "./Tooltip/TTooltip";
+export { default as TToggleGroup } from "./ToggleGroup/TTogglegroup";

@@ -1,11 +1,19 @@
 .dropdownRoot {
   cursor: pointer;
+  background: var(--accent-primary);
 }
 
 .triggerButton {
   cursor: pointer;
+  background: var(--accent-primary);
+  color: white;
+  border-radius: 5px;
 }
 
 .dropdownItem {
   cursor: pointer;
+}
+.dropdownItem:hover {
+  cursor: pointer;
+  background-color: var(--accent-primary);
 }

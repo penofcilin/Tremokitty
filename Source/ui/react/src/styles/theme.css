@@ -4,11 +4,13 @@
   --bg-secondary: #e7b7c2; /* warm rose */
   --bg-dark: #24161b; /* deep wine / near-black */
   --bg-black: #000000;
+  --bg-white: #ffffff;
 
   /* Accents */
   --accent-primary: #d24a6a; /* strong pink-red */
   --accent-hover: #e25f7e; /* brighter hover */
   --accent-active: #b83c5a; /* pressed state */
+  --accent-grey: #e4e4e4;
 
   /* Controls */
   --control-track: #f0c6d1; /* soft pink track */
@@ -28,5 +30,5 @@
   --error: #e04f5f; /* vivid coral-red */
 
   /* Typography */
-  --font-sans: "murecho";
+  --font-sans: "arial";
 }

@@ -1,25 +1,33 @@
+import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Button } from "@radix-ui/themes";
+import { emitFormEvent } from "../../utilities/juceBridge";
+import { Box, Button } from "@radix-ui/themes";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import "./tDialog.css";
 
 export default function TDialog({
+  id,
   header,
   description,
   buttonText,
   fields = [],
-  onSubmit,
 }) {
+  const [open, setOpen] = useState(false);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!onSubmit) return;
 
-    const data = new FormData(e.currentTarget);
-    onSubmit(Object.fromEntries(data.entries()));
+    const formData = new FormData(e.currentTarget);
+    const values = Object.fromEntries(formData.entries());
+
+    emitFormEvent(id, values);
+
+    // close dialog AFTER submit logic
+    setOpen(false);
   };
 
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <Button className="Button">{buttonText}</Button>
       </Dialog.Trigger>
@@ -27,12 +35,19 @@ export default function TDialog({
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay" />
 
-        <Dialog.Content className="DialogContent">
-          <Dialog.Title className="DialogTitle">{header}</Dialog.Title>
+        <Dialog.Content
+          className="DialogContent"
+          aria-describedby={description ? undefined : undefined}
+        >
+          <Box className="HeaderContainer">
+            <Dialog.Title className="DialogTitle">{header}</Dialog.Title>
+          </Box>
 
-          <Dialog.Description className="DialogDescription">
-            {description}
-          </Dialog.Description>
+          {description && (
+            <Dialog.Description className="DialogDescription">
+              {description}
+            </Dialog.Description>
+          )}
 
           <form onSubmit={handleSubmit}>
             {fields.map((field) => (
@@ -58,11 +73,9 @@ export default function TDialog({
                 justifyContent: "flex-end",
               }}
             >
-              <Dialog.Close asChild>
-                <button className="Button save" type="submit">
-                  Save
-                </button>
-              </Dialog.Close>
+              <button className="Button save" type="submit">
+                Save
+              </button>
             </div>
           </form>
 
