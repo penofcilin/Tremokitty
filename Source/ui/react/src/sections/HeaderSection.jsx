@@ -20,6 +20,7 @@ export default function HeaderSection() {
 
           color: "white",
           fontFamily: "var(--font-sans)",
+          fontWeight: "bold",
         }}
       >
         Tremokitty!
