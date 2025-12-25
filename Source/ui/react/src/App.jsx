@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TremoloSection, HeaderSection } from "./sections";
+import { TremoloSection, HeaderSection, PresetPanel } from "./sections";
 import { Flex, Theme, ThemePanel } from "@radix-ui/themes";
 import "./styles/fonts.css";
 
@@ -26,7 +26,8 @@ function App() {
         }}
       >
         <HeaderSection />
-        <TremoloSection data={data} style={{ marginTop: "5px" }} />
+        <PresetPanel style={{height: "50px", padding: "0 8px"}}></PresetPanel>
+        <TremoloSection data={data} style={{ marginTop: "0px", marginLeft: "5px", }} />
       </Flex>
     </Theme>
   );
