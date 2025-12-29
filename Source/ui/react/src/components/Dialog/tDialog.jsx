@@ -9,8 +9,12 @@ export default function TDialog({
   id,
   header,
   description,
-  buttonText,
   fields = [],
+  buttonStyle,
+
+  // NEW
+  icon = null,
+  children,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -21,24 +25,23 @@ export default function TDialog({
     const values = Object.fromEntries(formData.entries());
 
     emitFormEvent(id, values);
-
-    // close dialog AFTER submit logic
     setOpen(false);
   };
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
+      {/* Trigger */}
       <Dialog.Trigger asChild>
-        <Button className="Button">{buttonText}</Button>
+        <Button style={buttonStyle} className="Button">
+          {icon && <span className="tDialogIcon">{icon}</span>}
+          {children && <span className="tDialogText">{children}</span>}
+        </Button>
       </Dialog.Trigger>
 
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay" />
 
-        <Dialog.Content
-          className="DialogContent"
-          aria-describedby={description ? undefined : undefined}
-        >
+        <Dialog.Content className="DialogContent">
           <Box className="HeaderContainer">
             <Dialog.Title className="DialogTitle">{header}</Dialog.Title>
           </Box>

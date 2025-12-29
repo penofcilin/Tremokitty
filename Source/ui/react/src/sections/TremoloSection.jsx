@@ -55,7 +55,7 @@ export default function TremoloSection({ data, style }) {
             id={ParameterID.TREMRATE}
             min={0}
             max={20}
-            step={0.011}
+            step={0.1}
             defaultValue={10}
             size="3"
             variant="soft"
@@ -65,7 +65,6 @@ export default function TremoloSection({ data, style }) {
           ></TSlider>
 
           <Heading>Presets</Heading>
-          <TDropdown id="presetDropdown" options={presets}></TDropdown>
 
           <Heading>Wave Type</Heading>
           <TToggleGroup

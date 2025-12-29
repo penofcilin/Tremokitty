@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { TremoloSection, HeaderSection, PresetPanel } from "./sections";
-import { Flex, Theme, ThemePanel } from "@radix-ui/themes";
+import { Flex, Theme } from "@radix-ui/themes";
+import { PresetsContext } from "./utilities/PresetsContext";
 import "./styles/fonts.css";
 
 //Load initlization data from juce
 const data = window.__JUCE__.initialisationData;
+
 function App() {
   //document.addEventListener("contextmenu", (e) => e.preventDefault()); //Prevent context menu from opening on right click
   return (
@@ -25,9 +27,13 @@ function App() {
           height: "100vh",
         }}
       >
-        <HeaderSection />
-        <PresetPanel style={{height: "50px", padding: "0 8px"}}></PresetPanel>
-        <TremoloSection data={data} style={{ marginTop: "0px", marginLeft: "5px", }} />
+        <PresetsContext.Provider value={data.Presets[0]}>
+          <HeaderSection presets={data.Presets[0]} />
+        </PresetsContext.Provider>
+        <TremoloSection
+          data={data}
+          style={{ marginTop: "0px", marginLeft: "5px" }}
+        />
       </Flex>
     </Theme>
   );

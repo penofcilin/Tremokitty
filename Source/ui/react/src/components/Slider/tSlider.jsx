@@ -10,7 +10,7 @@ export default function TSlider({
   id, // ParameterID.X
   min = 0,
   max = 1,
-  step = 0.01,
+  step = 0.1,
   defaultValue = 0.5,
   tooltip, // optional object
 }) {
@@ -26,7 +26,7 @@ export default function TSlider({
   const tooltipEnabled = Boolean(tooltip);
   const formatValue = tooltip?.format ?? ((v) => v.toString());
 
-  const tooltipContent = formatValue(value[0]);
+  const tooltipContent = formatValue(value[0].toFixed(2)); //Format the tooltip such that it displays rounded to two decimal places
 
   return (
     <Tooltip.Provider delayDuration={tooltip?.delay ?? 15}>

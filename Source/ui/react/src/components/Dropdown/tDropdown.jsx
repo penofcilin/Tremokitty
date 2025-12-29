@@ -9,13 +9,14 @@ export default function TDropdown({
   defaultValue = options[0],
   variant = "solid",
   size = 2,
+  buttonStyle,
 }) {
   const [value, setValue] = useState(defaultValue);
 
   return (
     <div>
       <DropdownMenu.Root className="dropdownRoot">
-        <DropdownMenu.Trigger>
+        <DropdownMenu.Trigger style={buttonStyle}>
           <Button className="triggerButton" variant="soft">
             {value}
             <DropdownMenu.TriggerIcon />

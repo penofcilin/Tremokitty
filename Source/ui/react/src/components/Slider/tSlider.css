@@ -62,3 +62,7 @@
   outline: none;
   transform: scale(0.9);
 }
+
+.TooltipContent {
+  font-weight: bold;
+}

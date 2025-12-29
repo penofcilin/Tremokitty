@@ -123,6 +123,8 @@ input {
   cursor: pointer;
   background: var(--accent-primary);
   color: var(--text-inverted);
+
+  transition: transform 120ms ease-out, filter 120ms ease-out;
 }
 
 .Button:active {
@@ -132,6 +134,7 @@ input {
 
 .Button:hover:not(:active) {
   filter: brightness(0.8);
+  transform: scale(0.95);
 }
 
 .Button.save {
@@ -147,6 +150,10 @@ input {
 
 .Button.save:active {
   background-color: var(--accent-active);
+}
+
+.tDialogText {
+  font-family: var(--font-sans);
 }
 
 /* Close (X) button */
