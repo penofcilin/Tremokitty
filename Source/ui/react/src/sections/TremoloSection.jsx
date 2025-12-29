@@ -1,20 +1,12 @@
 import { useState } from "react";
 import { ParameterID, WaveTypes } from "../utilities/juceBridge.js";
-import { ReloadIcon, PersonIcon, SunIcon } from "@radix-ui/react-icons";
-import NegativeCosineWaveIcon from "../assets/icons/NegativeCosineWaveIcon.svg?react";
-import SineWaveIcon from "../assets/icons/SineWaveIcon.svg?react";
-import CosineWaveIcon from "../assets/icons/CosineWaveIcon.svg?react";
-import SawWaveIcon from "../assets/icons/SawWaveIcon.svg?react";
-import SawDownWaveIcon from "../assets/icons/SawDownWaveIcon.svg?react";
-import SquareWaveIcon from "../assets/icons/SquareWaveIcon.svg?react";
-import InverseSquareWaveIcon from "../assets/icons/InverseSquareWaveIcon.svg?react";
-import { Box, Flex, Heading } from "@radix-ui/themes";
+import { Box, Flex, Heading, Separator } from "@radix-ui/themes";
 import {
   TSlider,
   TDropdown,
   TCheckbox,
-  TDialog,
   TToggleGroup,
+  WaveSelector,
 } from "../components";
 
 export default function TremoloSection({ data, style }) {
@@ -47,16 +39,51 @@ export default function TremoloSection({ data, style }) {
         <Box
           p="2"
           display="inline-block"
-          style={{ backgroundColor: "pink", borderRadius: "14px" }}
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            borderRadius: "14px",
+          }}
         >
-          <Heading>Tremolo Section</Heading>
-          <TDialog
-            id="savePresetForm"
-            header="Save Preset"
-            description=""
-            fields={fieldFormat}
-            buttonText="Save Preset"
-          ></TDialog>
+          <div
+            style={{
+              backgroundColor: "var(--bg-darkish)",
+              borderRadius: "14px 14px 0 0", // rounded top, flat bottom
+              padding: "0px 0px",
+              height: "30px",
+            }}
+          >
+            <Flex direction="row" align="center">
+              <Separator
+                size="4"
+                my="2"
+                style={{
+                  width: "60px",
+                  height: "2px",
+                  backgroundColor: "white",
+                  marginLeft: "7px",
+                  marginRight: "2px",
+                  transform: "translateY(2px)",
+                  borderRadius: "50px",
+                }}
+              />
+
+              <Heading style={{ alignSelf: "center", color: "white" }}>
+                Tremolo
+              </Heading>
+
+              <Separator
+                size="4"
+                my="2"
+                style={{
+                  width: "60px",
+                  height: "2px",
+                  backgroundColor: "white",
+                  transform: "translateY(2px)",
+                  marginLeft: "3px",
+                }}
+              />
+            </Flex>
+          </div>
           <Heading>Tremolo Rate</Heading>
           <TSlider
             id={ParameterID.TREMRATE}
@@ -74,93 +101,12 @@ export default function TremoloSection({ data, style }) {
           <Heading>Presets</Heading>
 
           <Heading>Wave Type</Heading>
-          <TToggleGroup
+
+          <WaveSelector
             id={ParameterID.TREMWAVE}
             value={waveType}
             onChange={setWaveType}
-            vertical={true}
-            options={[
-              {
-                value: "Sine",
-                label: "Sine",
-                icon: (
-                  <SineWaveIcon
-                    width={18}
-                    height={18}
-                    color="white"
-                    strokeWidth={1}
-                    style={{ color: "white" }}
-                  ></SineWaveIcon>
-                ),
-              },
-              {
-                value: "Cosine",
-                label: "Cosine",
-                icon: (
-                  <CosineWaveIcon
-                    width={18}
-                    height={18}
-                    color="white"
-                  ></CosineWaveIcon>
-                ),
-              },
-              {
-                value: "NegativeCosine",
-                label: "Negative Cosine",
-                icon: (
-                  <NegativeCosineWaveIcon
-                    width={18}
-                    height={18}
-                    color="white"
-                  ></NegativeCosineWaveIcon>
-                ),
-              },
-              {
-                value: "Saw",
-                label: "Saw",
-                icon: (
-                  <SawWaveIcon
-                    width={20}
-                    height={20}
-                    color="white"
-                  ></SawWaveIcon>
-                ),
-              },
-              {
-                value: "SawDown",
-                label: "Saw Down",
-                icon: (
-                  <SawDownWaveIcon
-                    width={20}
-                    height={20}
-                    color="white"
-                  ></SawDownWaveIcon>
-                ),
-              },
-              {
-                value: "Square",
-                label: "Square",
-                icon: (
-                  <SquareWaveIcon
-                    width={18}
-                    height={18}
-                    color="white"
-                  ></SquareWaveIcon>
-                ),
-              },
-              {
-                value: "InverseSquare",
-                label: "Inverse Square",
-                icon: (
-                  <InverseSquareWaveIcon
-                    width={18}
-                    height={18}
-                    color="white"
-                  ></InverseSquareWaveIcon>
-                ),
-              },
-            ]}
-          ></TToggleGroup>
+          ></WaveSelector>
 
           <TCheckbox label="Bypass Tremolo" id={ParameterID.TREMBP}></TCheckbox>
         </Box>
