@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { ParameterID, WaveTypes } from "../utilities/juceBridge.js";
 import { ReloadIcon, PersonIcon, SunIcon } from "@radix-ui/react-icons";
-import TriangleWaveIcon from "../assets/icons/triangleWaveIconThick.svg?react";
+import NegativeCosineWaveIcon from "../assets/icons/NegativeCosineWaveIcon.svg?react";
+import SineWaveIcon from "../assets/icons/SineWaveIcon.svg?react";
+import CosineWaveIcon from "../assets/icons/CosineWaveIcon.svg?react";
+import SawWaveIcon from "../assets/icons/SawWaveIcon.svg?react";
+import SawDownWaveIcon from "../assets/icons/SawDownWaveIcon.svg?react";
+import SquareWaveIcon from "../assets/icons/SquareWaveIcon.svg?react";
+import InverseSquareWaveIcon from "../assets/icons/InverseSquareWaveIcon.svg?react";
 import { Box, Flex, Heading } from "@radix-ui/themes";
 import {
   TSlider,
@@ -78,24 +84,80 @@ export default function TremoloSection({ data, style }) {
                 value: "Sine",
                 label: "Sine",
                 icon: (
-                  <TriangleWaveIcon
+                  <SineWaveIcon
                     width={18}
                     height={18}
                     color="white"
                     strokeWidth={1}
                     style={{ color: "white" }}
-                  ></TriangleWaveIcon>
+                  ></SineWaveIcon>
+                ),
+              },
+              {
+                value: "Cosine",
+                label: "Cosine",
+                icon: (
+                  <CosineWaveIcon
+                    width={18}
+                    height={18}
+                    color="white"
+                  ></CosineWaveIcon>
+                ),
+              },
+              {
+                value: "NegativeCosine",
+                label: "Negative Cosine",
+                icon: (
+                  <NegativeCosineWaveIcon
+                    width={18}
+                    height={18}
+                    color="white"
+                  ></NegativeCosineWaveIcon>
                 ),
               },
               {
                 value: "Saw",
                 label: "Saw",
-                icon: <PersonIcon></PersonIcon>,
+                icon: (
+                  <SawWaveIcon
+                    width={20}
+                    height={20}
+                    color="white"
+                  ></SawWaveIcon>
+                ),
+              },
+              {
+                value: "SawDown",
+                label: "Saw Down",
+                icon: (
+                  <SawDownWaveIcon
+                    width={20}
+                    height={20}
+                    color="white"
+                  ></SawDownWaveIcon>
+                ),
               },
               {
                 value: "Square",
                 label: "Square",
-                icon: <SunIcon></SunIcon>,
+                icon: (
+                  <SquareWaveIcon
+                    width={18}
+                    height={18}
+                    color="white"
+                  ></SquareWaveIcon>
+                ),
+              },
+              {
+                value: "InverseSquare",
+                label: "Inverse Square",
+                icon: (
+                  <InverseSquareWaveIcon
+                    width={18}
+                    height={18}
+                    color="white"
+                  ></InverseSquareWaveIcon>
+                ),
               },
             ]}
           ></TToggleGroup>
