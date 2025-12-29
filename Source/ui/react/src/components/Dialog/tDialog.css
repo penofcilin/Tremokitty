@@ -124,11 +124,11 @@ input {
   background: var(--accent-primary);
   color: var(--text-inverted);
 
-  transition: transform 120ms ease-out, filter 120ms ease-out;
+  transition: transform 40ms ease-out, filter 120ms ease-out;
 }
 
 .Button:active {
-  transform: scale(0.9);
+  transform: scale(0.8);
   filter: brightness(0.5);
 }
 

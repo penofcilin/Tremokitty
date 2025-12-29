@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ParameterID, WaveTypes } from "../utilities/juceBridge.js";
 import { ReloadIcon, PersonIcon, SunIcon } from "@radix-ui/react-icons";
+import TriangleWaveIcon from "../assets/icons/triangleWaveIconThick.svg?react";
 import { Box, Flex, Heading } from "@radix-ui/themes";
 import {
   TSlider,
@@ -76,7 +77,15 @@ export default function TremoloSection({ data, style }) {
               {
                 value: "Sine",
                 label: "Sine",
-                icon: <ReloadIcon></ReloadIcon>,
+                icon: (
+                  <TriangleWaveIcon
+                    width={18}
+                    height={18}
+                    color="white"
+                    strokeWidth={1}
+                    style={{ color: "white" }}
+                  ></TriangleWaveIcon>
+                ),
               },
               {
                 value: "Saw",
