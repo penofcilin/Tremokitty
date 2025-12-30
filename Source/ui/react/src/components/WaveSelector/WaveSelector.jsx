@@ -1,4 +1,3 @@
-import { emitTogglegroupEvent } from "../../utilities/juceBridge.js";
 import { TToggleGroup } from "../../components";
 import {
   SineWaveIcon,
@@ -15,10 +14,7 @@ export default function WaveSelector({ id, value, onChange }) {
     <TToggleGroup
       id={id}
       value={value}
-      onChange={(newValue) => {
-        emitTogglegroupEvent(id, newValue);
-        onChange(newValue);
-      }}
+      onChange={onChange}
       vertical
       options={[
         {

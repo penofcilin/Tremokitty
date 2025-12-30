@@ -4,32 +4,35 @@ import "./TToggleGroup.css";
 
 export default function TToggleGroup({
   id,
-  value, // MUST be a valid option value
+  value,
   options = [],
   ariaLabel = "Toggle group",
   onChange,
   vertical = false,
 }) {
+  // 🔑 GUARANTEE a valid value at all times
+  const safeValue = options.some((opt) => opt.value === value)
+    ? value
+    : options[0]?.value;
+
   const handleChange = (newValue) => {
-    if (newValue == null) return; // prevent deselection
+    // 🔑 Radix sends null when clicking the active item
+    if (newValue == null) return;
 
     const index = options.findIndex((opt) => opt.value === newValue);
+    if (index === -1) return;
 
-    if (index !== -1) {
-      emitTogglegroupEvent(id, index);
-    }
-
+    emitTogglegroupEvent(id, index);
     onChange?.(newValue);
   };
 
   return (
     <ToggleGroup.Root
-      className="ToggleGroup"
+      className={`ToggleGroup ${vertical ? "vertical" : ""}`}
       type="single"
-      value={value}
+      value={safeValue} // 🔒 never invalid
       onValueChange={handleChange}
       aria-label={ariaLabel}
-      orientation={"vertical"}
     >
       {options.map((opt) => (
         <ToggleGroup.Item

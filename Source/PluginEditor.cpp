@@ -218,6 +218,7 @@ namespace kitty_editor
             audioProcessor.apvts.getRawParameterValue(buttonID)->store(!audioProcessor.apvts.getRawParameterValue(buttonID)->load());
             DBG("Toggled " + buttonID + " new value: " + juce::String(audioProcessor.apvts.getRawParameterValue(buttonID)->load()));
         }
+        DBG("clicked " + buttonID);
 
         //todo: write explicit handlers for each unique button
     }

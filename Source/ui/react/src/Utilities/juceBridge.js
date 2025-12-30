@@ -63,6 +63,21 @@ export const WaveTypes = Object.freeze([
   "InverseSquare",
 ]);
 
+export const NoteTypes = Object.freeze([
+  "Whole",
+  "Half",
+  "Dotted Half",
+  "Quarter",
+  "Dotted Quarter",
+  "Triplet Quarter",
+  "Eighth",
+  "Dotted Eighth",
+  "Triplet Eighth",
+  "Sixteenth",
+  "Dotted Sixteenth",
+  "Triplet Sixteenth",
+]);
+
 //Passes a string to cpp, calls function "sliderChanged" within editor
 export function emitSliderEvent(sliderID, newValue) {
   window.__JUCE__.backend.emitEvent("SliderChanged", {

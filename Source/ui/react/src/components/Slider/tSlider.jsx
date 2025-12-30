@@ -12,6 +12,7 @@ export default function TSlider({
   max = 1,
   step = 0.1,
   defaultValue = 0.5,
+  orientation = "horizontal",
   tooltip, // optional object
 }) {
   const [value, setValue] = useState([defaultValue]);
@@ -33,7 +34,8 @@ export default function TSlider({
       <Tooltip.Root open={isHovering || isDragging}>
         <Tooltip.Trigger asChild>
           <Slider.Root
-            className="tSlider"
+            className={`tSlider ${orientation}`}
+            orientation={orientation}
             value={value}
             min={min}
             max={max}

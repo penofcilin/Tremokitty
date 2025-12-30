@@ -10,6 +10,7 @@ export default function TButton({
   radius = "medium",
   style,
   icon = null,
+  isToggle = 0,
   children,
 }) {
   return (
@@ -21,7 +22,7 @@ export default function TButton({
       radius={radius}
       onClick={() => {
         if (emitEvent) {
-          emitButtonEvent(id, 0);
+          emitButtonEvent(id, { isToggle });
         }
       }}
     >
