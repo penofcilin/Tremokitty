@@ -1,4 +1,5 @@
 export { default as TSlider } from "./Slider/TSlider";
+export { default as TKnob } from "./Knob/TKnob";
 export { default as TDropdown } from "./Dropdown/TDropdown";
 export { default as TButton } from "./Button/TButton";
 export { default as TCheckbox } from "./Checkbox/TCheckbox";

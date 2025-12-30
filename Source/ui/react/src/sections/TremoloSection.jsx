@@ -1,37 +1,15 @@
 import { useState } from "react";
-import { ParameterID, WaveTypes } from "../utilities/juceBridge.js";
-import { Box, Flex, Heading, Separator } from "@radix-ui/themes";
 import {
-  TSlider,
-  TDropdown,
-  TCheckbox,
-  TToggleGroup,
-  WaveSelector,
-} from "../components";
+  ParameterID,
+  WaveTypes,
+  emitButtonEvent,
+} from "../utilities/juceBridge.js";
+import { Box, Flex, Heading, Separator } from "@radix-ui/themes";
+import { TSlider, TKnob, WaveSelector } from "../components";
 
-export default function TremoloSection({ data, style }) {
-  const presets = data.Presets[0];
-  const fieldFormat = [
-    {
-      name: "PresetName", // REQUIRED (form key)
-      label: "Name", // REQUIRED (visible label)
-      type: "text", // optional (default: "text")
-      placeholder: "",
-      defaultValue: "",
-      description: "Shown publicly",
-      required: false,
-    },
-    {
-      name: "Category", // REQUIRED (form key)
-      label: "Category", // REQUIRED (visible label)
-      type: "text", // optional (default: "text")
-      placeholder: "",
-      defaultValue: "",
-      description: "Shown publicly",
-      required: false,
-    },
-  ];
+export default function TremoloSection({ style }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
+  const [panDepth, setPanDepth] = useState(0.5);
 
   return (
     <div>
@@ -42,14 +20,26 @@ export default function TremoloSection({ data, style }) {
           style={{
             backgroundColor: "var(--bg-secondary)",
             borderRadius: "14px",
+            padding: "5px",
+            border: "4px solid white",
           }}
         >
           <div
+            onClick={() => {
+              emitButtonEvent(ParameterID.TREMBP, 1);
+              console.log("clicked");
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.filter = "brightness(1.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.filter = "brightness(1)";
+            }}
             style={{
               backgroundColor: "var(--bg-darkish)",
               borderRadius: "14px 14px 0 0", // rounded top, flat bottom
-              padding: "0px 0px",
               height: "30px",
+              cursor: "pointer",
             }}
           >
             <Flex direction="row" align="center">
@@ -84,7 +74,7 @@ export default function TremoloSection({ data, style }) {
               />
             </Flex>
           </div>
-          <Heading>Tremolo Rate</Heading>
+          <Heading size="6">Rate</Heading>
           <TSlider
             id={ParameterID.TREMRATE}
             min={0}
@@ -98,17 +88,60 @@ export default function TremoloSection({ data, style }) {
             }}
           ></TSlider>
 
-          <Heading>Presets</Heading>
+          <Separator
+            style={{
+              margin: "10px 0 10px 5px",
+              width: "220px",
+              height: "3px",
+              background: "var(--bg-darkish)",
+            }}
+          ></Separator>
 
-          <Heading>Wave Type</Heading>
+          <Heading>Depth</Heading>
 
-          <WaveSelector
-            id={ParameterID.TREMWAVE}
-            value={waveType}
-            onChange={setWaveType}
-          ></WaveSelector>
+          <TSlider
+            id={ParameterID.TREMDEPTH}
+            min={0}
+            max={1}
+            step={0.01}
+            defaultValue={0.7}
+            size="3"
+            variant="soft"
+            tooltip={{
+              enabled: true,
+            }}
+          ></TSlider>
+          <Flex
+            direction="column"
+            style={{
+              display: "inline-flex", // keep it tight around contents
+              padding: "4px", // space between border and controls
+              border: "4px solid white", // the white box outline
+              borderRadius: "10px",
+              alignItems: "center",
+              marginTop: "5px",
+              marginRight: "15px",
+            }}
+            gap={0}
+          >
+            <Heading>Wave Type</Heading>
 
-          <TCheckbox label="Bypass Tremolo" id={ParameterID.TREMBP}></TCheckbox>
+            <WaveSelector
+              id={ParameterID.TREMWAVE}
+              value={waveType}
+              onChange={setWaveType}
+            ></WaveSelector>
+          </Flex>
+
+          <TKnob
+            tooltip={{ enabled: true }}
+            id={ParameterID.PANDEPTH}
+            style={{ marginTop: "5px" }}
+            onChange={setPanDepth}
+          ></TKnob>
+          <p style={{ pointerEvents: "none" }}>
+            Pan Depth: {panDepth.toFixed(2)} hz{" "}
+          </p>
         </Box>
       </Flex>
     </div>

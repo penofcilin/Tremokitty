@@ -25,15 +25,13 @@ function App() {
           padding: 0,
           width: "100vw",
           height: "100vh",
+          background: "var(--bg-primary)",
         }}
       >
         <PresetsContext.Provider value={data.Presets[0]}>
           <HeaderSection presets={data.Presets[0]} />
         </PresetsContext.Provider>
-        <TremoloSection
-          data={data}
-          style={{ marginTop: "0px", marginLeft: "5px" }}
-        />
+        <TremoloSection style={{ marginTop: "5px", marginLeft: "5px" }} />
       </Flex>
     </Theme>
   );

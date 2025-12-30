@@ -1,6 +1,6 @@
 :root {
   /* Backgrounds */
-  --bg-primary: #f2d3da; /* lighter pink surface */
+  --bg-primary: #fff1f7; /* lighter pink surface */
   --bg-secondary: #ffbaca; /* warm rose */
   --bg-dark: #24161b; /* deep wine / near-black */
   --bg-darkish: #531d30;
@@ -32,7 +32,7 @@
   --error: #e04f5f; /* vivid coral-red */
 
   /* Typography */
-  --font-sans: "arial";
+  --font-sans: "murecho";
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -40,8 +40,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html,
+body,
+#root,
 [data-radix-theme] {
-  background: black;
+  height: 100%;
+}
+
+[data-radix-theme] {
+  background-color: var(--bg-dark);
 }
 
 body {
