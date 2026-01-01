@@ -40,7 +40,13 @@
 
 .tSlider.vertical .tSliderRange {
   width: 100%;
-  bottom: 0; /* 🔑 anchor fill to bottom */
+  bottom: 0;
+}
+
+.tSlider.vertical.isDisabled,
+.tSlider.horizontal.isDisabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* ================= TRACK ================= */

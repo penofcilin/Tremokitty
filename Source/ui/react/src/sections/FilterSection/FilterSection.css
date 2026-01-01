@@ -1,0 +1,5 @@
+.filterSection {
+  background-color: var(--bg-secondary);
+  border: 2px solid black;
+  border-radius: 14px;
+}

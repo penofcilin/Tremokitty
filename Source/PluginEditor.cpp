@@ -112,7 +112,7 @@ namespace kitty_editor
                                        });
 
         setResizable(false,false);
-        setSize(600, 580);
+        setSize(730, 580);
     }
 
     //Webview changes

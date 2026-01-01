@@ -13,6 +13,7 @@ export default function TSlider({
   step = 0.1,
   defaultValue = 0.5,
   orientation = "horizontal",
+  disabled = false,
   onChange,
   tooltip, // optional object
   style,
@@ -37,7 +38,7 @@ export default function TSlider({
       <Tooltip.Root open={isHovering || isDragging}>
         <Tooltip.Trigger asChild>
           <Slider.Root
-            className={`tSlider ${orientation}`}
+            className={`tSlider ${orientation} ${disabled ? "isDisabled" : ""}`}
             style={style}
             orientation={orientation}
             value={value}

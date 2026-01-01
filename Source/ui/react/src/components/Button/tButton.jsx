@@ -8,6 +8,7 @@ export default function TButton({
   variant = "solid",
   emitEvent = true,
   radius = "medium",
+  clickEvent,
   style,
   icon = null,
   isToggle = 0,
@@ -23,6 +24,7 @@ export default function TButton({
       onClick={() => {
         if (emitEvent) {
           emitButtonEvent(id, { isToggle });
+          clickEvent?.();
         }
       }}
     >

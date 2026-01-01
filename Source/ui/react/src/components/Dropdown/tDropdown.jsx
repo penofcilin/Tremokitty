@@ -8,6 +8,7 @@ export default function TDropdown({
   options = [],
   defaultValue = options[0],
   variant = "solid",
+  disabled = false,
   size = 2,
   buttonStyle,
 }) {
@@ -17,7 +18,10 @@ export default function TDropdown({
     <div>
       <DropdownMenu.Root className="dropdownRoot">
         <DropdownMenu.Trigger style={buttonStyle}>
-          <Button className="triggerButton" variant="soft">
+          <Button
+            className={`triggerButton ${disabled ? "disabled" : ""}`}
+            variant="soft"
+          >
             {value}
             <DropdownMenu.TriggerIcon />
           </Button>

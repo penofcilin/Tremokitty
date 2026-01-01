@@ -48,13 +48,15 @@ export default function HeaderSection() {
           inset: 0,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "end",
         }}
       >
-        <div style={{ paddingRight: "5px", transform: "translateX(18px)" }}>
+        <div style={{ paddingRight: "5px", transform: "translateX(155px)" }}>
           Tremokitty!
         </div>
-        <PresetPanel style={{ position: "relative" }}></PresetPanel>
+        <div style={{ marginLeft: "auto", marginRight: "105px" }}>
+          <PresetPanel />
+        </div>
       </Box>
     </Box>
   );

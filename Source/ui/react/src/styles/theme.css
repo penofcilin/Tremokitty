@@ -55,6 +55,13 @@ body,
   padding: 0;
 }
 
+.mainGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 15px;
+}
+
 .Heading {
   font-family: "Permanent Marker" !important;
 }
@@ -68,4 +75,40 @@ body,
 body {
   margin: 0;
   padding: 0;
+}
+
+.tremoloSection[data-bypassed] {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+/* Kill interaction everywhere */
+.tremoloSection[data-bypassed] * {
+  pointer-events: none;
+}
+
+/* Re-enable header */
+.tremoloSection[data-bypassed] .tremoloHeader,
+.tremoloSection[data-bypassed] .tremoloHeader * {
+  pointer-events: auto;
+  opacity: 1;
+  filter: none;
+}
+
+.panSection[data-bypassed] {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+/* Kill interaction everywhere */
+.panSection[data-bypassed] * {
+  pointer-events: none;
+}
+
+/* Re-enable header */
+.panSection[data-bypassed] .panHeader,
+.panSection[data-bypassed] .panHeader * {
+  pointer-events: auto;
+  opacity: 1;
+  filter: none;
 }

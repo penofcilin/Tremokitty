@@ -20,6 +20,11 @@
   filter: brightness(0.8);
 }
 
+.triggerButton.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 .dropdownItem {
   cursor: pointer;
 }

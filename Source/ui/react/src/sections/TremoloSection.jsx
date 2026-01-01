@@ -15,12 +15,20 @@ import {
   TDropdown,
 } from "../components";
 
-export default function TremoloSection({ style }) {
+export default function TremoloSection({ style, bypassed, toggleBypass }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [tremDepth, setTremDepth] = useState(0.7);
 
+  const [sync, setSync] = useState(false);
+
   return (
-    <Flex direction="column" width="255px" style={style}>
+    <Flex
+      direction="column"
+      width="255px"
+      style={style}
+      className="tremoloSection"
+      data-bypassed={bypassed ? "" : undefined}
+    >
       <Box
         style={{
           backgroundColor: "var(--bg-secondary)",
@@ -31,7 +39,11 @@ export default function TremoloSection({ style }) {
       >
         {/* ================= HEADER BOX ================= */}
         <div
-          onClick={() => emitButtonEvent(ParameterID.TREMBP, 1)}
+          className="tremoloHeader"
+          onClick={() => {
+            emitButtonEvent(ParameterID.TREMBP, 1);
+            toggleBypass();
+          }}
           onMouseEnter={(e) =>
             (e.currentTarget.style.filter = "brightness(1.3)")
           }
@@ -154,12 +166,14 @@ export default function TremoloSection({ style }) {
                 size="3"
                 variant="soft"
                 tooltip={{ enabled: true }}
+                disabled={sync}
                 style={{ width: "150px", marginTop: "3px" }}
               />
 
               <TButton
                 style={{ width: "40px", height: "25px", align: "center" }}
                 id={ParameterID.TREMSYNC}
+                clickEvent={() => setSync((prev) => !prev)}
                 isToggle={1}
               >
                 Sync
@@ -169,7 +183,8 @@ export default function TremoloSection({ style }) {
                 id={ParameterID.TREMSYNCCHOICE}
                 defaultValue={NoteTypes[0]}
                 buttonStyle={{ width: "135px" }}
-                options={NoteTypes} // May need to make this return index of selection
+                disabled={!sync}
+                options={NoteTypes}
               ></TDropdown>
             </Flex>
           </Flex>
