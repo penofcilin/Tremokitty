@@ -2,7 +2,9 @@ import { useState } from "react";
 import { TremoloSection, HeaderSection, PresetPanel } from "./sections";
 import { Flex, Theme } from "@radix-ui/themes";
 import { PresetsContext } from "./utilities/PresetsContext";
+import "@radix-ui/themes/styles.css";
 import "./styles/fonts.css";
+import "./styles/theme.css";
 
 //Load initlization data from juce
 const data = window.__JUCE__.initialisationData;
@@ -16,7 +18,6 @@ function App() {
       panelBackground="solid"
       scaling="100%"
       radius="full"
-      fontFamily="sans"
     >
       <Flex
         direction="column"

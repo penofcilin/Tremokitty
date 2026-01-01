@@ -17,6 +17,7 @@ import {
 
 export default function TremoloSection({ style }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
+  const [tremDepth, setTremDepth] = useState(0.7);
 
   return (
     <Flex direction="column" width="255px" style={style}>
@@ -25,6 +26,7 @@ export default function TremoloSection({ style }) {
           backgroundColor: "var(--bg-secondary)",
           borderRadius: "14px",
           overflow: "hidden",
+          border: "2px solid black",
         }}
       >
         {/* ================= HEADER BOX ================= */}
@@ -36,7 +38,7 @@ export default function TremoloSection({ style }) {
           onMouseLeave={(e) => (e.currentTarget.style.filter = "brightness(1)")}
           style={{
             backgroundColor: "var(--bg-darkish)",
-            height: "30px",
+            height: "35px",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -50,7 +52,7 @@ export default function TremoloSection({ style }) {
           >
             <Separator
               style={{
-                width: "75px",
+                width: "70px",
                 height: "2px",
                 backgroundColor: "white",
                 marginLeft: "7px",
@@ -58,13 +60,13 @@ export default function TremoloSection({ style }) {
               }}
             />
 
-            <Heading size="4" style={{ color: "white" }}>
+            <Heading size="5" className="Heading" style={{ color: "white" }}>
               Tremolo
             </Heading>
 
             <Separator
               style={{
-                width: "75px",
+                width: "70px",
                 height: "2px",
                 backgroundColor: "white",
                 marginLeft: "4px",
@@ -78,55 +80,106 @@ export default function TremoloSection({ style }) {
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1px 80px",
-            padding: "6px",
           }}
         >
           {/* ---------- RATE (LEFT) ---------- */}
           <Flex
             direction="column"
-            gap="2"
+            gap="1"
             style={{
-              paddingRight: "6px",
-              justifyContent: "center",
+              paddingRight: "0px",
+              justifyContent: "flex-start",
               alignItems: "center",
             }}
           >
-            <Heading size="6">Rate</Heading>
-
-            <TSlider
-              id={ParameterID.TREMRATE}
-              min={0}
-              max={20}
-              step={0.1}
-              defaultValue={10}
-              size="3"
-              variant="soft"
-              tooltip={{ enabled: true }}
-            />
-
-            <TButton
-              style={{ width: "60px", height: "35px", align: "center" }}
-              id={ParameterID.TREMSYNC}
-              isToggle={1}
+            <div
+              style={{
+                height: "30px",
+                display: "flex",
+                alignItems: "center",
+              }}
             >
-              Sync
-            </TButton>
+              <Flex
+                direction="row"
+                align="center"
+                width="100%"
+                style={{ transform: "translateX(2px)" }}
+              >
+                <Separator
+                  style={{
+                    width: "40px",
+                    height: "2px",
+                    marginRight: "6px",
+                    backgroundColor: "black",
+                  }}
+                />
 
-            <TDropdown
-              id={ParameterID.TREMSYNCCHOICE}
-              defaultValue={NoteTypes[0]}
-              buttonStyle={{ width: "135px" }}
-              options={NoteTypes} // May need to make this return index of selection
-            ></TDropdown>
+                <Heading className="Heading" size="6">
+                  Rate
+                </Heading>
+
+                <Separator
+                  style={{
+                    width: "40px",
+                    height: "2px",
+                    marginLeft: "6px",
+                    backgroundColor: "black",
+                  }}
+                />
+              </Flex>
+            </div>
+
+            <Separator
+              style={{
+                width: "170px",
+                height: "2px",
+                backgroundColor: "black",
+              }}
+            />
+            <Flex
+              direction="column"
+              gap="4"
+              style={{
+                padding: "1px",
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              <TSlider
+                id={ParameterID.TREMRATE}
+                min={0}
+                max={20}
+                step={0.1}
+                defaultValue={10}
+                size="3"
+                variant="soft"
+                tooltip={{ enabled: true }}
+                style={{ width: "150px", marginTop: "3px" }}
+              />
+
+              <TButton
+                style={{ width: "40px", height: "25px", align: "center" }}
+                id={ParameterID.TREMSYNC}
+                isToggle={1}
+              >
+                Sync
+              </TButton>
+
+              <TDropdown
+                id={ParameterID.TREMSYNCCHOICE}
+                defaultValue={NoteTypes[0]}
+                buttonStyle={{ width: "135px" }}
+                options={NoteTypes} // May need to make this return index of selection
+              ></TDropdown>
+            </Flex>
           </Flex>
 
           {/* ---------- VERTICAL DIVIDER ---------- */}
           <div
             style={{
               width: "2px",
-              backgroundColor: "var(--bg-separator)",
+              backgroundColor: "black",
               height: "100%",
-              margin: "0 6px",
             }}
           />
 
@@ -134,12 +187,35 @@ export default function TremoloSection({ style }) {
           <Flex
             direction="column"
             align="center"
-            gap="2"
-            style={{ marginLeft: "7px" }}
+            gap="0"
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginLeft: "0px",
+            }}
           >
-            <Heading size="6">Depth</Heading>
+            <Heading className="Heading" size="6">
+              Depth
+            </Heading>
+            <Separator
+              style={{
+                width: "80px",
+                height: "2px",
+                backgroundColor: "black",
+                transform: "translateY(4px)",
+              }}
+            />
 
-            <div style={{ height: "110px" }}>
+            <Flex
+              direction="column"
+              style={{
+                height: "140px",
+                width: "100%",
+                marginTop: "7px",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <TSlider
                 id={ParameterID.TREMDEPTH}
                 min={0}
@@ -147,11 +223,30 @@ export default function TremoloSection({ style }) {
                 step={0.01}
                 defaultValue={0.7}
                 orientation="vertical"
-                size="3"
+                size="1"
                 variant="soft"
-                tooltip={{ enabled: true }}
+                onChange={setTremDepth}
+                style={{ height: "100px", marginBottom: "5px" }}
               />
-            </div>
+              <Flex
+                style={{
+                  backgroundColor: "var(--bg-offWhite)",
+                  borderRadius: "5px",
+                  border: "2px solid var(--outline)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "3px",
+                  fontSize: "15px",
+                  fontFamily: "var(--font-sans)",
+                  fontWeight: "bold",
+                  marginBottom: "5px",
+                }}
+                width="50px"
+                height="30px"
+              >
+                {tremDepth}
+              </Flex>
+            </Flex>
           </Flex>
         </div>
 
@@ -159,10 +254,8 @@ export default function TremoloSection({ style }) {
         <Flex
           direction="column"
           align="center"
-          gap="1"
+          gap="0"
           style={{
-            margin: "6px",
-            padding: "6px",
             borderRadius: "10px",
           }}
         >
@@ -173,12 +266,52 @@ export default function TremoloSection({ style }) {
               backgroundColor: "var(--bg-separator)",
             }}
           ></Separator>
-          <Heading size="4">Wave Type</Heading>
+
+          <div
+            style={{
+              height: "35px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Flex
+              direction="row"
+              align="center"
+              width="100%"
+              style={{ transform: "translateX(2px)" }}
+            >
+              <Separator
+                style={{
+                  width: "40px",
+                  height: "2px",
+                  marginRight: "6px",
+                  backgroundColor: "black",
+                }}
+              />
+
+              <Heading className="Heading" size="6">
+                Wave Type
+              </Heading>
+
+              <Separator
+                style={{
+                  width: "40px",
+                  height: "2px",
+                  marginLeft: "6px",
+                  backgroundColor: "black",
+                }}
+              />
+            </Flex>
+          </div>
 
           <WaveSelector
             id={ParameterID.TREMWAVE}
             value={waveType}
             onChange={setWaveType}
+            style={{
+              marginBottom: "8px",
+              border: "2px solid var(--bg-primary)",
+            }}
           />
         </Flex>
       </Box>

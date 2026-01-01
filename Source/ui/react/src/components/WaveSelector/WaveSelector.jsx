@@ -9,12 +9,13 @@ import {
   InverseSquareWaveIcon,
 } from "../../assets/icons";
 
-export default function WaveSelector({ id, value, onChange }) {
+export default function WaveSelector({ id, value, onChange, style }) {
   return (
     <TToggleGroup
       id={id}
       value={value}
       onChange={onChange}
+      style={style}
       vertical
       options={[
         {

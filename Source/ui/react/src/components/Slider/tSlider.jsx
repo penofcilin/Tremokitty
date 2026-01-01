@@ -13,13 +13,16 @@ export default function TSlider({
   step = 0.1,
   defaultValue = 0.5,
   orientation = "horizontal",
+  onChange,
   tooltip, // optional object
+  style,
 }) {
   const [value, setValue] = useState([defaultValue]);
   const [isHovering, setIsHovering] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleChange = (newValue) => {
+    onChange?.((newValue * 100).toFixed(0) + "%");
     setValue(newValue);
     emitSliderEvent(id, newValue[0]);
   };
@@ -35,6 +38,7 @@ export default function TSlider({
         <Tooltip.Trigger asChild>
           <Slider.Root
             className={`tSlider ${orientation}`}
+            style={style}
             orientation={orientation}
             value={value}
             min={min}

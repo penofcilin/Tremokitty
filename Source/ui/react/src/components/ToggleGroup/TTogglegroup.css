@@ -31,7 +31,7 @@
   line-height: 1;
 
   color: var(--text-secondary);
-  background-color: var(--bg-primary);
+  background-color: var(--bg-white);
 
   cursor: pointer;
   user-select: none;
@@ -56,7 +56,7 @@
 
 /* Hover */
 .ToggleGroupItem:hover {
-  background-color: var(--accent-hover);
+  background-color: var(--control-track);
   color: var(--text-inverted);
 }
 

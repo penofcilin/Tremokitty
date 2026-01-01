@@ -9,6 +9,7 @@ export default function TToggleGroup({
   ariaLabel = "Toggle group",
   onChange,
   vertical = false,
+  style,
 }) {
   // 🔑 GUARANTEE a valid value at all times
   const safeValue = options.some((opt) => opt.value === value)
@@ -33,6 +34,7 @@ export default function TToggleGroup({
       value={safeValue} // 🔒 never invalid
       onValueChange={handleChange}
       aria-label={ariaLabel}
+      style={style}
     >
       {options.map((opt) => (
         <ToggleGroup.Item

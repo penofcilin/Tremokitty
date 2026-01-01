@@ -1,12 +1,16 @@
 :root {
   /* Backgrounds */
   --bg-primary: #fff1f7; /* lighter pink surface */
-  --bg-secondary: #ffbaca; /* warm rose */
+
+  --bg-secondary: #ffb8b8; /* warm rose  #ffbaca;*/
   --bg-dark: #24161b; /* deep wine / near-black */
   --bg-darkish: #531d30;
   --bg-black: #000000;
   --bg-white: #ffffff;
-  --bg-separator: #42313550;
+  --bg-offWhite: #fffffe; /* lighter pink surface */
+  --bg-separator: #000000cb;
+
+  --outline: #cccccc;
 
   /* Accents */
   --accent-primary: #d24a6a; /* strong pink-red */
@@ -34,6 +38,7 @@
 
   /* Typography */
   --font-sans: "murecho";
+  --font-family-heading: "Permanent Marker", cursive;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -46,12 +51,21 @@ body,
 #root,
 [data-radix-theme] {
   height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.Heading {
+  font-family: "Permanent Marker" !important;
 }
 
 [data-radix-theme] {
   background-color: var(--bg-dark);
+  --font-family-heading: "Permanent Marker", cursive;
+  --font-family-body: "Murecho", sans-serif;
 }
 
 body {
   margin: 0;
+  padding: 0;
 }
