@@ -23,7 +23,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
   return (
     <Flex
       width="525px"
-      height="208px"
+      height="212px"
       style={{ style }}
       data-bypassed={bypassed ? "" : undefined}
       className="filterSection bypassable"
@@ -75,54 +75,123 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
               />
             </Flex>
           </div>
+          <Flex
+            style={{
+              display: "inline-flex", // keep it tight around contents
+              padding: "4px", // space between border and controls
+              border: "3px solid white", // the white box outline
+              borderRadius: "10px",
+              alignItems: "center",
+              marginLeft: "7px",
+              marginTop: "5px",
+            }}
+            direction="column"
+            gap={0}
+          >
+            <div className="filterGraphicWithControls">
+              <div className="filterGraphic"></div>
+              <TToggleGroup
+                id={ParameterID.FILTERTYPE}
+                value={filterType}
+                onChange={setFilterType}
+                vertical={true}
+                style={{ marginTop: "3px" }}
+                options={[
+                  {
+                    value: "0",
+                    label: "Low Pass",
+                    icon: <LowPassIcon width={18} height={18} />,
+                  },
+                  {
+                    value: "1",
+                    label: "High Pass",
+                    icon: <HighPassIcon width={18} height={18} />,
+                  },
+                  {
+                    value: "2",
+                    label: "Negative Cosine",
+                    icon: <BandPassIcon width={18} height={18} />,
+                  },
+                ]}
+              ></TToggleGroup>
+            </div>
+            <div className="filterControlsSection">
+              <TSlider
+                id={ParameterID.FILTERCUTOFF}
+                min={0}
+                max={1}
+                defaultValue={1}
+                step={0.1}
+                style={{
+                  width: "290px",
+                  marginTop: "5px",
+                  flexShrink: "0",
+                  transform: "translateX(-5px)",
+                }}
+                className="cutoffSlider"
+              ></TSlider>
+              <TKnob
+                id={ParameterID.FILTERRES}
+                className="resonanceKnob"
+                min={0.7}
+                max={10}
+                step={0.05}
+                defaultValue={0.7}
+                style={{
+                  "--knob-size": "28px",
+                }}
+              ></TKnob>
+            </div>
+            <Flex
+              direction="row"
+              align="center"
+              width="100%"
+              style={{ marginLeft: "30px" }}
+            >
+              <Separator
+                style={{
+                  width: "100px",
+                  height: "2px",
+                  backgroundColor: "Black",
+                  marginLeft: "7px",
+                  marginRight: "4px",
+                }}
+              />
 
-          <div className="filterGraphicWithControls">
-            <div className="filterGraphic"></div>
-            <TToggleGroup
-              id={ParameterID.FILTERTYPE}
-              value={filterType}
-              onChange={setFilterType}
-              vertical={true}
-              style={{ marginTop: "12px" }}
-              options={[
-                {
-                  value: "0",
-                  label: "Low Pass",
-                  icon: <LowPassIcon width={18} height={18} />,
-                },
-                {
-                  value: "1",
-                  label: "High Pass",
-                  icon: <HighPassIcon width={18} height={18} />,
-                },
-                {
-                  value: "2",
-                  label: "Negative Cosine",
-                  icon: <BandPassIcon width={18} height={18} />,
-                },
-              ]}
-            ></TToggleGroup>
-          </div>
-          <div className="filterControlsSection">
-            <TSlider
-              id={ParameterID.FILTERCUTOFF}
-              min={0}
-              max={1}
-              defaultValue={1}
-              step={0.1}
-              style={{ width: "300px", marginTop: "5px", marginLeft: "15px" }}
-              className="cutoffSlider"
-            ></TSlider>
-            <TKnob
-              id={ParameterID.FILTERRES}
-              className="resonanceKnob"
-              min={0.7}
-              max={10}
-              step={0.05}
-              defaultValue={0}
-            ></TKnob>
-          </div>
+              <Heading
+                size="3"
+                className="Heading"
+                style={{
+                  color: "Black",
+                  margin: "0px",
+                  padding: "0px",
+                  marginTop: "0px",
+                }}
+              >
+                Cutoff
+              </Heading>
+
+              <Separator
+                style={{
+                  width: "100px",
+                  height: "2px",
+                  backgroundColor: "Black",
+                  marginLeft: "4px",
+                  marginRight: "4px",
+                }}
+              />
+
+              <Heading
+                className="Heading"
+                size="3"
+                style={{ margin: "0px", marginLeft: "0px" }}
+              >
+                Resy
+              </Heading>
+            </Flex>
+          </Flex>
         </div>
+
         <div className="rightPanel"></div>
       </div>
     </Flex>

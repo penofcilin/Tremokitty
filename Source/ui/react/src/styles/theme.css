@@ -59,11 +59,16 @@ body,
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: auto 1fr;
-  gap: 15px;
+  gap: 10px;
 }
 
 .Heading {
   font-family: "Permanent Marker" !important;
+}
+
+.Heading,
+[data-radix-heading] {
+  margin: 0;
 }
 
 [data-radix-theme] {

@@ -1,8 +1,14 @@
 /* Root */
 .tKnob {
+  --knob-size: 36px;
+  --indicator-width: 0.08;
+  --indicator-length: 0.28;
+  --indicator-offset: 0.16;
+
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: var(--knob-size);
+  height: var(--knob-size);
+
   cursor: grab;
   touch-action: none;
 }
@@ -21,15 +27,22 @@
 /* Indicator (rotation driven by CSS variable) */
 .tKnobIndicator {
   position: absolute;
-  top: 6px;
-  left: 50%;
-  width: 3px;
-  height: 10px;
-  background: white;
-  border-radius: 1px;
 
-  transform-origin: center 12px;
+  width: calc(var(--knob-size) * var(--indicator-width));
+  height: calc(var(--knob-size) * var(--indicator-length));
+
+  top: calc(var(--knob-size) * var(--indicator-offset));
+  left: 50%;
+
+  background: white;
+  border-radius: 999px;
+
+  /* pivot slightly below the indicator */
+  transform-origin: 50% calc(100% + (var(--knob-size) * 0.08));
   transform: translateX(-50%) rotate(var(--angle));
+
+  /* safety */
+  z-index: 1;
 }
 
 /* Hover bloom (matches slider thumb hover) */
