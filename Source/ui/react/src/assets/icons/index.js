@@ -5,3 +5,6 @@ export { default as SawWaveIcon } from "./SawWaveIcon.svg?react";
 export { default as SawDownWaveIcon } from "./SawDownWaveIcon.svg?react";
 export { default as SquareWaveIcon } from "./SquareWaveIcon.svg?react";
 export { default as InverseSquareWaveIcon } from "./InverseSquareWaveIcon.svg?react";
+export { default as LowPassIcon } from "./LowPassIcon.svg?react";
+export { default as HighPassIcon } from "./HighPassIcon.svg?react";
+export { default as BandPassIcon } from "./BandPassIcon.svg?react";

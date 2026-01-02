@@ -64,6 +64,7 @@ function App() {
             className="filter"
           >
             <FilterSection
+              bypassed={filterBypassed}
               toggleBypass={() => setFilterBypassed((prev) => !prev)}
             ></FilterSection>
           </div>
@@ -71,7 +72,7 @@ function App() {
           <div
             style={{
               marginTop: "5px",
-              marginRight: "5px",
+              marginRight: "1px",
               gridColumn: "3",
               gridRow: "1 / -1",
             }}

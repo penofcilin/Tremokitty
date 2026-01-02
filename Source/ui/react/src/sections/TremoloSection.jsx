@@ -26,7 +26,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
       direction="column"
       width="255px"
       style={style}
-      className="tremoloSection"
+      className="bypassable tremoloSection"
       data-bypassed={bypassed ? "" : undefined}
     >
       <Box
@@ -39,7 +39,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
       >
         {/* ================= HEADER BOX ================= */}
         <div
-          className="tremoloHeader"
+          className="bypassableHeader tremoloHeader"
           onClick={() => {
             emitButtonEvent(ParameterID.TREMBP, 1);
             toggleBypass();

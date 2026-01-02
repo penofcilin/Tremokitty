@@ -4,7 +4,7 @@ import "./ModSection.css";
 export default function ModSection({ style, bypassed, toggleBypass }) {
   return (
     <Flex
-      width="155px"
+      width="161px"
       height="502px"
       style={{ style }}
       data-bypassed={bypassed ? "" : undefined}

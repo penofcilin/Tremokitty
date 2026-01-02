@@ -3,3 +3,52 @@
   border: 2px solid black;
   border-radius: 14px;
 }
+
+.filterHeader {
+  background-color: var(--bg-darkish);
+  height: 35px;
+  width: 250px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+
+  border-radius: 12px 0px 14px 0px;
+  border: 1px solid black;
+}
+
+.sectionLayout {
+  display: grid;
+  grid-template-columns: 1fr auto; /* or 2fr 1fr */
+  gap: 12px;
+  align-items: stretch;
+}
+
+.filterGraphic {
+  background-color: var(--bg-darkish);
+  width: 300px;
+  height: 100px;
+  margin-left: 15px;
+  margin-top: 8px;
+  border-radius: 14px;
+  border: 1px solid black;
+}
+
+.filterGraphicWithControls {
+  display: flex;
+}
+
+.filterControlsSection {
+  display: flex;
+  flex-direction: "column";
+}
+
+.cutoffSlider {
+  width: 10px;
+  margin-left: 25px;
+}
+
+.resonanceKnob {
+  width: 1px;
+  height: 1px;
+}

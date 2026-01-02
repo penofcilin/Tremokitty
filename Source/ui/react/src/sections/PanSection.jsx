@@ -18,7 +18,7 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
       direction="column"
       width="255px"
       style={style}
-      className="panSection"
+      className="panSection bypassable"
       data-bypassed={bypassed ? "" : undefined}
     >
       <Box
@@ -31,7 +31,7 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
       >
         {/* ================= HEADER BOX ================= */}
         <div
-          className="panHeader"
+          className="bypassableHeader panHeader"
           onClick={() => {
             emitButtonEvent(ParameterID.PANBP, 1);
             toggleBypass();

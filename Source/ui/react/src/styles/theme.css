@@ -77,37 +77,19 @@ body {
   padding: 0;
 }
 
-.tremoloSection[data-bypassed] {
+.bypassable[data-bypassed] {
   opacity: 0.45;
   filter: grayscale(1);
 }
 
-/* Kill interaction everywhere */
-.tremoloSection[data-bypassed] * {
+/* Disable all interaction */
+.bypassable[data-bypassed] * {
   pointer-events: none;
 }
 
-/* Re-enable header */
-.tremoloSection[data-bypassed] .tremoloHeader,
-.tremoloSection[data-bypassed] .tremoloHeader * {
-  pointer-events: auto;
-  opacity: 1;
-  filter: none;
-}
-
-.panSection[data-bypassed] {
-  opacity: 0.45;
-  filter: grayscale(1);
-}
-
-/* Kill interaction everywhere */
-.panSection[data-bypassed] * {
-  pointer-events: none;
-}
-
-/* Re-enable header */
-.panSection[data-bypassed] .panHeader,
-.panSection[data-bypassed] .panHeader * {
+/* Re-enable header interaction + visuals */
+.bypassable[data-bypassed] .bypassableHeader,
+.bypassable[data-bypassed] .bypassableHeader * {
   pointer-events: auto;
   opacity: 1;
   filter: none;

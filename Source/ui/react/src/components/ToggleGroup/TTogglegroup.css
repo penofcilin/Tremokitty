@@ -18,6 +18,30 @@
   line-height: 1;
 }
 
+.ToggleGroup:not(.vertical) .ToggleGroupItem:first-child {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.ToggleGroup:not(.vertical) .ToggleGroupItem:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.ToggleGroup.vertical {
+  flex-direction: column;
+}
+
+.ToggleGroup.vertical .ToggleGroupItem:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.ToggleGroup.vertical .ToggleGroupItem:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
 /* Items */
 .ToggleGroupItem {
   height: 30px;

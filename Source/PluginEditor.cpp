@@ -112,7 +112,7 @@ namespace kitty_editor
                                        });
 
         setResizable(false,false);
-        setSize(730, 580);
+        setSize(730, 600);
     }
 
     //Webview changes
@@ -247,7 +247,7 @@ namespace kitty_editor
     {
         const auto& groupID = info.getProperty("togglegroupID", "null").toString();
         juce::var newVal = info.getProperty("newValue", "null");
-        DBG("Togled: " + groupID + juce::String(newVal.toString()));
+        DBG("Togled: " + groupID + ", new value: " + juce::String(newVal.toString()));
 
 
         //Store value. In theory, pass an integer index reflecting choice. For instance click on sine in react -> 0 is passed, apvts gets the tremwave parameter, and sets it to the same index, which should be the same. Later on may need to change this, if miscellaneous togglegroups are incorporated (misc meaning the group does not reflect the state of some parameter).

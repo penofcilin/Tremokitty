@@ -16,7 +16,6 @@ export default function WaveSelector({ id, value, onChange, style }) {
       value={value}
       onChange={onChange}
       style={style}
-      vertical
       options={[
         {
           value: "0",
