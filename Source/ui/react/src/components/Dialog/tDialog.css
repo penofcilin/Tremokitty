@@ -54,7 +54,8 @@ input {
 }
 
 .HeaderContainer {
-  background-color: var(--accent-primary);
+  background-color: white;
+  border: 3px solid black;
   display: inline-flex;
   padding: 5px;
   margin-bottom: 10px;
@@ -122,7 +123,7 @@ input {
   user-select: none;
   cursor: pointer;
   background: var(--accent-primary);
-  color: var(--text-inverted);
+  color: white;
 
   transition: transform 40ms ease-out, filter 120ms ease-out;
 }
@@ -139,9 +140,11 @@ input {
 
 .Button.save {
   background-color: var(--accent-primary);
-  color: var(--bg-black);
+  color: white;
   font-weight: bold;
   font-family: var(--font-sans);
+  width: 75px;
+  height: 40px;
 }
 
 .Button.save:hover {
@@ -154,6 +157,7 @@ input {
 
 .tDialogText {
   font-family: var(--font-sans);
+  color: white;
 }
 
 /* Close (X) button */

@@ -11,13 +11,11 @@ export default function TToggleGroup({
   vertical = false,
   style,
 }) {
-  // 🔑 GUARANTEE a valid value at all times
   const safeValue = options.some((opt) => opt.value === value)
     ? value
     : options[0]?.value;
 
   const handleChange = (newValue) => {
-    // 🔑 Radix sends null when clicking the active item
     if (newValue == null) return;
 
     const index = options.findIndex((opt) => opt.value === newValue);
@@ -31,7 +29,7 @@ export default function TToggleGroup({
     <ToggleGroup.Root
       className={`ToggleGroup ${vertical ? "vertical" : ""}`}
       type="single"
-      value={safeValue} // 🔒 never invalid
+      value={safeValue}
       onValueChange={handleChange}
       aria-label={ariaLabel}
       style={style}

@@ -20,6 +20,7 @@ import "./FilterSection.css";
 export default function FilterSection({ style, bypassed, toggleBypass }) {
   const [filterType, setFilterType] = useState(0);
   const [filterResonance, setFilterResonance] = useState(0);
+  const [filterWaveType, setFilterWaveType] = useState(0);
   return (
     <Flex
       width="525px"
@@ -75,6 +76,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
               />
             </Flex>
           </div>
+          {/*Filter graphic + controls */}
           <Flex
             style={{
               display: "inline-flex", // keep it tight around contents
@@ -95,7 +97,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 value={filterType}
                 onChange={setFilterType}
                 vertical={true}
-                style={{ marginTop: "3px" }}
+                style={{ marginTop: "0px", transform: "translateY(-2px)" }}
                 options={[
                   {
                     value: "0",
@@ -124,9 +126,9 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 step={0.1}
                 style={{
                   width: "290px",
-                  marginTop: "5px",
+                  marginTop: "0px",
                   flexShrink: "0",
-                  transform: "translateX(-5px)",
+                  transform: "translateX(-10px)",
                 }}
                 className="cutoffSlider"
               ></TSlider>
@@ -138,7 +140,8 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 step={0.05}
                 defaultValue={0.7}
                 style={{
-                  "--knob-size": "28px",
+                  "--knob-size": "26px",
+                  transform: "translateX(5px)",
                 }}
               ></TKnob>
             </div>
@@ -150,7 +153,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
             >
               <Separator
                 style={{
-                  width: "100px",
+                  width: "90px",
                   height: "2px",
                   backgroundColor: "Black",
                   marginLeft: "7px",
@@ -159,7 +162,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
               />
 
               <Heading
-                size="3"
+                size="5"
                 className="Heading"
                 style={{
                   color: "Black",
@@ -173,7 +176,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
 
               <Separator
                 style={{
-                  width: "100px",
+                  width: "90px",
                   height: "2px",
                   backgroundColor: "Black",
                   marginLeft: "4px",
@@ -183,8 +186,12 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
 
               <Heading
                 className="Heading"
-                size="3"
-                style={{ margin: "0px", marginLeft: "0px" }}
+                size="5"
+                style={{
+                  margin: "0px",
+                  marginLeft: "7px",
+                  transform: "translateX(13px)",
+                }}
               >
                 Resy
               </Heading>
@@ -192,7 +199,109 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
           </Flex>
         </div>
 
-        <div className="rightPanel"></div>
+        <div className="rightPanel">
+          <Flex
+            style={{
+              display: "inline-flex", // keep it tight around contents
+              padding: "4px", // space between border and controls
+              border: "3px solid white", // the white box outline
+              borderRadius: "10px",
+              alignItems: "center",
+              marginTop: "5px",
+            }}
+            direction="column"
+            gap={0}
+          >
+            <div className="rightPanelComponents">
+              {/* header*/}
+              <Flex direction="row" align="center" width="100%">
+                <Separator
+                  style={{
+                    width: "5px",
+                    height: "2px",
+                    backgroundColor: "Black",
+                    marginRight: "4px",
+                  }}
+                />
+
+                <Heading
+                  size="5"
+                  className="Heading"
+                  style={{
+                    color: "Black",
+                    margin: "0px",
+                    padding: "0px",
+                    marginTop: "0px",
+                  }}
+                >
+                  Modulation
+                </Heading>
+
+                <Separator
+                  style={{
+                    width: "5px",
+                    height: "2px",
+                    backgroundColor: "Black",
+                    marginLeft: "4px",
+                    marginRight: "4px",
+                  }}
+                />
+              </Flex>
+              <TButton style={{ padding: "5px" }} id={ParameterID.FILTERSYNC}>
+                Sync
+              </TButton>
+
+              {/*Knobs*/}
+              <Flex
+                style={{
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ marginRight: "15px" }}>
+                  <TKnob
+                    id={ParameterID.FILTERRATE}
+                    min={0}
+                    max={20}
+                    step={0.001}
+                    defaultValue={10}
+                    style={{
+                      "--knob-size": "50px",
+                    }}
+                    tooltip={"enabled"}
+                  ></TKnob>
+                  <Heading size="5" className="Heading">
+                    Rate
+                  </Heading>
+                </div>
+                <div>
+                  <TKnob
+                    id={ParameterID.FILTERMODLEVEL}
+                    min={0}
+                    max={1}
+                    step={0.001}
+                    defaultValue={0.7}
+                    style={{
+                      "--knob-size": "50px",
+                    }}
+                    tooltip={"enabled"}
+                  ></TKnob>
+                  <Heading size="5" className="Heading">
+                    Depth
+                  </Heading>
+                </div>
+
+                <WaveSelector
+                  id={ParameterID.FILTERWAVE}
+                  value={filterWaveType}
+                  onChange={() => setFilterWaveType}
+                  vertical={false}
+                  style={{ width: "110px" }}
+                ></WaveSelector>
+              </Flex>
+            </div>
+          </Flex>
+        </div>
       </div>
     </Flex>
   );

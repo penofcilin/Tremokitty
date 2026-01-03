@@ -72,7 +72,6 @@ function App() {
           <div
             style={{
               marginTop: "5px",
-              marginRight: "1px",
               gridColumn: "3",
               gridRow: "1 / -1",
             }}
