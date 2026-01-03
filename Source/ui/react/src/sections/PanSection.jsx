@@ -318,6 +318,7 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
             style={{
               marginBottom: "8px",
               border: "2px solid var(--bg-primary)",
+              "--item-size": "28px",
             }}
           />
         </Flex>

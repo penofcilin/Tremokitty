@@ -61,6 +61,7 @@ export const WaveTypes = Object.freeze([
   "SawDown",
   "Square",
   "InverseSquare",
+  "Random",
 ]);
 
 export const NoteTypes = Object.freeze([

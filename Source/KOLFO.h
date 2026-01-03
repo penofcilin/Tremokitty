@@ -35,8 +35,8 @@ public:
         Saw = 3,
         SawDown = 4,
         Square = 5,
-        InverseSquare = 6
-        //Random
+        InverseSquare = 6,
+        Random = 7
     };
 
     //Returns a string array of wave types. Useful for putting in an APVTS parameter.
@@ -83,7 +83,10 @@ private:
     double sampleRate;
     double relativeFrequency;
     float increment{ 0 };
-    //juce::Random rand;
+    float currentRandomValue = 0.0f;
+    float lastPhase = 0.0f;
+    juce::Random randomGenerator;
+
     juce::dsp::Phase<float> phase;
     std::function<double(double)> generator;
     WaveType currentWavetype;

@@ -17,6 +17,8 @@
   /* Prevent height changes from children transforms */
   line-height: 1;
   flex-wrap: wrap;
+
+  --item-size: 30px;
 }
 
 .ToggleGroup:not(.vertical) .ToggleGroupItem:first-child {
@@ -46,8 +48,8 @@
 
 /* Items */
 .ToggleGroupItem {
-  height: 30px;
-  width: 30px;
+  height: var(--item-size);
+  width: var(--item-size);
 
   display: inline-flex;
   align-items: center;

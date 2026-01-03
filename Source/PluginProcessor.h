@@ -14,7 +14,7 @@
 #include "KOLFO.h"
 #include "KOTempo.h"
 
-#define WAVE_TYPES  "Sine", "Cosine", "NegativeCosine",  "Saw", "SawDown", "Square", "InverseSquare"
+#define WAVE_TYPES  "Sine", "Cosine", "NegativeCosine",  "Saw", "SawDown", "Square", "InverseSquare", "Random"
 
 
 //==============================================================================

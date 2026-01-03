@@ -109,10 +109,20 @@ void  KOLFO::setWaveType(WaveType newWaveType)
         currentWavetype = WaveType::InverseSquare;
         break;
     }
-    /*case  KOLFO::WaveType::Random:
+    case KOLFO::WaveType::Random:
     {
-        initialise([&](float x) {return (x * rando.nextFloat()); });
-    }*/
+    initialise([this](float x)
+               {
+                   if (x < lastPhase)
+                       currentRandomValue = randomGenerator.nextFloat() * 2.0f - 1.0f;
+
+                   lastPhase = x;
+                   return currentRandomValue;
+               });
+
+        currentWavetype = WaveType::Random;
+        break;
+    }
     }
 }
 

@@ -20,7 +20,7 @@ import "./FilterSection.css";
 export default function FilterSection({ style, bypassed, toggleBypass }) {
   const [filterType, setFilterType] = useState(0);
   const [filterResonance, setFilterResonance] = useState(0);
-  const [filterWaveType, setFilterWaveType] = useState(0);
+  const [filterWaveType, setFilterWaveType] = useState(WaveTypes[0]);
   return (
     <Flex
       width="525px"
@@ -290,13 +290,23 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                     Depth
                   </Heading>
                 </div>
-
+              </Flex>
+              <Flex
+                style={{
+                  display: "inline-flex",
+                  padding: "2px",
+                  border: "2px solid white",
+                  borderRadius: "10px",
+                  alignItems: "center",
+                  marginLeft: "9px",
+                }}
+              >
                 <WaveSelector
                   id={ParameterID.FILTERWAVE}
                   value={filterWaveType}
-                  onChange={() => setFilterWaveType}
+                  onChange={setFilterWaveType}
                   vertical={false}
-                  style={{ width: "110px" }}
+                  style={{ width: "110px", "--item-size": "25px" }}
                 ></WaveSelector>
               </Flex>
             </div>
