@@ -13,7 +13,8 @@
   --outline: #cccccc;
 
   /* Accents */
-  --accent-primary: #d24a6a; /* strong pink-red */
+  --accent-primary: #d24a6a; /* strong pink-red */ /* strong pink-red */
+  --accent-toggled: #6d0019;
   --accent-hover: #df8fa1; /* brighter hover */
   --accent-active: #b83c5a; /* pressed state */
   --accent-grey: #e4e4e4;

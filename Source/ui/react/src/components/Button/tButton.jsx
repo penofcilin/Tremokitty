@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { emitButtonEvent } from "../../utilities/juceBridge.js";
 import { Button } from "@radix-ui/themes";
 import "./tButton.css";
@@ -14,16 +15,20 @@ export default function TButton({
   isToggle = 0,
   children,
 }) {
+  const [toggled, setToggled] = useState(false);
   return (
     <Button
       style={style}
-      className="tButton"
+      className={`tButton ${isToggle ? (toggled ? "Toggled" : "") : ""}`}
       size={size}
       variant={variant}
       radius={radius}
       onClick={() => {
         if (emitEvent) {
           emitButtonEvent(id, isToggle);
+        }
+        if (isToggle) {
+          setToggled(!toggled);
         }
         clickEvent?.();
       }}
