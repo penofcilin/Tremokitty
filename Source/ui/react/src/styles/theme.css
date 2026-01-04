@@ -19,6 +19,7 @@
   --accent-active: #b83c5a; /* pressed state */
   --accent-grey: #e4e4e4;
   --accent-outline: #cf7d90;
+  --accent-filter-curve: #ffee00;
 
   /* Controls */
   --control-track: #f0c6d1; /* soft pink track */

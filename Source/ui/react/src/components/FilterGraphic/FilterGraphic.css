@@ -1,0 +1,33 @@
+.filterGraphic {
+  background-color: var(--bg-darkish);
+  width: 300px;
+  height: 90px;
+  border: 1px solid black;
+  border-radius: 14px;
+  cursor: grab;
+  display: block;
+}
+
+.filterGraphic:active {
+  cursor: grabbing;
+}
+
+.filterCurve {
+  fill: none;
+  stroke: var(--accent-filter-curve);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.modRange {
+  fill: rgba(255, 255, 255, 0.12);
+}
+
+.cutoffLine {
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 1.5;
+}
+
+.resonance {
+  fill: rgba(255, 255, 255, 0.25);
+}

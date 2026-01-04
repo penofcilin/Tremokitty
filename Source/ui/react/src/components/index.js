@@ -7,3 +7,4 @@ export { default as TDialog } from "./Dialog/TDialog";
 export { default as TTooltip } from "./Tooltip/TTooltip";
 export { default as TToggleGroup } from "./ToggleGroup/TTogglegroup";
 export { default as WaveSelector } from "./WaveSelector/WaveSelector";
+export { default as FilterGraphic } from "./FilterGraphic/FilterGraphic";

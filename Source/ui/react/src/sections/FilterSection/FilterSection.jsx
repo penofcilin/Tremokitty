@@ -12,9 +12,9 @@ import {
   TSlider,
   WaveSelector,
   TButton,
-  TDropdown,
   TToggleGroup,
   TKnob,
+  FilterGraphic,
 } from "../../components";
 import { toPercentage } from "../../Utilities/General.js";
 import "./FilterSection.css";
@@ -22,10 +22,12 @@ import "./FilterSection.css";
 export default function FilterSection({ style, bypassed, toggleBypass }) {
   const [filterType, setFilterType] = useState(0);
   const [filterWaveType, setFilterWaveType] = useState(WaveTypes[0]);
-
   const [sync, setSync] = useState(true);
   const [syncedRate, setSyncedRate] = useState(10);
   const [unsyncedRate, setUnsyncedRate] = useState(0);
+  const [cutoff, setCutoff] = useState(1);
+  const [resonance, setResonance] = useState(0);
+  const [modDepth, setModDepth] = useState(0);
 
   const activeRate = sync ? syncedRate : unsyncedRate;
 
@@ -55,6 +57,12 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
     return hz >= 1000
       ? `${(hz / 1000).toFixed(2)} kHz`
       : `${Math.round(hz)} Hz`;
+  };
+
+  const FILTER_PATHS = {
+    lowpass: "M0 10 H60 Q70 10 70 30 V60 H100",
+    highpass: "M0 60 V30 Q30 10 40 10 H100",
+    bandpass: "M0 60 Q30 60 40 30 Q50 0 60 30 Q70 60 100 60",
   };
 
   return (
@@ -127,11 +135,16 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
             gap={0}
           >
             <div className="filterGraphicWithControls">
-              <div className="filterGraphic"></div>
+              <FilterGraphic
+                cutoff={cutoff}
+                resonance={resonance}
+                modDepth={modDepth}
+                filterType={filterType}
+              ></FilterGraphic>
               <TToggleGroup
                 id={ParameterID.FILTERTYPE}
                 value={filterType}
-                onChange={setFilterType}
+                onChange={(v) => setFilterType(v)}
                 vertical={true}
                 style={{ marginTop: "0px", transform: "translateY(-2px)" }}
                 options={[
@@ -161,6 +174,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 defaultValue={1}
                 tooltip={"enabled"}
                 tooltipMap={cutoffTooltip}
+                onChange={(v) => setCutoff(v)}
                 step={0.00001}
                 style={{
                   width: "290px",
@@ -173,6 +187,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 id={ParameterID.FILTERRES}
                 tooltip={"enabled"}
                 className="resonanceKnob"
+                onChange={(v) => setResonance(v)}
                 min={0}
                 max={10}
                 step={0.05}
@@ -330,6 +345,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                     max={1}
                     step={0.001}
                     defaultValue={0.7}
+                    onChange={(v) => setModDepth(v)}
                     tooltipMap={(v) => {
                       return toPercentage(v);
                     }}
