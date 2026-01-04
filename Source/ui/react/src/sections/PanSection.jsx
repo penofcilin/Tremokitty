@@ -7,10 +7,11 @@ import {
 } from "../utilities/juceBridge.js";
 import { Box, Flex, Heading, Separator } from "@radix-ui/themes";
 import { TSlider, WaveSelector, TButton, TDropdown } from "../components";
+import { toPercentage } from "../Utilities/General.js";
 
 export default function PanSection({ style, bypassed, toggleBypass }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
-  const [Depth, setDepth] = useState(0.7);
+  const [depth, setDepth] = useState(0.7);
   const [sync, setSync] = useState(false);
 
   return (
@@ -158,6 +159,9 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                 size="3"
                 variant="soft"
                 tooltip={{ enabled: true }}
+                tooltipMap={(v) => {
+                  return v + " hz";
+                }}
                 disabled={sync}
                 style={{ width: "150px", marginTop: "3px" }}
               />
@@ -251,7 +255,7 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                 width="50px"
                 height="30px"
               >
-                {Depth}
+                {toPercentage(depth)}
               </Flex>
             </Flex>
           </Flex>

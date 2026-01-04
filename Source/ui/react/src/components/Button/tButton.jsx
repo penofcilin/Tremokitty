@@ -23,9 +23,9 @@ export default function TButton({
       radius={radius}
       onClick={() => {
         if (emitEvent) {
-          emitButtonEvent(id, { isToggle });
-          clickEvent?.();
+          emitButtonEvent(id, isToggle);
         }
+        clickEvent?.();
       }}
     >
       {icon && <span className="tButtonIcon">{icon}</span>}

@@ -14,6 +14,7 @@ import {
   TButton,
   TDropdown,
 } from "../components";
+import { toPercentage } from "../Utilities/General.js";
 
 export default function TremoloSection({ style, bypassed, toggleBypass }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
@@ -166,6 +167,9 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
                 size="3"
                 variant="soft"
                 tooltip={{ enabled: true }}
+                tooltipMap={(v) => {
+                  return v + " hz";
+                }}
                 disabled={sync}
                 style={{ width: "150px", marginTop: "3px" }}
               />
@@ -259,7 +263,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
                 width="50px"
                 height="30px"
               >
-                {tremDepth}
+                {toPercentage(tremDepth)}
               </Flex>
             </Flex>
           </Flex>

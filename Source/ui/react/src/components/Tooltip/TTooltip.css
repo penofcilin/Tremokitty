@@ -4,6 +4,15 @@
   border-radius: 5px;
   font-size: 15px;
   font-family: var(--font-sans);
+
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.TooltipContent {
+  min-width: 50px; /* adjust as needed */
+  text-align: center;
+  padding: 6px 8px;
 }
 
 .TooltipArrow {

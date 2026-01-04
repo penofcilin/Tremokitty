@@ -4,6 +4,7 @@ import {
   ParameterID,
   WaveTypes,
   emitButtonEvent,
+  emitSliderEvent,
   NoteTypes,
 } from "../../utilities/juceBridge.js";
 import { LowPassIcon, HighPassIcon, BandPassIcon } from "../../assets/icons";
@@ -15,12 +16,47 @@ import {
   TToggleGroup,
   TKnob,
 } from "../../components";
+import { toPercentage } from "../../Utilities/General.js";
 import "./FilterSection.css";
 
 export default function FilterSection({ style, bypassed, toggleBypass }) {
   const [filterType, setFilterType] = useState(0);
-  const [filterResonance, setFilterResonance] = useState(0);
   const [filterWaveType, setFilterWaveType] = useState(WaveTypes[0]);
+
+  const [sync, setSync] = useState(true);
+  const [syncedRate, setSyncedRate] = useState(10);
+  const [unsyncedRate, setUnsyncedRate] = useState(0);
+
+  const activeRate = sync ? syncedRate : unsyncedRate;
+
+  const handleRateChange = (value) => {
+    if (sync) {
+      setSyncedRate(value);
+    } else {
+      setUnsyncedRate(value);
+    }
+  };
+
+  const syncButtonClicked = () => {
+    setSync((prev) => {
+      const next = !prev;
+
+      emitSliderEvent(ParameterID.FILTERRATE, next ? syncedRate : unsyncedRate);
+
+      return next;
+    });
+  };
+
+  const cutoffTooltip = (n) => {
+    const min = 20;
+    const max = 20000;
+    const hz = min * Math.pow(max / min, n);
+
+    return hz >= 1000
+      ? `${(hz / 1000).toFixed(2)} kHz`
+      : `${Math.round(hz)} Hz`;
+  };
+
   return (
     <Flex
       width="525px"
@@ -123,25 +159,27 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 min={0}
                 max={1}
                 defaultValue={1}
-                step={0.1}
+                tooltip={"enabled"}
+                tooltipMap={cutoffTooltip}
+                step={0.00001}
                 style={{
                   width: "290px",
-                  marginTop: "0px",
-                  flexShrink: "0",
-                  transform: "translateX(-10px)",
+                  marginLeft: "3px",
+                  transform: "translateX(-9px)",
                 }}
                 className="cutoffSlider"
               ></TSlider>
               <TKnob
                 id={ParameterID.FILTERRES}
+                tooltip={"enabled"}
                 className="resonanceKnob"
-                min={0.7}
+                min={0}
                 max={10}
                 step={0.05}
-                defaultValue={0.7}
+                defaultValue={0}
                 style={{
                   "--knob-size": "26px",
-                  transform: "translateX(5px)",
+                  transform: "translateX(3px)",
                 }}
               ></TKnob>
             </div>
@@ -247,7 +285,12 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                   }}
                 />
               </Flex>
-              <TButton style={{ padding: "5px" }} id={ParameterID.FILTERSYNC}>
+              <TButton
+                style={{ padding: "5px" }}
+                id={ParameterID.FILTERSYNC}
+                clickEvent={syncButtonClicked}
+                isToggle={1}
+              >
                 Sync
               </TButton>
 
@@ -262,14 +305,20 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                   <TKnob
                     id={ParameterID.FILTERRATE}
                     min={0}
-                    max={20}
-                    step={0.001}
-                    defaultValue={10}
+                    max={sync ? 20 : NoteTypes.length - 1}
+                    defaultValue={sync ? 5 : 3}
+                    step={sync ? 0.001 : 1}
+                    value={activeRate}
+                    onChange={handleRateChange}
                     style={{
                       "--knob-size": "50px",
                     }}
-                    tooltip={"enabled"}
-                  ></TKnob>
+                    tooltip="enabled"
+                    tooltipMap={
+                      sync ? (v) => `${v.toFixed(1)} Hz` : (v) => NoteTypes[v]
+                    }
+                  />
+
                   <Heading size="5" className="Heading">
                     Rate
                   </Heading>
@@ -281,6 +330,9 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                     max={1}
                     step={0.001}
                     defaultValue={0.7}
+                    tooltipMap={(v) => {
+                      return toPercentage(v);
+                    }}
                     style={{
                       "--knob-size": "50px",
                     }}

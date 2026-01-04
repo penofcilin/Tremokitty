@@ -15,7 +15,8 @@ export default function TSlider({
   orientation = "horizontal",
   disabled = false,
   onChange,
-  tooltip, // optional object
+  tooltip,
+  tooltipMap,
   style,
 }) {
   const [value, setValue] = useState([defaultValue]);
@@ -23,15 +24,18 @@ export default function TSlider({
   const [isDragging, setIsDragging] = useState(false);
 
   const handleChange = (newValue) => {
-    onChange?.((newValue * 100).toFixed(0) + "%");
-    setValue(newValue);
-    emitSliderEvent(id, newValue[0]);
+    const v = newValue[0];
+
+    setValue([v]);
+    emitSliderEvent(id, v); //Emit a normalized value
+
+    onChange?.(v);
   };
 
   const tooltipEnabled = Boolean(tooltip);
-  const formatValue = tooltip?.format ?? ((v) => v.toString());
-
-  const tooltipContent = formatValue(value[0].toFixed(2)); //Format the tooltip such that it displays rounded to two decimal places
+  const tooltipContent = tooltipMap
+    ? tooltipMap(value[0])
+    : value[0].toFixed(2);
 
   return (
     <Tooltip.Provider delayDuration={tooltip?.delay ?? 15}>

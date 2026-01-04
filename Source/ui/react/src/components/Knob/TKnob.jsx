@@ -10,11 +10,15 @@ export default function TKnob({
   max = 1,
   step = 0.01,
   defaultValue = 0.5,
-  tooltip, // optional object (same shape as slider)
+  value: controlledValue, // 👈 NEW (optional)
+  tooltip,
+  tooltipMap,
   style,
   onChange,
 }) {
-  const [value, setValue] = useState(defaultValue);
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const value = controlledValue !== undefined ? controlledValue : internalValue;
+
   const [isHovering, setIsHovering] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -30,7 +34,8 @@ export default function TKnob({
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
-  const onPointerUp = () => {
+  const onPointerUp = (e) => {
+    e.currentTarget.releasePointerCapture(e.pointerId);
     setIsDragging(false);
   };
 
@@ -43,7 +48,10 @@ export default function TKnob({
     const snapped = Math.round(next / step) * step;
     const clamped = clamp(snapped);
 
-    setValue(clamped);
+    if (controlledValue === undefined) {
+      setInternalValue(clamped);
+    }
+
     emitSliderEvent(id, clamped);
     onChange?.(clamped);
   };
@@ -51,8 +59,9 @@ export default function TKnob({
   const angle = -135 + ((value - min) / (max - min)) * 270;
 
   const tooltipEnabled = Boolean(tooltip);
-  const formatValue = tooltip?.format ?? ((v) => v.toString());
-  const tooltipContent = formatValue(value.toFixed(2));
+
+  const tooltipContent =
+    typeof tooltipMap === "function" ? tooltipMap(value) : value.toFixed(2);
 
   return (
     <Tooltip.Provider delayDuration={tooltip?.delay ?? 15}>
@@ -66,9 +75,14 @@ export default function TKnob({
             onPointerUp={onPointerUp}
             onPointerMove={onPointerMove}
             onDoubleClick={() => {
-              setValue(defaultValue);
-              emitSliderEvent(id, defaultValue);
-              onChange?.(defaultValue);
+              const v = clamp(defaultValue);
+
+              if (controlledValue === undefined) {
+                setInternalValue(v);
+              }
+
+              emitSliderEvent(id, v);
+              onChange?.(v);
             }}
             style={{
               "--angle": `${angle}deg`,

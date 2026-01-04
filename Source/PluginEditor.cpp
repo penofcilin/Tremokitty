@@ -187,11 +187,7 @@ namespace kitty_editor
         const juce::String& sliderID =  info.getProperty("sliderID", 0).toString();
         float newValue = info.getProperty("newValue", -1); //if something goes wrong, hopefully this will crash it while in development. Could make it 0, but that will probably get confusing.
 
-
-         audioProcessor.apvts.getRawParameterValue(sliderID)->store(newValue);
-         float storedVal = audioProcessor.apvts.getRawParameterValue(sliderID)->load();
-         juce::String output = juce::String("Your slider is called " + sliderID + " and it's new value stored in apvts is " + juce::String(storedVal));
-         DBG(output);
+        audioProcessor.apvts.getParameter(sliderID)->setValueNotifyingHost(newValue); //New thing: parameters should ALWAYS be normalized from ui
     }
 
     void TremoKittyAudioProcessorEditor::dropdownCommit(juce::var info)
@@ -218,7 +214,8 @@ namespace kitty_editor
             audioProcessor.apvts.getRawParameterValue(buttonID)->store(!audioProcessor.apvts.getRawParameterValue(buttonID)->load());
             DBG("Toggled " + buttonID + " new value: " + juce::String(audioProcessor.apvts.getRawParameterValue(buttonID)->load()));
         }
-        DBG("clicked " + buttonID);
+        else
+            DBG("clicked " + buttonID);
 
         //todo: write explicit handlers for each unique button
     }
