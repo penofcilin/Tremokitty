@@ -461,8 +461,11 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         if (filterModLevel > 0)
         {
             //Value between -1 and 1
-            float lfoResult = filterLFOFilter.processSample(0, filterLFO.getNextValue(block.getNumSamples()));
+            float nextLFOValue = filterLFO.getNextValue(block.getNumSamples());
+            float lfoResult = filterLFOFilter.processSample(0, nextLFOValue);
             float filterModder =  lfoResult * filterModLevel * 19980;
+
+            filterLFOCurrentPosition.store(nextLFOValue);
             
             float finalCutoff = (filterCutoffInHertz + filterModder);
 

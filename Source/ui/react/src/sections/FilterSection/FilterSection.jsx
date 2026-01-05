@@ -28,6 +28,23 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
   const [cutoff, setCutoff] = useState(1);
   const [resonance, setResonance] = useState(0);
   const [modDepth, setModDepth] = useState(0);
+  const [modBypassed, setModBypassed] = useState(false);
+
+  const [lfoPosition, setLfoPosition] = useState(0);
+
+  window.__JUCE__.backend.addEventListener("FilterLFOUpdate", (v) => {
+    setLfoPosition(v);
+  });
+
+  const toggleModulationBypass = () => {
+    if (modBypassed) {
+      emitSliderEvent(ParameterID.FILTERMODLEVEL, modDepth);
+      setModBypassed(false);
+    } else {
+      emitSliderEvent(ParameterID.FILTERMODLEVEL, 0);
+      setModBypassed(true);
+    }
+  };
 
   const activeRate = sync ? syncedRate : unsyncedRate;
 
@@ -57,12 +74,6 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
     return hz >= 1000
       ? `${(hz / 1000).toFixed(2)} kHz`
       : `${Math.round(hz)} Hz`;
-  };
-
-  const FILTER_PATHS = {
-    lowpass: "M0 10 H60 Q70 10 70 30 V60 H100",
-    highpass: "M0 60 V30 Q30 10 40 10 H100",
-    bandpass: "M0 60 Q30 60 40 30 Q50 0 60 30 Q70 60 100 60",
   };
 
   return (
@@ -138,8 +149,9 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
               <FilterGraphic
                 cutoff={cutoff}
                 resonance={resonance}
-                modDepth={modDepth}
+                modDepth={modBypassed ? 0 : modDepth}
                 filterType={filterType}
+                lfoPosition={lfoPosition}
               ></FilterGraphic>
               <TToggleGroup
                 id={ParameterID.FILTERTYPE}
@@ -252,7 +264,10 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
           </Flex>
         </div>
 
-        <div className="rightPanel">
+        <div
+          className="rightPanel bypassable"
+          data-bypassed={modBypassed ? true : undefined}
+        >
           <Flex
             style={{
               display: "inline-flex", // keep it tight around contents
@@ -268,37 +283,49 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
             <div className="rightPanelComponents">
               {/* header*/}
               <Flex direction="row" align="center" width="100%">
-                <Separator
-                  style={{
-                    width: "5px",
-                    height: "2px",
-                    backgroundColor: "Black",
-                    marginRight: "4px",
+                <div
+                  className="modulationHeader bypassableHeader"
+                  onClick={() => {
+                    toggleModulationBypass();
+                    console.log("EY");
                   }}
-                />
-
-                <Heading
-                  size="5"
-                  className="Heading"
-                  style={{
-                    color: "Black",
-                    margin: "0px",
-                    padding: "0px",
-                    marginTop: "0px",
-                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.filter = "brightness(1.3)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.filter = "brightness(1)")
+                  }
                 >
-                  Modulation
-                </Heading>
-
-                <Separator
-                  style={{
-                    width: "5px",
-                    height: "2px",
-                    backgroundColor: "Black",
-                    marginLeft: "4px",
-                    marginRight: "4px",
-                  }}
-                />
+                  <Separator
+                    style={{
+                      width: "5px",
+                      height: "2px",
+                      backgroundColor: "white",
+                      marginRight: "4px",
+                    }}
+                  />
+                  <Heading
+                    size="5"
+                    className="Heading"
+                    style={{
+                      color: "white",
+                      margin: "0px",
+                      padding: "0px",
+                      marginTop: "0px",
+                    }}
+                  >
+                    Modulation
+                  </Heading>
+                  <Separator
+                    style={{
+                      width: "5px",
+                      height: "2px",
+                      backgroundColor: "white",
+                      marginLeft: "4px",
+                      marginRight: "4px",
+                    }}
+                  />
+                </div>
               </Flex>
               <TButton
                 style={{ padding: "5px" }}

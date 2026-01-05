@@ -16,7 +16,7 @@
 #define modules TremoKittyAudioProcessor::modules
 
 namespace kitty_editor {
-    class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor
+    class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Timer
     {
     public:
         TremoKittyAudioProcessorEditor(TremoKittyAudioProcessor&);
@@ -28,15 +28,19 @@ namespace kitty_editor {
         //webviews Testing section
         using Resource = juce::WebBrowserComponent::Resource;
         std::optional<Resource> getResource(const juce::String& url);
-       
+
         juce::WebBrowserComponent webView;
 
-        //Frontend Events
+        //Events from frontend
         void sliderChanged(juce::var info);
         void dropdownCommit(juce::var info);
         void buttonClicked(juce::var info);
         void formSubmitted(juce::var info);
         void toggleGroupChanged(juce::var info);
+
+        //Events to frontend
+        void timerCallback() override;
+        void emitFrontendEvent(const juce::String& identifier, juce::var value);
 
         void testNativeFunction(const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion);
 

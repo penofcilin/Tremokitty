@@ -17,6 +17,20 @@
   border: 1px solid black;
 }
 
+.filterGraphic {
+  background-color: var(--bg-darkish);
+  width: 300px;
+  height: 90px;
+  border: 1px solid black;
+  border-radius: 14px;
+  cursor: grab;
+  display: block;
+}
+
+.filterGraphic:active {
+  cursor: grabbing;
+}
+
 .sectionLayout {
   display: grid;
   grid-template-columns: 1fr auto; /* or 2fr 1fr */
@@ -49,4 +63,16 @@
 .resonanceKnob {
   width: 1px;
   height: 1px;
+}
+
+.modulationHeader {
+  display: flex;
+  align-items: center;
+  border-radius: 6px 6px 0 0;
+  width: 105%;
+  margin: -4px;
+  padding: 1px;
+  cursor: pointer;
+  background-color: var(--bg-darkish);
+  margin-bottom: 4px;
 }

@@ -72,12 +72,17 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::ApplicationProperties globalProperties;
 
+    //Used for the frontend filter preview with modulation enabled.
+    std::atomic<float> filterLFOCurrentPosition{ 0.0f };
+
     //Some Information Structures
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
     juce::StringArray WaveTypes{ WAVE_TYPES };
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
     juce::StringArray PresetNames;
     enum class modules { tremolo, pan, filter, mod, master };
+
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 private:
     //LFOlookuptable holds the values that our LFO processes so it can be checked in the processing period.
@@ -117,7 +122,7 @@ private:
 
     void getFilterType(bool shouldPrepare);
     void getWave(modules module);
-    void parameterChanged(const juce::String& parameterID, float newValue) override;
+   
     void processMod(const juce::String& parameterID, float bufferSize);
     void switchProcessMod();
     void updateModParam(float newValue);

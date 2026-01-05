@@ -63,6 +63,7 @@ namespace kitty_editor
                 .withResourceProvider([this](const auto& url) {return getResource(url); })
                 .withNativeIntegrationEnabled()
                 .withInitialisationData("Presets", convertPresetNames(p.PresetNames))
+                .withInitialisationData("filterLFOPosition", juce::var(p.filterLFOCurrentPosition.load()))
                 .withNativeFunction(
                     juce::Identifier{ "testNativeFunction" },
                     [this](const juce::Array<juce::var>& args,
@@ -93,7 +94,9 @@ namespace kitty_editor
     {
         juce::ignoreUnused(audioProcessor);
 
+        startTimer(30);
         addAndMakeVisible(webView);
+
 
         #if TREMOKITTY_DEV_UI
             webView.goToURL("http://localhost:5173");
@@ -101,21 +104,12 @@ namespace kitty_editor
             webView.goToURL(webView.getResourceProviderRoot());
         #endif
 
-            // CPP -> js 1: Webview Evaluate Javascript
-            constexpr auto js = "console.log(\"hello from cpp!\")";
-            webView.evaluateJavascript(js,
-                                       [](juce::WebBrowserComponent::EvaluationResult result) {
-                                           if (const auto* resultPtr = result.getResult())
-                                               DBG("Evaluation result in cpp: " + resultPtr->toString());
-                                           else 
-                                               DBG("Evaluation failed");
-                                       });
-
         setResizable(false,false);
         setSize(730, 600);
     }
 
     //Webview changes
+
     auto TremoKittyAudioProcessorEditor::getResource(const juce::String& url) -> std::optional<Resource>
     {
         juce::String dir;
@@ -155,6 +149,20 @@ namespace kitty_editor
         }
 
         return std::nullopt;
+    }
+
+    void TremoKittyAudioProcessorEditor::timerCallback()
+    {
+        float filterLFOValue = audioProcessor.filterLFOCurrentPosition.load();
+
+        emitFrontendEvent("FilterLFOUpdate", juce::var(filterLFOValue));
+        //DBG("Filterlfo = " + juce::String(filterLFOValue));
+        
+    }
+
+    void TremoKittyAudioProcessorEditor::emitFrontendEvent(const juce::String& identifier, juce::var value)
+    {
+        webView.emitEventIfBrowserIsVisible(juce::Identifier(identifier), value);
     }
 
     //This function is called by the GUI.
@@ -249,6 +257,8 @@ namespace kitty_editor
 
         //Store value. In theory, pass an integer index reflecting choice. For instance click on sine in react -> 0 is passed, apvts gets the tremwave parameter, and sets it to the same index, which should be the same. Later on may need to change this, if miscellaneous togglegroups are incorporated (misc meaning the group does not reflect the state of some parameter).
         audioProcessor.apvts.getRawParameterValue(groupID)->store(newVal);
+        audioProcessor.parameterChanged(groupID, newVal);
+       DBG("Currenrtly stored in " + groupID + juce::String(audioProcessor.apvts.getRawParameterValue(groupID)->load())) ;
 
     }
 
@@ -263,7 +273,7 @@ namespace kitty_editor
 
     TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
     {
-
+        stopTimer();
     }
 
     void TremoKittyAudioProcessorEditor::resized()

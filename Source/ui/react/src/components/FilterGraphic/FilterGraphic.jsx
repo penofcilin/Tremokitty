@@ -1,10 +1,9 @@
-import { useState } from "react";
-
-function FilterGraphic({
+export default function FilterGraphic({
   cutoff = 1,
   resonance = 0,
   modDepth = 0,
   filterType = 0,
+  lfoPosition = 0, // -1 to 1, represents current LFO value
 }) {
   const WIDTH = 100;
   const HEIGHT = 60;
@@ -12,26 +11,29 @@ function FilterGraphic({
   const type = Number(filterType);
   const safeCutoff = Math.min(1, Math.max(0, cutoff));
 
+  // Normalize resonance from 0-10 range to 0-1 range
+  const normalizedResonance = Math.min(1, Math.max(0, resonance / 10));
+
   const cutoffX = safeCutoff * WIDTH;
 
   const MID_Y = HEIGHT * 0.5;
 
-  const sweepWidth = modDepth * 40;
+  const sweepWidth = modDepth * WIDTH;
   const sweepX = Math.max(
     0,
     Math.min(WIDTH - sweepWidth, cutoffX - sweepWidth / 2)
   );
 
-  // Vertical positions - centered with more space
-  const TOP = HEIGHT * 0.25;
-  const BOTTOM = HEIGHT * 0.75;
+  // Vertical positions - high at middle, low extends off screen
+  const TOP = HEIGHT * 0.45;
+  const BOTTOM = HEIGHT * 1.3; // Extends below viewport
 
   // Resonance affects transition steepness and peak
   const baseTransition = 18;
-  const TRANSITION = baseTransition * (1 - resonance * 0.65);
+  const TRANSITION = baseTransition * (1 - normalizedResonance * 0.65);
 
   // Resonance boost at cutoff
-  const resBoost = resonance * HEIGHT * 0.18;
+  const resBoost = normalizedResonance * HEIGHT * 0.18;
 
   /* Low-pass: high → drop at cutoff → low */
   const LP_PEAK = Math.max(TOP - resBoost, HEIGHT * 0.1);
@@ -42,9 +44,9 @@ function FilterGraphic({
     Q ${cutoffX + TRANSITION / 4},${LP_PEAK} ${
     cutoffX + TRANSITION / 2
   },${MID_Y}
-    Q ${cutoffX + TRANSITION},${BOTTOM} ${Math.min(
+    Q ${cutoffX + TRANSITION * 2},${BOTTOM * 0.9} ${Math.min(
     WIDTH,
-    cutoffX + TRANSITION * 1.5
+    cutoffX + TRANSITION * 2.5
   )},${BOTTOM}
     L ${WIDTH},${BOTTOM}
   `;
@@ -53,8 +55,10 @@ function FilterGraphic({
   const HP_PEAK = Math.max(TOP - resBoost, HEIGHT * 0.1);
   const HP_PATH = `
     M 0,${BOTTOM}
-    L ${Math.max(0, cutoffX - TRANSITION * 1.5)},${BOTTOM}
-    Q ${cutoffX - TRANSITION},${BOTTOM} ${cutoffX - TRANSITION / 2},${MID_Y}
+    L ${Math.max(0, cutoffX - TRANSITION * 2.5)},${BOTTOM}
+    Q ${cutoffX - TRANSITION * 2},${BOTTOM * 0.9} ${
+    cutoffX - TRANSITION / 2
+  },${MID_Y}
     Q ${cutoffX - TRANSITION / 4},${HP_PEAK} ${cutoffX},${HP_PEAK}
     Q ${cutoffX + TRANSITION / 4},${HP_PEAK} ${Math.min(
     WIDTH,
@@ -64,8 +68,8 @@ function FilterGraphic({
   `;
 
   /* Band-pass: low → peak at cutoff → low */
-  const BP_WIDTH = baseTransition * (1 - resonance * 0.5);
-  const BP_PEAK = Math.max(TOP - resBoost, HEIGHT * 0.1);
+  const BP_WIDTH = baseTransition * 2.4 * (1 - normalizedResonance * 0.7);
+  const BP_PEAK = Math.max(TOP - resBoost * 1.5, HEIGHT * 0.05);
   const BP_PATH = `
     M 0,${BOTTOM}
     L ${Math.max(0, cutoffX - BP_WIDTH)},${BOTTOM}
@@ -93,11 +97,26 @@ function FilterGraphic({
       curvePath = LP_PATH;
   }
 
+  // Calculate LFO indicator position and dimensions
+  // lfoPosition ranges from -1 to 1
+  // Map it to the sweep zone: -1 = left edge, 0 = center (cutoff), 1 = right edge
+  const lfoOffset =
+    lfoPosition !== undefined ? (lfoPosition * sweepWidth) / 2 : 0;
+  const lfoX = cutoffX + lfoOffset;
+
+  // Rectangle extends from cutoff to lfoX
+  const rectX = Math.min(cutoffX, lfoX);
+  const rectWidth = Math.abs(lfoX - cutoffX);
+  const rectY = TOP - resBoost - 3; // Just above the curve
+  const rectHeight = 2; // Thin line
+
   return (
     <svg
       className="filterGraphic"
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       preserveAspectRatio="none"
+      width="300"
+      height="90"
     >
       <rect
         x="0"
@@ -106,8 +125,7 @@ function FilterGraphic({
         height={HEIGHT}
         fill="transparent"
         stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        vectorEffect="non-scaling-stroke"
+        strokeWidth="0.5"
       />
 
       {modDepth > 0 && (
@@ -124,10 +142,9 @@ function FilterGraphic({
         d={curvePath}
         fill="none"
         stroke="white"
-        strokeWidth="1.5"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
       />
 
       <line
@@ -136,114 +153,20 @@ function FilterGraphic({
         y1="0"
         y2={HEIGHT}
         stroke="rgba(255,255,255,0.6)"
-        strokeWidth="1"
-        vectorEffect="non-scaling-stroke"
+        strokeWidth="0.5"
       />
-    </svg>
-  );
-}
 
-export default function App() {
-  const [cutoff, setCutoff] = useState(0.5);
-  const [resonance, setResonance] = useState(0.3);
-  const [modDepth, setModDepth] = useState(0.2);
-  const [filterType, setFilterType] = useState(0);
-
-  return (
-    <div
-      style={{
-        padding: "40px",
-        background: "#1a1a1a",
-        minHeight: "100vh",
-        color: "white",
-      }}
-    >
-      <h1 style={{ marginBottom: "30px" }}>Filter Graphic Demo</h1>
-
-      <div
-        style={{
-          marginBottom: "40px",
-          background: "#2a2a2a",
-          padding: "20px",
-          borderRadius: "8px",
-        }}
-      >
-        <FilterGraphic
-          cutoff={cutoff}
-          resonance={resonance}
-          modDepth={modDepth}
-          filterType={filterType}
+      {/* LFO modulation indicator */}
+      {modDepth > 0 && lfoPosition !== undefined && (
+        <rect
+          x={rectX}
+          y={rectY}
+          width={rectWidth}
+          height={rectHeight}
+          fill="rgba(255,220,0,0.9)"
+          style={{ marginBottom: "10px" }}
         />
-      </div>
-
-      <div style={{ maxWidth: "400px" }}>
-        <div style={{ marginBottom: "20px" }}>
-          <label style={{ display: "block", marginBottom: "8px" }}>
-            Filter Type
-          </label>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(Number(e.target.value))}
-            style={{
-              width: "100%",
-              padding: "8px",
-              background: "#333",
-              color: "white",
-              border: "1px solid #555",
-              borderRadius: "4px",
-            }}
-          >
-            <option value={0}>Low Pass</option>
-            <option value={1}>High Pass</option>
-            <option value={2}>Band Pass</option>
-          </select>
-        </div>
-
-        <div style={{ marginBottom: "20px" }}>
-          <label style={{ display: "block", marginBottom: "8px" }}>
-            Cutoff: {(cutoff * 100).toFixed(0)}%
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={cutoff}
-            onChange={(e) => setCutoff(Number(e.target.value))}
-            style={{ width: "100%" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "20px" }}>
-          <label style={{ display: "block", marginBottom: "8px" }}>
-            Resonance: {(resonance * 100).toFixed(0)}%
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={resonance}
-            onChange={(e) => setResonance(Number(e.target.value))}
-            style={{ width: "100%" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "20px" }}>
-          <label style={{ display: "block", marginBottom: "8px" }}>
-            Mod Depth: {(modDepth * 100).toFixed(0)}%
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={modDepth}
-            onChange={(e) => setModDepth(Number(e.target.value))}
-            style={{ width: "100%" }}
-          />
-        </div>
-      </div>
-    </div>
+      )}
+    </svg>
   );
 }
