@@ -1,5 +1,6 @@
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { emitTogglegroupEvent } from "../../utilities/juceBridge.js";
+import TTooltip from "../Tooltip/TTooltip.jsx";
 import "./TToggleGroup.css";
 
 export default function TToggleGroup({
@@ -42,7 +43,23 @@ export default function TToggleGroup({
           aria-label={opt.label}
           disabled={opt.disabled}
         >
-          {opt.icon ?? opt.label}
+          <TTooltip
+            content={opt.label}
+            side={vertical ? "right" : "top"}
+            delay={400}
+          >
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              {opt.icon ?? opt.label}
+            </span>
+          </TTooltip>
         </ToggleGroup.Item>
       ))}
     </ToggleGroup.Root>

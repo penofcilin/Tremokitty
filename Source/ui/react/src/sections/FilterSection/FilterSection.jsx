@@ -267,7 +267,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                   },
                   {
                     value: "2",
-                    label: "Negative Cosine",
+                    label: "Band Pass",
                     icon: <BandPassIcon width={18} height={18} />,
                   },
                 ]}
