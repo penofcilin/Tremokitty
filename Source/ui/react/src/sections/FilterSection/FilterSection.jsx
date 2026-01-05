@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Separator } from "@radix-ui/themes";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ParameterID,
   WaveTypes,
@@ -16,7 +16,7 @@ import {
   TKnob,
   FilterGraphic,
 } from "../../components";
-import { toPercentage } from "../../Utilities/General.js";
+import { normToSkewed, toPercentage } from "../../Utilities/General.js";
 import "./FilterSection.css";
 
 export default function FilterSection({ style, bypassed, toggleBypass }) {
@@ -32,9 +32,17 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
 
   const [lfoPosition, setLfoPosition] = useState(0);
 
-  window.__JUCE__.backend.addEventListener("FilterLFOUpdate", (v) => {
-    setLfoPosition(v);
-  });
+  useEffect(() => {
+    const handler = (v) => {
+      setLfoPosition(v);
+    };
+
+    window.__JUCE__.backend.addEventListener("FilterLFOUpdate", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("FilterLFOUpdate", handler);
+    };
+  }, []);
 
   const toggleModulationBypass = () => {
     if (modBypassed) {
@@ -60,7 +68,10 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
     setSync((prev) => {
       const next = !prev;
 
-      emitSliderEvent(ParameterID.FILTERRATE, next ? syncedRate : unsyncedRate);
+      emitSliderEvent(
+        sync ? ParameterID.FILTERSYNCCHOICE : ParameterID.FILTERRATE,
+        next ? syncedRate : unsyncedRate
+      );
 
       return next;
     });
@@ -69,7 +80,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
   const cutoffTooltip = (n) => {
     const min = 20;
     const max = 20000;
-    const hz = min * Math.pow(max / min, n);
+    const hz = normToSkewed(n, min, max, 0.35);
 
     return hz >= 1000
       ? `${(hz / 1000).toFixed(2)} kHz`
@@ -148,7 +159,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
             <div className="filterGraphicWithControls">
               <FilterGraphic
                 cutoff={cutoff}
-                resonance={resonance}
+                resonance={resonance * 8}
                 modDepth={modBypassed ? 0 : modDepth}
                 filterType={filterType}
                 lfoPosition={lfoPosition}
@@ -198,11 +209,14 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
               <TKnob
                 id={ParameterID.FILTERRES}
                 tooltip={"enabled"}
+                tooltipMap={(v) => {
+                  return (v * 10).toFixed(2);
+                }}
                 className="resonanceKnob"
                 onChange={(v) => setResonance(v)}
                 min={0}
-                max={10}
-                step={0.05}
+                max={1}
+                step={0.00005}
                 defaultValue={0}
                 style={{
                   "--knob-size": "26px",
@@ -302,6 +316,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                       height: "2px",
                       backgroundColor: "white",
                       marginRight: "4px",
+                      marginLeft: "3px",
                     }}
                   />
                   <Heading
@@ -345,11 +360,14 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
               >
                 <div style={{ marginRight: "15px" }}>
                   <TKnob
-                    id={ParameterID.FILTERRATE}
-                    min={0}
-                    max={sync ? 20 : NoteTypes.length - 1}
-                    defaultValue={sync ? 5 : 3}
-                    step={sync ? 0.001 : 1}
+                    id={
+                      sync
+                        ? ParameterID.FILTERRATE
+                        : ParameterID.FILTERSYNCCHOICE
+                    }
+                    defaultValue={sync ? 1 / 5 : 1 / 3}
+                    step={sync ? 0.00001 : 1 / (NoteTypes.length - 1)}
+                    skew={sync ? 0.5 : 0}
                     value={activeRate}
                     onChange={handleRateChange}
                     style={{
@@ -357,7 +375,9 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                     }}
                     tooltip="enabled"
                     tooltipMap={
-                      sync ? (v) => `${v.toFixed(1)} Hz` : (v) => NoteTypes[v]
+                      sync
+                        ? (v) => `${(v * 10).toFixed(2)} Hz`
+                        : (v) => NoteTypes[v * (NoteTypes.length - 1)]
                     }
                   />
 

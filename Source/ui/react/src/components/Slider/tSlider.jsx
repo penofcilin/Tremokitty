@@ -5,13 +5,13 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import TTooltip from "../Tooltip/TTooltip.jsx";
 import { emitSliderEvent } from "../../utilities/juceBridge.js";
 import "./tSlider.css";
+import { normToSkewed } from "../../Utilities/General.js";
 
 export default function TSlider({
   id, // ParameterID.X
-  min = 0,
-  max = 1,
-  step = 0.1,
+  step = 0.0001,
   defaultValue = 0.5,
+  skew = 0,
   orientation = "horizontal",
   disabled = false,
   onChange,
@@ -22,6 +22,9 @@ export default function TSlider({
   const [value, setValue] = useState([defaultValue]);
   const [isHovering, setIsHovering] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+
+  const min = 0,
+    max = 1;
 
   const handleChange = (newValue) => {
     const v = newValue[0];
@@ -34,8 +37,8 @@ export default function TSlider({
 
   const tooltipEnabled = Boolean(tooltip);
   const tooltipContent = tooltipMap
-    ? tooltipMap(value[0])
-    : value[0].toFixed(2);
+    ? tooltipMap(skew ? normToSkewed(value[0], 0, 1, skew) : value[0])
+    : (skew ? normToSkewed(value[0], 0, 1, skew) : value[0]).toFixed(2);
 
   return (
     <Tooltip.Provider delayDuration={tooltip?.delay ?? 15}>

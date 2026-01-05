@@ -161,14 +161,14 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
               <TSlider
                 id={ParameterID.TREMRATE}
                 min={0}
-                max={20}
-                step={0.1}
-                defaultValue={10}
+                max={1}
+                skew={0.5}
+                defaultValue={0.5}
                 size="3"
                 variant="soft"
                 tooltip={{ enabled: true }}
                 tooltipMap={(v) => {
-                  return v + " hz";
+                  return (v * 20).toFixed(2) + " hz";
                 }}
                 disabled={sync}
                 style={{ width: "150px", marginTop: "3px" }}

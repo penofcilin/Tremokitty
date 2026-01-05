@@ -196,6 +196,8 @@ namespace kitty_editor
         float newValue = info.getProperty("newValue", -1); //if something goes wrong, hopefully this will crash it while in development. Could make it 0, but that will probably get confusing.
 
         audioProcessor.apvts.getParameter(sliderID)->setValueNotifyingHost(newValue); //New thing: parameters should ALWAYS be normalized from ui
+        DBG("STored something: " + juce::String(sliderID) +" :" +  juce::String(newValue));
+        DBG("Stored: " + juce::String(audioProcessor.apvts.getRawParameterValue(sliderID)->load()));
     }
 
     void TremoKittyAudioProcessorEditor::dropdownCommit(juce::var info)

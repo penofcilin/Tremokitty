@@ -2,20 +2,22 @@
 import { useRef, useState } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { emitSliderEvent } from "../../utilities/juceBridge.js";
+import { normToSkewed } from "../../Utilities/General.js";
 import "./tKnob.css";
 
 export default function TKnob({
   id,
-  min = 0,
-  max = 1,
-  step = 0.01,
+  step = 0.001,
   defaultValue = 0.5,
-  value: controlledValue, // 👈 NEW (optional)
+  skew = 0,
+  value: controlledValue,
   tooltip,
   tooltipMap,
   style,
   onChange,
 }) {
+  const min = 0,
+    max = 1;
   const [internalValue, setInternalValue] = useState(defaultValue);
   const value = controlledValue !== undefined ? controlledValue : internalValue;
 
@@ -61,7 +63,9 @@ export default function TKnob({
   const tooltipEnabled = Boolean(tooltip);
 
   const tooltipContent =
-    typeof tooltipMap === "function" ? tooltipMap(value) : value.toFixed(2);
+    typeof tooltipMap === "function"
+      ? tooltipMap(skew > 0 ? normToSkewed(value, min, max, skew) : value)
+      : (skew > 0 ? normToSkewed(value, min, max, skew) : value).toFixed(2);
 
   return (
     <Tooltip.Provider delayDuration={tooltip?.delay ?? 15}>
@@ -96,7 +100,7 @@ export default function TKnob({
         </Tooltip.Trigger>
 
         {tooltipEnabled && (
-          <Tooltip.Portal>
+          <Tooltip.Portal className="tooltipBox">
             <Tooltip.Content
               className="TooltipContent"
               side={tooltip?.side ?? "top"}

@@ -69,3 +69,7 @@
 .tKnob:active .tKnobIndicator {
   filter: brightness(1.1);
 }
+
+.tooltipBox {
+  width: 75px;
+}

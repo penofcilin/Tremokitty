@@ -742,7 +742,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
         juce::ParameterID("TREMSYNC", 1), "Tremolo Sync",
         false));
 
-
     // Panner Section
     layout.add (std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("PANRATE", 1), "Pan Rate",
