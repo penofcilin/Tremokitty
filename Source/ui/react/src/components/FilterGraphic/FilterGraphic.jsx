@@ -167,6 +167,28 @@ export default function FilterGraphic({
           style={{ marginBottom: "10px" }}
         />
       )}
+
+      <text
+        x="2"
+        y={HEIGHT - 2}
+        fontSize="4"
+        fill="rgba(255,255,255,0.6)"
+        textAnchor="start"
+        dominantBaseline="ideographic"
+      >
+        20
+      </text>
+
+      <text
+        x={WIDTH - 2}
+        y={HEIGHT - 2}
+        fontSize="4"
+        fill="rgba(255,255,255,0.6)"
+        textAnchor="end"
+        dominantBaseline="ideographic"
+      >
+        20 kHz
+      </text>
     </svg>
   );
 }

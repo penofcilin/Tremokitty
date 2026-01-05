@@ -14,6 +14,7 @@ import {
   TButton,
   TToggleGroup,
   TKnob,
+  TTooltip,
   FilterGraphic,
 } from "../../components";
 import { normToSkewed, toPercentage } from "../../Utilities/General.js";
@@ -29,9 +30,10 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
   const [resonance, setResonance] = useState(0);
   const [modDepth, setModDepth] = useState(0);
   const [modBypassed, setModBypassed] = useState(false);
-
   const [lfoPosition, setLfoPosition] = useState(0);
+  const [xyCursorPx, setXyCursorPx] = useState(null);
 
+  //LFO Updates
   useEffect(() => {
     const handler = (v) => {
       setLfoPosition(v);
@@ -44,6 +46,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
     };
   }, []);
 
+  //Mod Bypass
   const toggleModulationBypass = () => {
     if (modBypassed) {
       emitSliderEvent(ParameterID.FILTERMODLEVEL, modDepth);
@@ -64,6 +67,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
     }
   };
 
+  //Sync button click
   const syncButtonClicked = () => {
     setSync((prev) => {
       const next = !prev;
@@ -85,6 +89,45 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
     return hz >= 1000
       ? `${(hz / 1000).toFixed(2)} kHz`
       : `${Math.round(hz)} Hz`;
+  };
+
+  //Filter clicking stuff
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+  const updateXYFromEvent = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const x = clamp01((e.clientX - rect.left) / rect.width);
+    const y = clamp01((rect.bottom - e.clientY) / rect.height);
+
+    setXyCursorPx({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+
+    setCutoff(x);
+    setResonance(y);
+
+    emitSliderEvent(ParameterID.FILTERCUTOFF, x);
+    emitSliderEvent(ParameterID.FILTERRES, y);
+  };
+
+  const onXYPointerDown = (e) => {
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    updateXYFromEvent(e);
+  };
+
+  const onXYPointerMove = (e) => {
+    if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+    updateXYFromEvent(e);
+  };
+
+  const onXYPointerUp = (e) => {
+    setXyCursorPx(null);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   };
 
   return (
@@ -157,13 +200,54 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
             gap={0}
           >
             <div className="filterGraphicWithControls">
-              <FilterGraphic
-                cutoff={cutoff}
-                resonance={resonance * 8}
-                modDepth={modBypassed ? 0 : modDepth}
-                filterType={filterType}
-                lfoPosition={lfoPosition}
-              ></FilterGraphic>
+              <div
+                className="filterXYPad"
+                onPointerDown={onXYPointerDown}
+                onPointerMove={onXYPointerMove}
+                onPointerUp={onXYPointerUp}
+                onPointerCancel={onXYPointerUp}
+                style={{
+                  position: "relative",
+                  touchAction: "none",
+                  cursor: "grabbing",
+                }}
+              >
+                {/* SVG graphic */}
+                <FilterGraphic
+                  cutoff={cutoff}
+                  resonance={resonance * 8}
+                  modDepth={modBypassed ? 0 : modDepth}
+                  filterType={filterType}
+                  lfoPosition={lfoPosition}
+                />
+
+                {xyCursorPx && (
+                  <TTooltip
+                    side="top"
+                    open={true}
+                    delay={0}
+                    style={{ border: "2px solid var(--outline)" }}
+                    content={
+                      <div>
+                        <div>Cutoff: {cutoffTooltip(cutoff)}</div>
+                        <div>Resy res: {(resonance * 10).toFixed(2)}</div>
+                      </div>
+                    }
+                  >
+                    <div
+                      className="xyTooltipAnchor"
+                      style={{
+                        position: "absolute",
+                        left: xyCursorPx.x,
+                        top: xyCursorPx.y,
+                        width: "1px",
+                        height: "1px",
+                        pointerEvents: "none",
+                      }}
+                    />
+                  </TTooltip>
+                )}
+              </div>
               <TToggleGroup
                 id={ParameterID.FILTERTYPE}
                 value={filterType}
@@ -194,6 +278,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 id={ParameterID.FILTERCUTOFF}
                 min={0}
                 max={1}
+                value={cutoff}
                 defaultValue={1}
                 tooltip={"enabled"}
                 tooltipMap={cutoffTooltip}
@@ -212,6 +297,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 tooltipMap={(v) => {
                   return (v * 10).toFixed(2);
                 }}
+                value={resonance}
                 className="resonanceKnob"
                 onChange={(v) => setResonance(v)}
                 min={0}

@@ -11,6 +11,7 @@ export default function TSlider({
   id, // ParameterID.X
   step = 0.0001,
   defaultValue = 0.5,
+  value: controlledValue, // ✅ controlled support
   skew = 0,
   orientation = "horizontal",
   disabled = false,
@@ -19,26 +20,34 @@ export default function TSlider({
   tooltipMap,
   style,
 }) {
-  const [value, setValue] = useState([defaultValue]);
+  const [internalValue, setInternalValue] = useState([defaultValue]);
   const [isHovering, setIsHovering] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   const min = 0,
     max = 1;
 
+  const value =
+    controlledValue !== undefined ? [controlledValue] : internalValue;
+
   const handleChange = (newValue) => {
     const v = newValue[0];
 
-    setValue([v]);
-    emitSliderEvent(id, v); //Emit a normalized value
+    if (controlledValue === undefined) {
+      setInternalValue([v]);
+    }
 
+    emitSliderEvent(id, v); // Emit normalized value
     onChange?.(v);
   };
 
   const tooltipEnabled = Boolean(tooltip);
+
+  const displayValue = skew ? normToSkewed(value[0], 0, 1, skew) : value[0];
+
   const tooltipContent = tooltipMap
-    ? tooltipMap(skew ? normToSkewed(value[0], 0, 1, skew) : value[0])
-    : (skew ? normToSkewed(value[0], 0, 1, skew) : value[0]).toFixed(2);
+    ? tooltipMap(displayValue)
+    : displayValue.toFixed(2);
 
   return (
     <Tooltip.Provider delayDuration={tooltip?.delay ?? 15}>
@@ -58,15 +67,20 @@ export default function TSlider({
             onPointerDown={() => setIsDragging(true)}
             onPointerUp={() => setIsDragging(false)}
             onDoubleClick={() => {
-              setValue([defaultValue]);
-              handleChange([defaultValue]);
+              const v = defaultValue;
+
+              if (controlledValue === undefined) {
+                setInternalValue([v]);
+              }
+
+              emitSliderEvent(id, v);
+              onChange?.(v);
             }}
           >
             <Slider.Track className="tSliderTrack">
               <Slider.Range className="tSliderRange" />
             </Slider.Track>
 
-            {/* Anchor = thumb */}
             <Slider.Thumb className="tSliderThumb" />
           </Slider.Root>
         </Tooltip.Trigger>

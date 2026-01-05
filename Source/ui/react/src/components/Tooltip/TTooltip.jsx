@@ -6,15 +6,18 @@ export default function TTooltip({
   children,
   side = "top",
   delay = 600,
+  open,
+  style,
 }) {
   if (!content) return children;
 
   return (
     <Tooltip.Provider delayDuration={delay}>
-      <Tooltip.Root>
+      <Tooltip.Root open={open}>
         <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
+            style={style}
             className="TooltipContent"
             side={side}
             sideOffset={6}
