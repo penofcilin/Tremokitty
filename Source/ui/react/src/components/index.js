@@ -8,3 +8,4 @@ export { default as TTooltip } from "./Tooltip/TTooltip";
 export { default as TToggleGroup } from "./ToggleGroup/TTogglegroup";
 export { default as WaveSelector } from "./WaveSelector/WaveSelector";
 export { default as FilterGraphic } from "./FilterGraphic/FilterGraphic";
+export { default as Oscilloscope } from "./Oscilloscope/Oscilloscope";

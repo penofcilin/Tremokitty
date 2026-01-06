@@ -37,6 +37,21 @@ float KOLFO::getNextValue(float bufferSize)
     return generator(phase.advance(increment) - juce::MathConstants<float>::pi);
 }
 
+float KOLFO::peekNextValue()
+{
+    increment = juce::MathConstants<float>::twoPi * relativeFrequency;
+    auto phaseCopy = phase;
+    return generator(phaseCopy.advance(increment) - juce::MathConstants<float>::pi);
+}
+
+float KOLFO::peekNextValue(float bufferSize)
+{
+    relativeFrequency = frequency / (sampleRate / bufferSize);
+    increment = juce::MathConstants<float>::twoPi * relativeFrequency;
+    auto phaseCopy = phase;
+    return generator(phaseCopy.advance(increment) - juce::MathConstants<float>::pi);
+}
+
 void KOLFO::advancePhase(float increment)
 {
     phase.advance(increment);

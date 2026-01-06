@@ -154,8 +154,14 @@ namespace kitty_editor
     void TremoKittyAudioProcessorEditor::timerCallback()
     {
         float filterLFOValue = audioProcessor.filterLFOCurrentPosition.load();
+        float tremLFOValue = audioProcessor.tremLFOCurrentPosition.load();
+        float panLFOValue = audioProcessor.panLFOCurrentPosition.load();
+        float modLFOValue = audioProcessor.modLFOCurrentPosition.load();
 
         emitFrontendEvent("FilterLFOUpdate", juce::var(filterLFOValue));
+        emitFrontendEvent("TremLFOUpdate", juce::var(tremLFOValue));
+        emitFrontendEvent("PanLFOUpdate", juce::var(panLFOValue));
+        emitFrontendEvent("ModLFOUpdate", juce::var(modLFOValue));
         //DBG("Filterlfo = " + juce::String(filterLFOValue));
         
     }

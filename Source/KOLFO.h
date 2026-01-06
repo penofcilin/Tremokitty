@@ -54,6 +54,11 @@ public:
     //Returns next value and advances phase, use this when you need to use something in the process block but the buffer sizes are not fixed.
     float getNextValue(float bufferSize);
 
+    //These will show the next value of the LFO, but not advance the phase or anything.
+    float peekNextValue();
+
+    float peekNextValue(float bufferSize);
+
     //Meant to jump the wave ahead to some point in it's phase. Note that phase is a value between 0 and 2 pi.
     void advancePhase(float increment);
 

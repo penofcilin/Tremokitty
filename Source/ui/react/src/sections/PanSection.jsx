@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   ParameterID,
   WaveTypes,
@@ -6,13 +6,39 @@ import {
   NoteTypes,
 } from "../utilities/juceBridge.js";
 import { Box, Flex, Heading, Separator } from "@radix-ui/themes";
-import { TSlider, WaveSelector, TButton, TDropdown } from "../components";
+import {
+  TSlider,
+  WaveSelector,
+  TButton,
+  TDropdown,
+  Oscilloscope,
+} from "../components";
 import { toPercentage } from "../Utilities/General.js";
 
 export default function PanSection({ style, bypassed, toggleBypass }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [depth, setDepth] = useState(0.7);
   const [sync, setSync] = useState(false);
+  const [lfoPosition, setLfoPosition] = useState(0);
+
+  const bypassedRef = useRef(false);
+
+  useEffect(() => {
+    bypassedRef.current = bypassed;
+  }, [bypassed]);
+
+  useEffect(() => {
+    const handler = (v) => {
+      if (bypassedRef.current) return;
+      setLfoPosition(v);
+    };
+
+    window.__JUCE__.backend.addEventListener("PanLFOUpdate", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("PanLFOUpdate", handler);
+    };
+  }, []);
 
   return (
     <Flex
@@ -150,38 +176,51 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                 alignItems: "center",
               }}
             >
-              <TSlider
-                id={ParameterID.PANRATE}
-                min={0}
-                max={1}
-                skew={0.5}
-                defaultValue={0.5}
-                size="3"
-                variant="soft"
-                tooltip={{ enabled: true }}
-                tooltipMap={(v) => {
-                  return (v * 10).toFixed(2) + " hz";
-                }}
-                disabled={sync}
-                style={{ width: "150px", marginTop: "3px" }}
-              />
+              <Oscilloscope
+                width={110}
+                height={90}
+                lfoValue={lfoPosition}
+                depth={depth}
+              ></Oscilloscope>
 
-              <TButton
-                style={{ width: "40px", height: "25px", align: "center" }}
-                id={ParameterID.PANSYNC}
-                clickEvent={() => setSync((prev) => !prev)}
-                isToggle={1}
-              >
-                Sync
-              </TButton>
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                {sync && (
+                  <TDropdown
+                    id={ParameterID.PANSYNCCHOICE}
+                    defaultValue={NoteTypes[0]}
+                    buttonStyle={{ width: "130px" }}
+                    disabled={!sync}
+                    options={NoteTypes}
+                  ></TDropdown>
+                )}
 
-              <TDropdown
-                id={ParameterID.PANSYNCCHOICE}
-                defaultValue={NoteTypes[0]}
-                buttonStyle={{ width: "135px" }}
-                disabled={!sync}
-                options={NoteTypes}
-              ></TDropdown>
+                {!sync && (
+                  <TSlider
+                    id={ParameterID.PANRATE}
+                    min={0}
+                    max={1}
+                    skew={0.5}
+                    defaultValue={0.5}
+                    size="3"
+                    variant="soft"
+                    tooltip={{ enabled: true }}
+                    tooltipMap={(v) => {
+                      return (v * 10).toFixed(2) + " hz";
+                    }}
+                    disabled={sync}
+                    style={{ width: "130px", marginTop: "3px" }}
+                  />
+                )}
+
+                <TButton
+                  style={{ width: "40px", height: "25px", align: "center" }}
+                  id={ParameterID.PANSYNC}
+                  clickEvent={() => setSync((prev) => !prev)}
+                  isToggle={1}
+                >
+                  Sync
+                </TButton>
+              </div>
             </Flex>
           </Flex>
 

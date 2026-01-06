@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ParameterID,
   WaveTypes,
@@ -9,18 +9,31 @@ import {
 import { Box, Flex, Heading, Separator } from "@radix-ui/themes";
 import {
   TSlider,
-  TKnob,
-  WaveSelector,
   TButton,
   TDropdown,
+  WaveSelector,
+  Oscilloscope,
 } from "../components";
 import { toPercentage } from "../Utilities/General.js";
 
 export default function TremoloSection({ style, bypassed, toggleBypass }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [tremDepth, setTremDepth] = useState(0.7);
-
   const [sync, setSync] = useState(false);
+  const [lfoPosition, setLfoPosition] = useState(0);
+
+  //LFO Updates
+  useEffect(() => {
+    const handler = (v) => {
+      setLfoPosition(v);
+    };
+
+    window.__JUCE__.backend.addEventListener("TremLFOUpdate", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("TremLFOUpdate", handler);
+    };
+  }, []);
 
   return (
     <Flex
@@ -144,7 +157,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
 
             <Separator
               style={{
-                width: "170px",
+                width: "175px",
                 height: "2px",
                 backgroundColor: "black",
               }}
@@ -158,38 +171,51 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
                 alignItems: "center",
               }}
             >
-              <TSlider
-                id={ParameterID.TREMRATE}
-                min={0}
-                max={1}
-                skew={0.5}
-                defaultValue={0.5}
-                size="3"
-                variant="soft"
-                tooltip={{ enabled: true }}
-                tooltipMap={(v) => {
-                  return (v * 20).toFixed(2) + " hz";
-                }}
-                disabled={sync}
-                style={{ width: "150px", marginTop: "3px" }}
-              />
+              <Oscilloscope
+                width={110}
+                height={90}
+                lfoValue={lfoPosition}
+                depth={tremDepth}
+              ></Oscilloscope>
 
-              <TButton
-                style={{ width: "40px", height: "25px", align: "center" }}
-                id={ParameterID.TREMSYNC}
-                clickEvent={() => setSync((prev) => !prev)}
-                isToggle={1}
-              >
-                Sync
-              </TButton>
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                {sync && (
+                  <TDropdown
+                    id={ParameterID.TREMSYNCCHOICE}
+                    defaultValue={NoteTypes[0]}
+                    buttonStyle={{ width: "130px" }}
+                    disabled={!sync}
+                    options={NoteTypes}
+                  ></TDropdown>
+                )}
 
-              <TDropdown
-                id={ParameterID.TREMSYNCCHOICE}
-                defaultValue={NoteTypes[0]}
-                buttonStyle={{ width: "135px" }}
-                disabled={!sync}
-                options={NoteTypes}
-              ></TDropdown>
+                {!sync && (
+                  <TSlider
+                    id={ParameterID.TREMRATE}
+                    min={0}
+                    max={1}
+                    skew={0.5}
+                    defaultValue={0.5}
+                    size="3"
+                    variant="soft"
+                    tooltip={{ enabled: true }}
+                    tooltipMap={(v) => {
+                      return (v * 20).toFixed(2) + " hz";
+                    }}
+                    disabled={sync}
+                    style={{ width: "130px", marginTop: "3px" }}
+                  />
+                )}
+
+                <TButton
+                  style={{ width: "40px", height: "25px", align: "center" }}
+                  id={ParameterID.TREMSYNC}
+                  clickEvent={() => setSync((prev) => !prev)}
+                  isToggle={1}
+                >
+                  Sync
+                </TButton>
+              </div>
             </Flex>
           </Flex>
 

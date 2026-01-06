@@ -30,8 +30,8 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
   const [resonance, setResonance] = useState(0);
   const [modDepth, setModDepth] = useState(0);
   const [modBypassed, setModBypassed] = useState(false);
-  const [lfoPosition, setLfoPosition] = useState(0);
   const [xyCursorPx, setXyCursorPx] = useState(null);
+  const [lfoPosition, setLfoPosition] = useState(0);
 
   //LFO Updates
   useEffect(() => {

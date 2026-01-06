@@ -384,6 +384,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             float f{0};
             float tremscaler = 1 - tremDepth;
 
+            tremLFOCurrentPosition.store(tremLFO.peekNextValue());
             for (int samples = 0; samples < buffer.getNumSamples(); ++samples)
             {
                 f = (tremLFO.getNextValue() + 1) * 0.5f;
@@ -426,6 +427,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     //Add panning functionality
     if (panDepth != 0.f)
     {
+        panLFOCurrentPosition.store( panLFO.peekNextValue(block.getNumSamples()));
         newPanVal = panLFO.getNextValue(block.getNumSamples());
         panner.setPan(newPanVal * panDepth);
     }

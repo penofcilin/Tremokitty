@@ -74,6 +74,9 @@ public:
 
     //Used for the frontend filter preview with modulation enabled.
     std::atomic<float> filterLFOCurrentPosition{ 0.0f };
+    std::atomic<float> tremLFOCurrentPosition{ 0.0f };
+    std::atomic<float> panLFOCurrentPosition{ 0.0f };
+    std::atomic<float> modLFOCurrentPosition{ 0.0f };
 
     //Some Information Structures
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
