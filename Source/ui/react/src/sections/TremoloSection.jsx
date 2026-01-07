@@ -19,6 +19,7 @@ import { toPercentage } from "../Utilities/General.js";
 export default function TremoloSection({ style, bypassed, toggleBypass }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [tremDepth, setTremDepth] = useState(0.7);
+  const [rate, setRate] = useState(0.5);
   const [sync, setSync] = useState(false);
   const [lfoPosition, setLfoPosition] = useState(0);
 
@@ -176,6 +177,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
                 height={90}
                 lfoValue={lfoPosition}
                 depth={tremDepth}
+                rate={rate}
               ></Oscilloscope>
 
               <div style={{ display: "flex", flexDirection: "row" }}>
@@ -198,6 +200,9 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
                     defaultValue={0.5}
                     size="3"
                     variant="soft"
+                    onChange={(v) => {
+                      setRate(v);
+                    }}
                     tooltip={{ enabled: true }}
                     tooltipMap={(v) => {
                       return (v * 20).toFixed(2) + " hz";

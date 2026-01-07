@@ -18,6 +18,7 @@ import { toPercentage } from "../Utilities/General.js";
 export default function PanSection({ style, bypassed, toggleBypass }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [depth, setDepth] = useState(0.7);
+  const [rate, setRate] = useState(0.5);
   const [sync, setSync] = useState(false);
   const [lfoPosition, setLfoPosition] = useState(0);
 
@@ -180,6 +181,7 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                 width={110}
                 height={90}
                 lfoValue={lfoPosition}
+                rate={rate}
                 depth={depth}
               ></Oscilloscope>
 
@@ -201,6 +203,9 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                     max={1}
                     skew={0.5}
                     defaultValue={0.5}
+                    onChange={(v) => {
+                      setRate(v);
+                    }}
                     size="3"
                     variant="soft"
                     tooltip={{ enabled: true }}

@@ -2,6 +2,7 @@ export default function FilterGraphic({
   cutoff = 1,
   resonance = 0,
   modDepth = 0,
+  modRate = 1,
   filterType = 0,
   lfoPosition = 0, // -1 to 1, represents current LFO value
 }) {
@@ -106,7 +107,7 @@ export default function FilterGraphic({
 
   // Rectangle extends from cutoff to lfoX
   const rectX = Math.min(cutoffX, lfoX);
-  const rectWidth = Math.abs(lfoX - cutoffX);
+  const rectWidth = modRate > 0 ? Math.abs(lfoX - cutoffX) : 0;
   const rectY = TOP - resBoost - 3; // Just above the curve
   const rectHeight = 2; // Thin line
 

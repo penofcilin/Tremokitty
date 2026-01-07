@@ -217,6 +217,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                   cutoff={cutoff}
                   resonance={resonance * 8}
                   modDepth={modBypassed ? 0 : modDepth}
+                  modRate={sync ? syncedRate : unsyncedRate}
                   filterType={filterType}
                   lfoPosition={lfoPosition}
                 />

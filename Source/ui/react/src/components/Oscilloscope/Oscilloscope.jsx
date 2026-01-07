@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Oscilloscope({
   lfoValue = 0,
   depth = 1,
+  rate = 1,
   style,
   width = 100,
   height = 100,
@@ -11,14 +12,15 @@ export default function Oscilloscope({
 
   const WIDTH = width;
   const HEIGHT = height;
-  const SNAPSHOT_SIZE = 24; // smaller = more zoomed in
+  const SNAPSHOT_SIZE = 24;
 
   const bufferRef = useRef(new Array(SNAPSHOT_SIZE).fill(0));
   const writeIndex = useRef(0);
   const currentLfoRef = useRef(0);
   const currentDepthRef = useRef(1);
+  const currentRateRef = useRef(1);
 
-  // update current LFO value and depth when they change
+  // update current LFO value, depth, and rate when they change
   useEffect(() => {
     currentLfoRef.current = lfoValue;
   }, [lfoValue]);
@@ -26,6 +28,10 @@ export default function Oscilloscope({
   useEffect(() => {
     currentDepthRef.current = depth;
   }, [depth]);
+
+  useEffect(() => {
+    currentRateRef.current = rate;
+  }, [rate]);
 
   // continuous rendering loop
   useEffect(() => {
@@ -41,14 +47,17 @@ export default function Oscilloscope({
       const deltaTime = (currentTime - lastTime) / 1000;
       lastTime = currentTime;
 
-      // advance write position based on scroll speed
+      // advance write position based on scroll speed (always scroll, even when rate is 0)
       const pixelsToAdvance = SCROLL_SPEED * deltaTime;
       const samplesPerPixel = SNAPSHOT_SIZE / WIDTH;
       const samplesToAdvance = pixelsToAdvance * samplesPerPixel;
 
       // write current LFO value multiple times if needed
       for (let i = 0; i < Math.ceil(samplesToAdvance); i++) {
-        bufferRef.current[writeIndex.current] = currentLfoRef.current;
+        // when rate is 0, write 0 to flatten the wave
+        const sample = currentRateRef.current === 0 ? 0 : currentLfoRef.current;
+
+        bufferRef.current[writeIndex.current] = sample;
         writeIndex.current = (writeIndex.current + 1) % SNAPSHOT_SIZE;
       }
 
