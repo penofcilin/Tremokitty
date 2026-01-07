@@ -1,6 +1,8 @@
 .oscilloscopeView {
   background-color: var(--bg-darkish);
   border-radius: 14px;
+  overflow: hidden;
+  display: block;
 }
 
 .tcanvas {

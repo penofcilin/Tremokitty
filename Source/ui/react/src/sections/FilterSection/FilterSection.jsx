@@ -165,7 +165,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                   width: "87px",
                   height: "2px",
                   backgroundColor: "white",
-                  marginLeft: "7px",
+                  marginLeft: "3px",
                   marginRight: "4px",
                 }}
               />
@@ -452,7 +452,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                         ? ParameterID.FILTERRATE
                         : ParameterID.FILTERSYNCCHOICE
                     }
-                    defaultValue={sync ? 1 / 5 : 1 / 3}
+                    defaultValue={sync ? 1 / 5 : 1 / 11}
                     step={sync ? 0.00001 : 1 / (NoteTypes.length - 1)}
                     skew={sync ? 0.5 : 0}
                     value={activeRate}

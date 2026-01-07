@@ -77,6 +77,7 @@ function App() {
             }}
           >
             <ModSection
+              bypassed={modBypassed}
               toggleBypass={() => setModBypassed((prev) => !prev)}
             ></ModSection>
           </div>

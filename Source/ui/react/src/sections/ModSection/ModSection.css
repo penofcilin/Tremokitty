@@ -3,3 +3,15 @@
   border: 2px solid black;
   border-radius: 14px;
 }
+
+.controls {
+  display: "flex";
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+}
+
+.oscilloscopeDiv {
+  justify-items: center;
+  margin-top: 10px;
+}
