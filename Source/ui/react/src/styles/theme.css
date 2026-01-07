@@ -102,3 +102,58 @@ body {
   opacity: 1;
   filter: none;
 }
+
+.appBackground {
+  background-color: #fff1f7;
+  opacity: 1;
+  background-image: linear-gradient(
+      30deg,
+      #ff8181 12%,
+      transparent 12.5%,
+      transparent 87%,
+      #ff8181 87.5%,
+      #ff8181
+    ),
+    linear-gradient(
+      150deg,
+      #ff8181 12%,
+      transparent 12.5%,
+      transparent 87%,
+      #ff8181 87.5%,
+      #ff8181
+    ),
+    linear-gradient(
+      30deg,
+      #ff8181 12%,
+      transparent 12.5%,
+      transparent 87%,
+      #ff8181 87.5%,
+      #ff8181
+    ),
+    linear-gradient(
+      150deg,
+      #ff8181 12%,
+      transparent 12.5%,
+      transparent 87%,
+      #ff8181 87.5%,
+      #ff8181
+    ),
+    linear-gradient(
+      60deg,
+      #ff818177 25%,
+      transparent 25.5%,
+      transparent 75%,
+      #ff818177 75%,
+      #ff818177
+    ),
+    linear-gradient(
+      60deg,
+      #ff818177 25%,
+      transparent 25.5%,
+      transparent 75%,
+      #ff818177 75%,
+      #ff818177
+    );
+  background-size: 54px 95px;
+  background-position: 0 0, 0 0, 27px 47px, 27px 47px, 0 0, 27px 47px;
+}

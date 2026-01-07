@@ -205,7 +205,7 @@ export default function ModSection({ style, bypassed, toggleBypass }) {
           }}
         >
           <WaveSelector
-            id={ParameterID.MODWAVE}
+            id={ParameterID.MODWAVETYPE}
             value={waveType}
             onChange={setWaveType}
             vertical={false}
