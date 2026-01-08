@@ -45,6 +45,7 @@ namespace kitty_editor {
         void testNativeFunction(const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion);
 
         juce::Array<juce::var> convertPresetNames(juce::StringArray& names);
+        juce::var prepareAPVTSState(const juce::ValueTree& state);
 
         //Member Variable
         bool shouldNotDisplayKitty{ false };

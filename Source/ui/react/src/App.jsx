@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   TremoloSection,
   PanSection,
@@ -6,84 +5,89 @@ import {
   FilterSection,
   ModSection,
 } from "./sections";
-import { Flex, Grid, Theme } from "@radix-ui/themes";
+
+import { Flex, Theme } from "@radix-ui/themes";
 import { PresetsContext } from "./utilities/PresetsContext";
+import {
+  parseParams,
+  resolveDefaults,
+  ParamsProvider,
+} from "./Utilities/General";
+
 import "@radix-ui/themes/styles.css";
 import "./styles/fonts.css";
 import "./styles/theme.css";
+import "./styles/App.css";
 
-//Load initlization data from juce
+// --------------------------------------------
+// Load initialization data from JUCE
+// --------------------------------------------
 const data = window.__JUCE__.initialisationData;
 
+// Parse XML -> [{ id, value | undefined }]
+const parsedParams = parseParams(data.InitialState);
+
+// Apply JUCE defaults -> { PARAMID: value }
+const resolvedParams = resolveDefaults(parsedParams);
+
 function App() {
-  const [tremBypassed, setTremBypassed] = useState(false);
-  const [panBypassed, setPanBypassed] = useState(false);
-  const [filterBypassed, setFilterBypassed] = useState(false);
-  const [modBypassed, setModBypassed] = useState(false);
-  //document.addEventListener("contextmenu", (e) => e.preventDefault()); //Prevent context menu from opening on right click
   return (
-    <Theme
-      accentColor="pink"
-      grayColor="gray"
-      panelBackground="solid"
-      scaling="100%"
-      radius="full"
-    >
-      <Flex
-        direction="column"
-        className="appBackground"
-        style={{
-          margin: 0,
-          padding: 0,
-          width: "100%",
-          height: "100vh",
-        }}
+    <ParamsProvider initialParams={resolvedParams}>
+      <Theme
+        accentColor="pink"
+        grayColor="gray"
+        panelBackground="solid"
+        scaling="100%"
+        radius="full"
       >
-        <PresetsContext.Provider value={data.Presets[0]}>
-          <HeaderSection presets={data.Presets[0]} />
-        </PresetsContext.Provider>
-        <div className="mainGrid">
-          <div className="tremolo">
-            <TremoloSection
-              bypassed={tremBypassed}
-              toggleBypass={() => setTremBypassed((prev) => !prev)}
-              style={{ marginLeft: "10px", marginTop: "5px" }}
-            />
-          </div>
+        <Flex
+          direction="column"
+          className="appBackground"
+          style={{
+            margin: 0,
+            padding: 0,
+            width: "100%",
+            height: "100vh",
+          }}
+        >
+          {/* Presets */}
+          <PresetsContext.Provider value={data.Presets[0]}>
+            <HeaderSection presets={data.Presets[0]} />
+          </PresetsContext.Provider>
 
-          <div className="pan">
-            <PanSection
-              bypassed={panBypassed}
-              toggleBypass={() => setPanBypassed((prev) => !prev)}
-              style={{ marginRight: "5px", marginTop: "5px" }}
-            />
-          </div>
+          {/* Main UI */}
+          <div className="mainGrid">
+            <div className="tremolo">
+              <TremoloSection
+                style={{ marginLeft: "10px", marginTop: "5px" }}
+              />
+            </div>
 
-          <div
-            style={{ gridColumn: "span 2", marginLeft: "10px" }}
-            className="filter"
-          >
-            <FilterSection
-              bypassed={filterBypassed}
-              toggleBypass={() => setFilterBypassed((prev) => !prev)}
-            ></FilterSection>
-          </div>
+            <div className="pan">
+              <PanSection style={{ marginRight: "5px", marginTop: "5px" }} />
+            </div>
 
-          <div
-            style={{
-              marginTop: "5px",
-              gridColumn: "3",
-              gridRow: "1 / -1",
-            }}
-          >
-            <ModSection
-              bypassed={modBypassed}
-              toggleBypass={() => setModBypassed((prev) => !prev)}
-            ></ModSection>
+            <div
+              className="filter"
+              style={{ gridColumn: "span 2", marginLeft: "10px" }}
+            >
+              <FilterSection />
+            </div>
+
+            <div
+              className="mod"
+              style={{
+                marginTop: "5px",
+                gridColumn: "3",
+                gridRow: "1 / -1",
+              }}
+            >
+              <ModSection />
+            </div>
           </div>
-        </div>
-      </Flex>
-    </Theme>
+        </Flex>
+      </Theme>
+    </ParamsProvider>
   );
 }
 

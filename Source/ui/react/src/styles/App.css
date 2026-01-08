@@ -1,0 +1,53 @@
+html,
+body,
+#root,
+[data-radix-theme] {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+}
+
+.Heading {
+  font-family: "Permanent Marker" !important;
+}
+
+.Heading,
+[data-radix-heading] {
+  margin: 0;
+}
+
+[data-radix-theme] {
+  background-color: var(--bg-dark);
+  --font-family-heading: "Permanent Marker", cursive;
+  --font-family-body: "Murecho", sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.bypassable[data-bypassed] {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+/* Disable all interaction */
+.bypassable[data-bypassed] * {
+  pointer-events: none;
+}
+
+/* Re-enable header interaction + visuals */
+.bypassable[data-bypassed] .bypassableHeader,
+.bypassable[data-bypassed] .bypassableHeader * {
+  pointer-events: auto;
+  opacity: 1;
+  filter: none;
+}

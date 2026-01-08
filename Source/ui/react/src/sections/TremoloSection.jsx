@@ -21,6 +21,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
   const [tremDepth, setTremDepth] = useState(0.7);
   const [rate, setRate] = useState(0.5);
   const [sync, setSync] = useState(false);
+  const [syncChoice, setSyncChoice] = useState(null);
   const [lfoPosition, setLfoPosition] = useState(0);
 
   //LFO Updates

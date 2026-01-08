@@ -45,6 +45,62 @@ export const ParameterID = Object.freeze({
   MODSYNC: "MODSYNC",
 });
 
+export const PARAM_DEFAULTS = {
+  // =====================
+  // Master / Global
+  // =====================
+  GAIN: 1.0,
+  MASTERBP: false,
+  PRESETINDEX: 0,
+
+  // =====================
+  // Tremolo
+  // =====================
+  TREMRATE: 0.1,
+  TREMDEPTH: 0.5,
+  TREMWAVE: 0, // choice index
+  TREMSYNCCHOICE: 3,
+  TREMBP: false,
+  TREMSYNC: false,
+
+  // =====================
+  // Panner
+  // =====================
+  PANRATE: 7.5,
+  PANDEPTH: 0.0,
+  PANWAVE: 0,
+  PANSYNCCHOICE: 3,
+  PANBP: false,
+  PANSYNC: false,
+
+  // =====================
+  // Filter
+  // =====================
+  FILTERRATE: 0.0,
+  FILTERMODLEVEL: 0.0,
+  FILTERCUTOFF: 0.9,
+  FILTERRES: 1.0 / Math.sqrt(2.0), // ≈ 0.70710678
+  FILTERWAVE: 0,
+  FILTERTYPE: 0,
+  FILTERSYNCCHOICE: 3,
+  FILTERBP: false,
+  FILTERSYNC: false,
+
+  // =====================
+  // Mod LFO
+  // =====================
+  MODLFORATE: 0.0,
+  MODLFODEPTH: 0.0,
+  MODWAVETYPE: 0,
+  MODCHOICE: 0,
+  LASTMODDEDPARAM: 0,
+  MODSYNCCHOICE: 3,
+  MODPARAMPRIORVALUE: 0.0,
+  MODRESETSWITCH: true,
+  MODBP: false,
+  MODSYNC: false,
+};
+
 export const ElementID = Object.freeze({
   SAVEPRESETBUTTON: "SAVEPRESETBUTTON",
   OPENPRESETFOLDERBUTTON: "OPENPRESETFOLDERBUTTON",

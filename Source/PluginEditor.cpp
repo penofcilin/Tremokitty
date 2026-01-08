@@ -63,7 +63,7 @@ namespace kitty_editor
                 .withResourceProvider([this](const auto& url) {return getResource(url); })
                 .withNativeIntegrationEnabled()
                 .withInitialisationData("Presets", convertPresetNames(p.PresetNames))
-                .withInitialisationData("filterLFOPosition", juce::var(p.filterLFOCurrentPosition.load()))
+               .withInitialisationData("InitialState", prepareAPVTSState(p.apvts.copyState()))
                 .withNativeFunction(
                     juce::Identifier{ "testNativeFunction" },
                     [this](const juce::Array<juce::var>& args,
@@ -195,6 +195,15 @@ namespace kitty_editor
 
         return presetVars;
     }
+
+    juce::var TremoKittyAudioProcessorEditor::prepareAPVTSState(const juce::ValueTree& state)
+    {
+        std::unique_ptr<juce::XmlElement> xml(state.createXml());
+        juce::String xmlString = xml->toString();
+        
+        return juce::var(xmlString);
+    }
+
 
     void TremoKittyAudioProcessorEditor::sliderChanged(juce::var info)
     {
