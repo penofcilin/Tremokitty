@@ -9,6 +9,8 @@ export default function TKnob({
   id,
   step = 0.001,
   defaultValue = 0.5,
+  min = 0,
+  max = 1,
   skew = 0,
   value: controlledValue,
   tooltip,
@@ -16,8 +18,6 @@ export default function TKnob({
   style,
   onChange,
 }) {
-  const min = 0,
-    max = 1;
   const [internalValue, setInternalValue] = useState(defaultValue);
   const value = controlledValue !== undefined ? controlledValue : internalValue;
 

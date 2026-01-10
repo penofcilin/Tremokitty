@@ -18,6 +18,7 @@ import {
   FilterGraphic,
 } from "../../components";
 import { normToSkewed, toPercentage } from "../../Utilities/General.js";
+import { useParam } from "../../Utilities/ParamsContext.jsx";
 import "./FilterSection.css";
 
 export default function FilterSection({ style, bypassed, toggleBypass }) {
@@ -449,12 +450,13 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                   <TKnob
                     id={
                       sync
-                        ? ParameterID.FILTERRATE
-                        : ParameterID.FILTERSYNCCHOICE
+                        ? ParameterID.FILTERSYNCCHOICE
+                        : ParameterID.FILTERRATE
                     }
-                    defaultValue={sync ? 1 / 5 : 1 / 11}
-                    step={sync ? 0.00001 : 1 / (NoteTypes.length - 1)}
-                    skew={sync ? 0.5 : 0}
+                    defaultValue={sync ? 1 : 1 / 5}
+                    max={NoteTypes.length - 1}
+                    step={sync ? 1 : 0.00001}
+                    skew={sync ? 0 : 0.5}
                     value={activeRate}
                     onChange={handleRateChange}
                     style={{
@@ -463,8 +465,8 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                     tooltip="enabled"
                     tooltipMap={
                       sync
-                        ? (v) => `${(v * 10).toFixed(2)} Hz`
-                        : (v) => NoteTypes[v * (NoteTypes.length - 1)]
+                        ? (v) => NoteTypes[v]
+                        : (v) => `${(v * 10).toFixed(2)} Hz`
                     }
                   />
 

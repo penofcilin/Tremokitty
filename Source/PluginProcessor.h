@@ -9,13 +9,20 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "Service/PresetManager.h"
 #include <chrono>
+#include <mutex>
+#include <vector>
+#include "Service/PresetManager.h"
 #include "KOLFO.h"
 #include "KOTempo.h"
 
+
 #define WAVE_TYPES  "Sine", "Cosine", "NegativeCosine",  "Saw", "SawDown", "Square", "InverseSquare", "Random"
 
+struct ParamUpdate {
+    juce::Identifier id;
+    float value;
+};
 
 //==============================================================================
 /**
@@ -78,6 +85,9 @@ public:
     std::atomic<float> panLFOCurrentPosition{ 0.0f };
     std::atomic<float> modLFOCurrentPosition{ 0.0f };
 
+    //Vector to hold all changed parameters that haven't been sent to the react frontend
+    std::vector<ParamUpdate> getChangedParameters();
+
     //Some Information Structures
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
     juce::StringArray WaveTypes{ WAVE_TYPES };
@@ -117,12 +127,16 @@ private:
     //APVTS helper methods
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+    void addListenersToAllParameters();
+    juce::StringArray registeredParamIDs;
+
+    std::mutex paramUpdateMutex;
+    std::vector<ParamUpdate> paramUpdates;
 
     //Our presetManager Instance
     std::unique_ptr<Service::PresetManager> presetManager;
 
    //Some Member Functions
-
     void getFilterType(bool shouldPrepare);
     void getWave(modules module);
    

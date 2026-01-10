@@ -7,12 +7,12 @@ import {
 } from "./sections";
 
 import { Flex, Theme } from "@radix-ui/themes";
-import { PresetsContext } from "./utilities/PresetsContext";
+import { PresetsContext } from "./Utilities/PresetsContext";
 import {
+  ParamsProvider,
   parseParams,
   resolveDefaults,
-  ParamsProvider,
-} from "./Utilities/General";
+} from "./Utilities/ParamsContext";
 
 import "@radix-ui/themes/styles.css";
 import "./styles/fonts.css";
@@ -31,6 +31,7 @@ const parsedParams = parseParams(data.InitialState);
 const resolvedParams = resolveDefaults(parsedParams);
 
 function App() {
+  console.log(JSON.stringify(resolvedParams, null, 2));
   return (
     <ParamsProvider initialParams={resolvedParams}>
       <Theme

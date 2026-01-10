@@ -162,8 +162,17 @@ namespace kitty_editor
         emitFrontendEvent("TremLFOUpdate", juce::var(tremLFOValue));
         emitFrontendEvent("PanLFOUpdate", juce::var(panLFOValue));
         emitFrontendEvent("ModLFOUpdate", juce::var(modLFOValue));
-        //DBG("Filterlfo = " + juce::String(filterLFOValue));
-        
+
+        auto paramUpdates = audioProcessor.getChangedParameters();
+        if (paramUpdates.empty())
+            return;
+
+        juce::DynamicObject::Ptr obj = new juce::DynamicObject();
+
+        for (const auto& u : paramUpdates)
+            obj->setProperty(u.id, u.value);
+
+        emitFrontendEvent( "ParamsUpdate", juce::var(obj.get()));
     }
 
     void TremoKittyAudioProcessorEditor::emitFrontendEvent(const juce::String& identifier, juce::var value)
@@ -198,51 +207,171 @@ namespace kitty_editor
 
     juce::var TremoKittyAudioProcessorEditor::prepareAPVTSState(const juce::ValueTree& state)
     {
-        std::unique_ptr<juce::XmlElement> xml(state.createXml());
-        juce::String xmlString = xml->toString();
-        
-        return juce::var(xmlString);
-    }
+        auto* obj = new juce::DynamicObject();
 
+        for (int i = 0; i < state.getNumProperties(); ++i)
+        {
+            juce::Identifier paramID = state.getPropertyName(i);
+
+            if (auto* param = dynamic_cast<juce::RangedAudioParameter*>(audioProcessor.apvts.getParameter(paramID.toString())))
+            {
+                // Get the actual current value (denormalized)
+                float currentValue = param->convertFrom0to1(param->getValue());
+
+                // Get the range and normalize it properly
+                juce::NormalisableRange<float> range = param->getNormalisableRange();
+                float normalizedValue = range.convertTo0to1(currentValue);
+
+                obj->setProperty(paramID.toString(), normalizedValue);
+            }
+        }
+
+        return juce::var(obj);
+    }
 
     void TremoKittyAudioProcessorEditor::sliderChanged(juce::var info)
     {
-        const juce::String& sliderID =  info.getProperty("sliderID", 0).toString();
-        float newValue = info.getProperty("newValue", -1); //if something goes wrong, hopefully this will crash it while in development. Could make it 0, but that will probably get confusing.
+        const juce::String sliderID =
+            info.getProperty("sliderID", "Null").toString();
 
-        audioProcessor.apvts.getParameter(sliderID)->setValueNotifyingHost(newValue); //New thing: parameters should ALWAYS be normalized from ui
-        DBG("STored something: " + juce::String(sliderID) +" :" +  juce::String(newValue));
-        DBG("Stored: " + juce::String(audioProcessor.apvts.getRawParameterValue(sliderID)->load()));
+        const float incoming =
+            (float)info.getProperty("newValue", 0.0f);
+
+        if (auto* param = audioProcessor.apvts.getParameter(sliderID))
+        {
+            // CHOICE PARAM (slider acting as discrete selector)
+            if (auto* choice =
+                dynamic_cast<juce::AudioParameterChoice*>(param))
+            {
+                const int index =
+                    juce::jlimit(0,
+                                 choice->choices.size() - 1,
+                                 (int)incoming);   //  NO rounding from normalized
+
+                const float normalized =
+                    choice->convertTo0to1(index);
+
+                choice->setValueNotifyingHost(normalized);
+            }
+
+            // BOOL PARAM (slider acting as toggle)
+            else if (auto* boolean = dynamic_cast<juce::AudioParameterBool*>(param))
+            {
+                const bool next = incoming > 0.5f;
+                boolean->setValueNotifyingHost(next ? 1.0f : 0.0f);
+            }
+
+            // INT PARAM
+            else if (auto* intParam =
+                     dynamic_cast<juce::AudioParameterInt*>(param))
+            {
+                const int value =
+                    juce::jlimit(intParam->getRange().getStart(),
+                                 intParam->getRange().getEnd(),
+                                 (int)std::round(incoming));
+
+                const float normalized =
+                    intParam->convertTo0to1(value);
+
+                intParam->setValueNotifyingHost(normalized);
+
+                DBG("Slider->Int " << sliderID
+                    << " value=" << value);
+            }
+
+            // FLOAT PARAM (normal case)
+            else
+            {
+                const float normalized =
+                    juce::jlimit(0.0f, 1.0f, incoming);
+
+                param->setValueNotifyingHost(normalized);
+
+                DBG("Slider->Float " << sliderID
+                    << " value=" << normalized);
+            }
+        }
+        else
+        {
+            DBG("ERROR: sliderCommit param not found: " << sliderID);
+        }
     }
 
     void TremoKittyAudioProcessorEditor::dropdownCommit(juce::var info)
     {
-        const juce::String& dropdownID = info.getProperty("dropdownID", "Null").toString();
-        const int newValue = info.getProperty("newValue", -1); //Choices are stored as integers
+        const juce::String dropdownID =
+            info.getProperty("dropdownID", "Null").toString();
 
-        audioProcessor.apvts.getRawParameterValue(dropdownID)->store(newValue);
+        const int newIndex =
+            (int)info.getProperty("newValue", -1);
 
-        float storedVal = audioProcessor.apvts.getRawParameterValue(dropdownID)->load();
-        juce::String output = juce::String("Your dropdown is called " + dropdownID + " and it's new value stored in apvts is " + juce::String(storedVal));
-        DBG(output);
+        if (auto* param = audioProcessor.apvts.getParameter(dropdownID))
+        {
+            if (auto* choice =
+                dynamic_cast<juce::AudioParameterChoice*>(param))
+            {
+                const float normalized =
+                    choice->convertTo0to1(newIndex);
 
+                choice->setValueNotifyingHost(normalized);
+
+                DBG("Dropdown " << dropdownID
+                    << " set to index " << newIndex
+                    << " (normalized " << normalized << ")");
+            }
+            else
+            {
+                DBG("ERROR: " << dropdownID << " is not an AudioParameterChoice");
+            }
+        }
+        else
+        {
+            DBG("ERROR: Parameter not found: " << dropdownID);
+        }
     }
 
     //Handle each button on it's own
     void TremoKittyAudioProcessorEditor::buttonClicked(juce::var info)
     {
-        const juce::String& buttonID = info.getProperty("buttonID", "null").toString();
-        const int isCheckBox = info.getProperty("isCheckBox", -1);
+        const juce::String buttonID =
+            info.getProperty("buttonID", "null").toString();
 
-        //If it's a togglebutton easy as shit, just store the inverse of the current parameter
-        if (isCheckBox) {
-            audioProcessor.apvts.getRawParameterValue(buttonID)->store(!audioProcessor.apvts.getRawParameterValue(buttonID)->load());
-            DBG("Toggled " + buttonID + " new value: " + juce::String(audioProcessor.apvts.getRawParameterValue(buttonID)->load()));
+        const bool isCheckBox =
+            (bool)info.getProperty("isCheckBox", false);
+
+        if (isCheckBox)
+        {
+            if (auto* param = audioProcessor.apvts.getParameter(buttonID))
+            {
+                if (auto* boolParam =
+                    dynamic_cast<juce::AudioParameterBool*>(param))
+                {
+                    const bool current =
+                        boolParam->get();
+
+                    const bool next = !current;
+
+                    // Bool params are already normalized (0 or 1)
+                    boolParam->setValueNotifyingHost(next ? 1.0f : 0.0f);
+
+                    DBG("Toggled " << buttonID
+                        << " new value: " << (next ? "true" : "false"));
+                }
+                else
+                {
+                    DBG("ERROR: " << buttonID << " is not an AudioParameterBool");
+                }
+            }
+            else
+            {
+                DBG("ERROR: Parameter not found: " << buttonID);
+            }
         }
         else
+        {
             DBG("clicked " + buttonID);
-
-        //todo: write explicit handlers for each unique button
+            // momentary buttons can stay UI-only for now
+        }
     }
 
     void TremoKittyAudioProcessorEditor::formSubmitted(juce::var info)

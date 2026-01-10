@@ -34,34 +34,14 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     LFOList.push_back(filterLFO);
     LFOList.push_back(modLFO);
     
-    apvts.addParameterListener("TREMWAVE", this);
-    apvts.addParameterListener("TREMBP", this);
-    apvts.addParameterListener("PANWAVE", this);
-    apvts.addParameterListener("PANBP", this);
-    apvts.addParameterListener("FILTERTYPE", this);
-    apvts.addParameterListener("FILTERWAVE", this);
-    apvts.addParameterListener("FILTERBP", this);
-    apvts.addParameterListener("MODWAVETYPE", this);
-    apvts.addParameterListener("MODCHOICE", this);
-    apvts.addParameterListener("MODBP", this);
-
-    //Syncing stuff
-    apvts.addParameterListener("TREMSYNC", this);
-    apvts.addParameterListener("PANSYNC", this);
-    apvts.addParameterListener("FILTERSYNC", this);
-    apvts.addParameterListener("MODSYNC", this);
-
-    apvts.addParameterListener("TREMSYNCCHOICE", this);
-    apvts.addParameterListener("PANSYNCCHOICE", this);
-    apvts.addParameterListener("FILTERSYNCCHOICE", this);
-    apvts.addParameterListener("MODSYNCCHOICE", this);
-    
     //Adding listeners to each of the modable parameters- see the enumerator ModParams
-    for (int i = 1; i < 7; i++)
+  /*  for (int i = 1; i < 7; i++)
     {
         juce::String paramID = ModParams[i];
         apvts.addParameterListener(paramID, this);
-    }
+    }*/
+
+    addListenersToAllParameters();
 
     getFilterType(false);
     shouldPrepare = false;
@@ -85,7 +65,32 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
 
 TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
 {
-    
+    for (const auto& paramID : registeredParamIDs)
+    {
+        apvts.removeParameterListener(paramID, this);
+    }
+
+    registeredParamIDs.clear();
+}
+
+void TremoKittyAudioProcessor::addListenersToAllParameters()
+{
+    registeredParamIDs.clear();
+
+    for (auto* p : getParameters())
+    {
+        if (auto* ranged = dynamic_cast<juce::RangedAudioParameter*>(p))
+        {
+            const auto id = ranged->paramID; // ParameterID string
+
+            apvts.addParameterListener(id, this);
+            registeredParamIDs.addIfNotAlreadyThere(id);
+        }
+    }
+}
+
+std::vector<ParamUpdate> TremoKittyAudioProcessor::getChangedParameters()
+{
 }
 
 //When a parameter changes, this one will run, figure out which parameter was changed, and do something accordingly.
@@ -865,6 +870,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout  TremoKittyAudioProcessor::c
     //Returning every parameter
     return layout;
 }
+
+
 
 //Sets the appropriate wave form for the modulation of the given module.
 void TremoKittyAudioProcessor::getWave(modules module)
