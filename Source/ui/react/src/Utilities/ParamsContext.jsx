@@ -36,7 +36,7 @@ export function ParamsProvider({ initialParams, children }) {
       setAllParams: (params) =>
         dispatch({ type: "SET_ALL_PARAMS", payload: params }),
     }),
-    [state]
+    [state],
   );
 
   useEffect(() => {
@@ -97,20 +97,4 @@ export function parseParams(initialData) {
     console.error("Error parsing XML:", error);
     return [];
   }
-}
-
-export function resolveDefaults(parsedParams) {
-  const resolved = { ...PARAM_DEFAULTS };
-
-  for (const { id, value } of parsedParams) {
-    // Only override if value is valid
-    if (value !== undefined && !isNaN(value)) {
-      resolved[id] = value;
-    } else if (!(id in resolved)) {
-      // Keep track of unknown params but don't override defaults
-      resolved[id] = PARAM_DEFAULTS[id] ?? 0; // or some other sensible default
-    }
-  }
-
-  return resolved;
 }

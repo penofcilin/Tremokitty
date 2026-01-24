@@ -44,10 +44,52 @@ namespace kitty_editor {
         void timerCallback() override;
         void emitFrontendEvent(const juce::String& identifier, juce::var value);
 
+        //AUGHHH
+        const std::vector<juce::String> parameterIDs{
+       "GAIN",
+       "MASTERBP",
+       "PRESETINDEX",
+
+       "TREMRATE",
+       "TREMDEPTH",
+       "TREMWAVE",
+       "TREMSYNCCHOICE",
+       "TREMBP",
+       "TREMSYNC",
+
+       "PANRATE",
+       "PANDEPTH",
+       "PANWAVE",
+       "PANSYNCCHOICE",
+       "PANBP",
+       "PANSYNC",
+
+       "FILTERRATE",
+       "FILTERMODLEVEL",
+       "FILTERCUTOFF",
+       "FILTERRES",
+       "FILTERWAVE",
+       "FILTERTYPE",
+       "FILTERSYNCCHOICE",
+       "FILTERBP",
+       "FILTERSYNC",
+
+       "MODLFORATE",
+       "MODLFODEPTH",
+       "MODWAVETYPE",
+       "MODCHOICE",
+       "LASTMODDEDPARAM",
+       "MODSYNCCHOICE",
+       "MODPARAMPRIORVALUE",
+       "MODRESETSWITCH",
+       "MODBP",
+       "MODSYNC"
+        };
+      
         void testNativeFunction(const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion);
 
         juce::Array<juce::var> convertPresetNames(juce::StringArray& names);
-        juce::var prepareAPVTSState(const juce::ValueTree& state);
+        void prepareAPVTSState(juce::WebBrowserComponent::NativeFunctionCompletion completion);
 
         //Member Variable
         bool shouldNotDisplayKitty{ false };

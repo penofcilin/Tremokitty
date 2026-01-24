@@ -58,18 +58,20 @@ namespace kitty_editor
         webView(juce::WebBrowserComponent::Options{}
                 .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
                 .withWinWebView2Options(juce::WebBrowserComponent::Options::WinWebView2{}
-                .withUserDataFolder(juce::File::getSpecialLocation(juce::File::tempDirectory))
-                .withBackgroundColour(juce::Colours::white))
+                                        .withUserDataFolder(juce::File::getSpecialLocation(juce::File::tempDirectory))
+                                        .withBackgroundColour(juce::Colours::white))
                 .withResourceProvider([this](const auto& url) {return getResource(url); })
                 .withNativeIntegrationEnabled()
                 .withInitialisationData("Presets", convertPresetNames(p.PresetNames))
-               .withInitialisationData("InitialState", prepareAPVTSState(p.apvts.copyState()))
                 .withNativeFunction(
                     juce::Identifier{ "testNativeFunction" },
                     [this](const juce::Array<juce::var>& args,
                            juce::WebBrowserComponent::NativeFunctionCompletion completion) {
                                testNativeFunction(args, std::move(completion)); }
-                            )
+                )
+                .withNativeFunction("ProvideState", [this](const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion) {
+                    prepareAPVTSState(std::move(completion)); }
+                )
                 .withEventListener("SliderChanged",
                                    [this](juce::var info) {
                                        sliderChanged(info);
@@ -96,6 +98,7 @@ namespace kitty_editor
 
         startTimer(30);
         addAndMakeVisible(webView);
+       
 
 
         #if TREMOKITTY_DEV_UI
@@ -205,28 +208,18 @@ namespace kitty_editor
         return presetVars;
     }
 
-    juce::var TremoKittyAudioProcessorEditor::prepareAPVTSState(const juce::ValueTree& state)
+    void  TremoKittyAudioProcessorEditor::prepareAPVTSState(juce::WebBrowserComponent::NativeFunctionCompletion completion)
     {
         auto* obj = new juce::DynamicObject();
+        auto state = audioProcessor.apvts.copyState();
 
-        for (int i = 0; i < state.getNumProperties(); ++i)
+        
+
+        for (const auto& id : parameterIDs)
         {
-            juce::Identifier paramID = state.getPropertyName(i);
-
-            if (auto* param = dynamic_cast<juce::RangedAudioParameter*>(audioProcessor.apvts.getParameter(paramID.toString())))
-            {
-                // Get the actual current value (denormalized)
-                float currentValue = param->convertFrom0to1(param->getValue());
-
-                // Get the range and normalize it properly
-                juce::NormalisableRange<float> range = param->getNormalisableRange();
-                float normalizedValue = range.convertTo0to1(currentValue);
-
-                obj->setProperty(paramID.toString(), normalizedValue);
-            }
+                obj->setProperty(id, audioProcessor.apvts.getRawParameterValue(id)->load());
         }
-
-        return juce::var(obj);
+        completion(juce::var(obj));
     }
 
     void TremoKittyAudioProcessorEditor::sliderChanged(juce::var info)

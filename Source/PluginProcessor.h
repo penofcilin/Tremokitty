@@ -92,6 +92,8 @@ public:
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
     juce::StringArray WaveTypes{ WAVE_TYPES };
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
+    
+
     juce::StringArray PresetNames;
     enum class modules { tremolo, pan, filter, mod, master };
 

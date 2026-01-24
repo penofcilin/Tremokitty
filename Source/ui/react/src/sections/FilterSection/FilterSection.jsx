@@ -18,13 +18,17 @@ import {
   FilterGraphic,
 } from "../../components";
 import { normToSkewed, toPercentage } from "../../Utilities/General.js";
-import { useParam } from "../../Utilities/ParamsContext.jsx";
 import "./FilterSection.css";
 
-export default function FilterSection({ style, bypassed, toggleBypass }) {
+export default function FilterSection({
+  style,
+  bypassed,
+  toggleBypass,
+  initialData,
+}) {
   const [filterType, setFilterType] = useState(0);
   const [filterWaveType, setFilterWaveType] = useState(WaveTypes[0]);
-  const [sync, setSync] = useState(true);
+  const [sync, setSync] = useState(false);
   const [syncedRate, setSyncedRate] = useState(10);
   const [unsyncedRate, setUnsyncedRate] = useState(0);
   const [cutoff, setCutoff] = useState(1);
@@ -58,6 +62,36 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
     }
   };
 
+  useEffect(() => {
+    if (!initialData) {
+      console.log("no data");
+      return;
+    }
+    if (typeof initialData !== "object") {
+      console.log("Nobject");
+      return;
+    }
+    console.log(
+      "init data in filtereffect: ",
+      JSON.stringify(initialData, null, 2),
+    );
+    setFilterType(initialData.FILTERTYPE);
+
+    setFilterWaveType(WaveTypes[initialData.FILTERWAVE] ?? WaveTypes[0]);
+
+    setSync(!!initialData.FILTERSYNC);
+
+    setSyncedRate(initialData.FILTERSYNCCHOICE);
+
+    setUnsyncedRate(initialData.FILTERRATE / 10);
+
+    setCutoff(initialData.FILTERCUTOFF);
+
+    setResonance(initialData.FILTERRES);
+
+    setModDepth(initialData.FILTERMODLEVEL);
+  }, [WaveTypes, initialData]);
+
   const activeRate = sync ? syncedRate : unsyncedRate;
 
   const handleRateChange = (value) => {
@@ -75,7 +109,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
 
       emitSliderEvent(
         sync ? ParameterID.FILTERSYNCCHOICE : ParameterID.FILTERRATE,
-        next ? syncedRate : unsyncedRate
+        next ? syncedRate : unsyncedRate,
       );
 
       return next;
@@ -389,7 +423,6 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                   className="modulationHeader bypassableHeader"
                   onClick={() => {
                     toggleModulationBypass();
-                    console.log("EY");
                   }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.filter = "brightness(1.3)")
@@ -435,6 +468,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                 id={ParameterID.FILTERSYNC}
                 clickEvent={syncButtonClicked}
                 isToggle={1}
+                value={sync}
               >
                 Sync
               </TButton>
@@ -454,7 +488,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                         : ParameterID.FILTERRATE
                     }
                     defaultValue={sync ? 1 : 1 / 5}
-                    max={NoteTypes.length - 1}
+                    max={sync ? NoteTypes.length - 1 : 1}
                     step={sync ? 1 : 0.00001}
                     skew={sync ? 0 : 0.5}
                     value={activeRate}
@@ -480,6 +514,7 @@ export default function FilterSection({ style, bypassed, toggleBypass }) {
                     min={0}
                     max={1}
                     step={0.001}
+                    value={modDepth}
                     defaultValue={0.7}
                     onChange={(v) => setModDepth(v)}
                     tooltipMap={(v) => {
