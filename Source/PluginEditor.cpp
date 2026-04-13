@@ -208,18 +208,40 @@ namespace kitty_editor
         return presetVars;
     }
 
-    void  TremoKittyAudioProcessorEditor::prepareAPVTSState(juce::WebBrowserComponent::NativeFunctionCompletion completion)
+    void TremoKittyAudioProcessorEditor::prepareAPVTSState(
+        juce::WebBrowserComponent::NativeFunctionCompletion completion)
     {
         auto* obj = new juce::DynamicObject();
-        auto state = audioProcessor.apvts.copyState();
-
-        
 
         for (const auto& id : parameterIDs)
         {
-                obj->setProperty(id, audioProcessor.apvts.getRawParameterValue(id)->load());
+            if (auto* param = audioProcessor.apvts.getParameter(id))
+            {
+                // ALWAYS normalized [0..1]
+                obj->setProperty(id, param->getValue());
+            }
         }
+
         completion(juce::var(obj));
+    }
+
+    //Called from cpp
+    juce::var TremoKittyAudioProcessorEditor::prepareAPVTSState()
+    {
+        auto* obj = new juce::DynamicObject();
+
+        for (const auto& id : parameterIDs)
+        {
+            obj->setProperty(id, audioProcessor.apvts.getRawParameterValue(id)->load());
+        }
+        return obj;
+    }
+
+    void TremoKittyAudioProcessorEditor::updateUI()
+    {
+        const auto& state = prepareAPVTSState();
+
+        emitFrontendEvent("UpdateUI", state);
     }
 
     void TremoKittyAudioProcessorEditor::sliderChanged(juce::var info)

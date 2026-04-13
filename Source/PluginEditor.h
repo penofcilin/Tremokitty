@@ -90,6 +90,9 @@ namespace kitty_editor {
 
         juce::Array<juce::var> convertPresetNames(juce::StringArray& names);
         void prepareAPVTSState(juce::WebBrowserComponent::NativeFunctionCompletion completion);
+        juce::var prepareAPVTSState();
+
+        void updateUI();
 
         //Member Variable
         bool shouldNotDisplayKitty{ false };

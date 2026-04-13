@@ -62,6 +62,7 @@ export default function FilterSection({
     }
   };
 
+  //Initial data loading
   useEffect(() => {
     if (!initialData) {
       console.log("no data");
@@ -91,6 +92,33 @@ export default function FilterSection({
 
     setModDepth(initialData.FILTERMODLEVEL);
   }, [WaveTypes, initialData]);
+
+  //updateUI event listener
+  useEffect(() => {
+    const handler = (data) => {
+      setFilterType(data.FILTERTYPE);
+
+      setFilterWaveType(WaveTypes[data.FILTERWAVE] ?? WaveTypes[0]);
+
+      setSync(!!data.FILTERSYNC);
+
+      setSyncedRate(data.FILTERSYNCCHOICE);
+
+      setUnsyncedRate(data.FILTERRATE / 10);
+
+      setCutoff(data.FILTERCUTOFF);
+
+      setResonance(data.FILTERRES);
+
+      setModDepth(data.FILTERMODLEVEL);
+    };
+
+    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
+    };
+  }, [WaveTypes]);
 
   const activeRate = sync ? syncedRate : unsyncedRate;
 
