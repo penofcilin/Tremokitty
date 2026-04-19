@@ -14,9 +14,7 @@ import "./styles/fonts.css";
 import "./styles/theme.css";
 import "./styles/App.css";
 
-// --------------------------------------------
-// Load initialization data from JUCE
-// --------------------------------------------
+//load data from juce
 const data = window.__JUCE__.initialisationData;
 
 function App() {
@@ -32,7 +30,6 @@ function App() {
     return () => {};
   }, []);
 
-  console.log("OUtisde the FUFUFUFUF", initialState);
   return (
     <Theme
       accentColor="pink"

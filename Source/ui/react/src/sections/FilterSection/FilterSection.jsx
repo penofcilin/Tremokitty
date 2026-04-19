@@ -82,16 +82,16 @@ export default function FilterSection({
 
     setSync(!!initialData.FILTERSYNC);
 
-    setSyncedRate(initialData.FILTERSYNCCHOICE);
+    setSyncedRate(Math.round(initialData.FILTERSYNCCHOICE * NoteTypes.length));
 
-    setUnsyncedRate(initialData.FILTERRATE / 10);
+    setUnsyncedRate(initialData.FILTERRATE);
 
     setCutoff(initialData.FILTERCUTOFF);
 
     setResonance(initialData.FILTERRES);
 
     setModDepth(initialData.FILTERMODLEVEL);
-  }, [WaveTypes, initialData]);
+  }, [initialData]);
 
   //updateUI event listener
   useEffect(() => {
@@ -102,9 +102,11 @@ export default function FilterSection({
 
       setSync(!!data.FILTERSYNC);
 
-      setSyncedRate(data.FILTERSYNCCHOICE);
+      setSyncedRate(
+        Math.round(initialData.FILTERSYNCCHOICE * NoteTypes.length),
+      );
 
-      setUnsyncedRate(data.FILTERRATE / 10);
+      setUnsyncedRate(data.FILTERRATE);
 
       setCutoff(data.FILTERCUTOFF);
 
@@ -118,7 +120,7 @@ export default function FilterSection({
     return () => {
       window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
     };
-  }, [WaveTypes]);
+  }, []);
 
   const activeRate = sync ? syncedRate : unsyncedRate;
 
@@ -251,9 +253,9 @@ export default function FilterSection({
           {/*Filter graphic + controls */}
           <Flex
             style={{
-              display: "inline-flex", // keep it tight around contents
-              padding: "4px", // space between border and controls
-              border: "3px solid white", // the white box outline
+              display: "inline-flex",
+              padding: "4px",
+              border: "3px solid white",
               borderRadius: "10px",
               alignItems: "center",
               marginLeft: "7px",
@@ -515,7 +517,7 @@ export default function FilterSection({
                         ? ParameterID.FILTERSYNCCHOICE
                         : ParameterID.FILTERRATE
                     }
-                    defaultValue={sync ? 1 : 1 / 5}
+                    defaultValue={sync ? 1 / (NoteTypes.length - 1) : 1 / 5}
                     max={sync ? NoteTypes.length - 1 : 1}
                     step={sync ? 1 : 0.00001}
                     skew={sync ? 0 : 0.5}

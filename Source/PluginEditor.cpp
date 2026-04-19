@@ -96,7 +96,7 @@ namespace kitty_editor
     {
         juce::ignoreUnused(audioProcessor);
 
-        startTimer(30);
+        startTimer(5);
         addAndMakeVisible(webView);
        
 
@@ -261,10 +261,12 @@ namespace kitty_editor
                 const int index =
                     juce::jlimit(0,
                                  choice->choices.size() - 1,
-                                 (int)incoming);   //  NO rounding from normalized
+                                 (int)incoming);
 
                 const float normalized =
                     choice->convertTo0to1(index);
+
+                DBG("CHANGED A CHOICE PARAM, VALUE " << normalized);
 
                 choice->setValueNotifyingHost(normalized);
             }
