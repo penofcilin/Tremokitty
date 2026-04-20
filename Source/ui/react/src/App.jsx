@@ -62,11 +62,17 @@ function App() {
         {/* Main UI */}
         <div className="mainGrid">
           <div className="tremolo">
-            <TremoloSection style={{ marginLeft: "10px", marginTop: "5px" }} />
+            <TremoloSection
+              initialData={initialState}
+              style={{ marginLeft: "10px", marginTop: "5px" }}
+            />
           </div>
 
           <div className="pan">
-            <PanSection style={{ marginRight: "5px", marginTop: "5px" }} />
+            <PanSection
+              initialData={initialState}
+              style={{ marginRight: "5px", marginTop: "5px" }}
+            />
           </div>
 
           <div

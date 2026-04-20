@@ -15,11 +15,17 @@ import {
 } from "../components";
 import { toPercentage } from "../Utilities/General.js";
 
-export default function PanSection({ style, bypassed, toggleBypass }) {
+export default function PanSection({
+  style,
+  bypassed,
+  toggleBypass,
+  initialData,
+}) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [depth, setDepth] = useState(0.7);
   const [rate, setRate] = useState(0.5);
   const [sync, setSync] = useState(false);
+  const [syncChoice, setSyncChoice] = useState(0);
   const [lfoPosition, setLfoPosition] = useState(0);
 
   const bypassedRef = useRef(false);
@@ -40,6 +46,40 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
       window.__JUCE__.backend.removeEventListener("PanLFOUpdate", handler);
     };
   }, []);
+
+  const applyState = (data) => {
+    console.log("Applied a preset/updated ui. State provided:", data);
+
+    setWaveType(data.PANWAVE);
+
+    setDepth(data.PANDEPTH);
+
+    setRate(data.PANRATE);
+
+    setSync(data.PANSYNC);
+
+    if (Number.isInteger(data.PANSYNCCHOICE)) setSyncChoice(data.PANSYNCCHOICE);
+    else setSyncChoice(Math.ceil(data.PANSYNCCHOICE * NoteTypes.length - 1));
+  };
+
+  //Manual UI updates
+  useEffect(() => {
+    const handler = (data) => {
+      applyState(data);
+    };
+
+    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
+    };
+  }, []);
+
+  //initial ui updates
+  useEffect(() => {
+    if (!initialData) return;
+    applyState(initialData);
+  }, [initialData]);
 
   return (
     <Flex
@@ -186,11 +226,12 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
               ></Oscilloscope>
 
               <div style={{ display: "flex", flexDirection: "row" }}>
-                {sync && (
+                {!!sync && (
                   <TDropdown
                     id={ParameterID.PANSYNCCHOICE}
                     defaultValue={NoteTypes[0]}
                     buttonStyle={{ width: "130px" }}
+                    valueFromParent={NoteTypes[syncChoice]}
                     disabled={!sync}
                     options={NoteTypes}
                   ></TDropdown>
@@ -200,9 +241,10 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                   <TSlider
                     id={ParameterID.PANRATE}
                     min={0}
-                    max={1}
+                    max={10}
                     skew={0.5}
                     defaultValue={0.5}
+                    value={rate}
                     onChange={(v) => {
                       setRate(v);
                     }}
@@ -210,7 +252,7 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                     variant="soft"
                     tooltip={{ enabled: true }}
                     tooltipMap={(v) => {
-                      return (v * 10).toFixed(2) + " hz";
+                      return v.toFixed(2) + " hz";
                     }}
                     disabled={sync}
                     style={{ width: "130px", marginTop: "3px" }}
@@ -222,6 +264,7 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                   id={ParameterID.PANSYNC}
                   clickEvent={() => setSync((prev) => !prev)}
                   isToggle={1}
+                  value={sync}
                 >
                   Sync
                 </TButton>
@@ -277,6 +320,7 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
                 max={1}
                 step={0.01}
                 defaultValue={0.7}
+                value={depth}
                 orientation="vertical"
                 size="1"
                 variant="soft"
@@ -361,8 +405,8 @@ export default function PanSection({ style, bypassed, toggleBypass }) {
 
           <WaveSelector
             id={ParameterID.PANWAVE}
-            value={waveType}
             onChange={setWaveType}
+            value={String(waveType)}
             style={{
               marginBottom: "8px",
               border: "2px solid var(--bg-primary)",

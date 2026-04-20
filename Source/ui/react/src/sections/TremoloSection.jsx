@@ -16,7 +16,12 @@ import {
 } from "../components";
 import { toPercentage } from "../Utilities/General.js";
 
-export default function TremoloSection({ style, bypassed, toggleBypass }) {
+export default function TremoloSection({
+  style,
+  bypassed,
+  toggleBypass,
+  initialData,
+}) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [tremDepth, setTremDepth] = useState(0.7);
   const [rate, setRate] = useState(0.5);
@@ -36,6 +41,41 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
       window.__JUCE__.backend.removeEventListener("TremLFOUpdate", handler);
     };
   }, []);
+
+  const applyState = (data) => {
+    console.log("Applied a preset/updated ui. State provided:", data);
+
+    setWaveType(data.TREMWAVE);
+
+    setTremDepth(data.TREMDEPTH);
+
+    setRate(data.TREMRATE);
+
+    setSync(data.TREMSYNC);
+
+    if (Number.isInteger(data.TREMSYNCCHOICE))
+      setSyncChoice(data.TREMSYNCCHOICE);
+    else setSyncChoice(Math.ceil(data.TREMSYNCCHOICE * NoteTypes.length - 1));
+  };
+
+  //Manual UI updates
+  useEffect(() => {
+    const handler = (data) => {
+      applyState(data);
+    };
+
+    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
+    };
+  }, []);
+
+  //initial ui updates
+  useEffect(() => {
+    if (!initialData) return;
+    applyState(initialData);
+  }, [initialData]);
 
   return (
     <Flex
@@ -182,11 +222,12 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
               ></Oscilloscope>
 
               <div style={{ display: "flex", flexDirection: "row" }}>
-                {sync && (
+                {!!sync && (
                   <TDropdown
                     id={ParameterID.TREMSYNCCHOICE}
                     defaultValue={NoteTypes[0]}
                     buttonStyle={{ width: "130px" }}
+                    valueFromParent={NoteTypes[syncChoice]}
                     disabled={!sync}
                     options={NoteTypes}
                   ></TDropdown>
@@ -196,17 +237,19 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
                   <TSlider
                     id={ParameterID.TREMRATE}
                     min={0}
-                    max={1}
+                    max={20}
                     skew={0.5}
-                    defaultValue={0.5}
+                    step={0.00001}
+                    defaultValue={5}
                     size="3"
                     variant="soft"
+                    value={rate}
                     onChange={(v) => {
                       setRate(v);
                     }}
                     tooltip={{ enabled: true }}
                     tooltipMap={(v) => {
-                      return (v * 20).toFixed(2) + " hz";
+                      return `${v.toFixed(2)} hz`;
                     }}
                     disabled={sync}
                     style={{ width: "130px", marginTop: "3px" }}
@@ -218,6 +261,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
                   id={ParameterID.TREMSYNC}
                   clickEvent={() => setSync((prev) => !prev)}
                   isToggle={1}
+                  value={sync}
                 >
                   Sync
                 </TButton>
@@ -273,6 +317,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
                 max={1}
                 step={0.01}
                 defaultValue={0.7}
+                value={tremDepth}
                 orientation="vertical"
                 size="1"
                 variant="soft"
@@ -357,7 +402,7 @@ export default function TremoloSection({ style, bypassed, toggleBypass }) {
 
           <WaveSelector
             id={ParameterID.TREMWAVE}
-            value={waveType}
+            value={String(waveType)}
             onChange={setWaveType}
             style={{
               marginBottom: "8px",

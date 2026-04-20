@@ -8,11 +8,13 @@ import "./tSlider.css";
 import { normToSkewed } from "../../Utilities/General.js";
 
 export default function TSlider({
-  id, // ParameterID.X
+  id,
+  min = 0,
+  max = 1,
   step = 0.0001,
   defaultValue = 0.5,
-  value: controlledValue, // ✅ controlled support
-  skew = 0,
+  skew,
+  value: controlledValue,
   orientation = "horizontal",
   disabled = false,
   onChange,
@@ -24,9 +26,6 @@ export default function TSlider({
   const [isHovering, setIsHovering] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  const min = 0,
-    max = 1;
-
   const value =
     controlledValue !== undefined ? [controlledValue] : internalValue;
 
@@ -37,17 +36,15 @@ export default function TSlider({
       setInternalValue([v]);
     }
 
-    emitSliderEvent(id, v); // Emit normalized value
+    emitSliderEvent(id, v);
     onChange?.(v);
   };
 
   const tooltipEnabled = Boolean(tooltip);
 
-  const displayValue = skew ? normToSkewed(value[0], 0, 1, skew) : value[0];
-
   const tooltipContent = tooltipMap
-    ? tooltipMap(displayValue)
-    : displayValue.toFixed(2);
+    ? tooltipMap(value[0])
+    : value[0].toFixed(2);
 
   return (
     <Tooltip.Provider delayDuration={tooltip?.delay ?? 15}>

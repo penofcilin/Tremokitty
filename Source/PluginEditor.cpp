@@ -302,13 +302,21 @@ namespace kitty_editor
             // FLOAT PARAM (normal case)
             else
             {
-                const float normalized =
-                    juce::jlimit(0.0f, 1.0f, incoming);
+                if (auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param))
+                {
+                    const auto& range = floatParam->range;
+                    const float normalized = range.convertTo0to1(incoming);
 
-                param->setValueNotifyingHost(normalized);
+                    floatParam->setValueNotifyingHost(normalized);
 
-                DBG("Slider->Float " << sliderID
-                    << " value=" << normalized);
+                    DBG("Slider->Float " << sliderID
+                        << " incoming=" << incoming
+                        << " normalized=" << normalized);
+                }
+                else
+                {
+                    DBG("ERROR: sliderCommit unknown float param type: " << sliderID);
+                }
             }
         }
         else
