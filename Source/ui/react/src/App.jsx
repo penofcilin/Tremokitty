@@ -25,13 +25,11 @@ function App() {
     getState().then((result) => {
       const init = typeof result === "string" ? JSON.parse(result) : result;
       setInitialState(init);
-      console.log("Preset index is:", init.PRESETINDEX);
     });
     return () => {};
   }, []);
 
-  const presetIndex = initialState?.PRESETINDEX ?? 0;
-  const selectedPreset = data.Presets[presetIndex];
+  const presetIndex = Math.ceil(initialState?.PRESETINDEX) ?? 0;
 
   return (
     <Theme
@@ -52,8 +50,13 @@ function App() {
         }}
       >
         {/* Presets */}
-        <PresetsContext.Provider value={selectedPreset}>
-          <HeaderSection presets={selectedPreset} />
+        <PresetsContext.Provider
+          value={{
+            presets: data.Presets,
+            initPresetIndex: presetIndex,
+          }}
+        >
+          <HeaderSection />
         </PresetsContext.Provider>
 
         {/* Main UI */}

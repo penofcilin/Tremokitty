@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { emitDropdownEvent } from "../../utilities/juceBridge.js";
 import { DropdownMenu, Button } from "@radix-ui/themes";
 import "./TDropdown.css";
@@ -11,8 +11,13 @@ export default function TDropdown({
   disabled = false,
   size = 2,
   buttonStyle,
+  valueFromParent,
 }) {
   const [value, setValue] = useState(defaultValue);
+
+  useEffect(() => {
+    setValue(valueFromParent);
+  }, [setValue, valueFromParent]);
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { PresetsContext } from "../utilities/PresetsContext";
 import { Flex } from "@radix-ui/themes";
 import { TDialog, TDropdown, TButton } from "../components";
@@ -6,7 +6,30 @@ import { ElementID } from "../utilities/juceBridge";
 import { FileIcon, CaretUpIcon, CaretDownIcon } from "@radix-ui/react-icons";
 
 export default function PresetPanel({ style }) {
-  const presets = useContext(PresetsContext);
+  const [selectedPresetIndex, setSelectedPresetIndex] = useState(1);
+
+  const presetContext = useContext(PresetsContext);
+  const presets = presetContext.presets[0];
+  const initPresetIndex = presetContext.initPresetIndex;
+  console.log("INIT PRESET INDEX", initPresetIndex);
+
+  //updateUI event listener
+  useEffect(() => {
+    const handler = (data) => {
+      console.log(
+        "Applied a preset/updated ui, in PRESETPANEL. State provided:",
+        data,
+      );
+      setSelectedPresetIndex(data.PRESETINDEX);
+    };
+
+    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
+    };
+  }, []);
+
   const fieldFormat = [
     {
       name: "PresetName", // REQUIRED (form key)
@@ -42,8 +65,9 @@ export default function PresetPanel({ style }) {
       <Flex direction="row" align="center" gap={0}>
         <TDropdown
           id="presetDropdown"
-          defaultValue={presets[0]}
+          defaultValue={"Default"}
           options={presets}
+          valueFromParent={presets[selectedPresetIndex]}
           buttonStyle={{ height: "40px" }}
         />
 
