@@ -62,6 +62,28 @@ export default function FilterSection({
     }
   };
 
+  const applyState = (data) => {
+    console.log("Applied a preset/updated ui. State provided:", data);
+
+    setFilterType(data.FILTERTYPE);
+
+    setFilterWaveType(data.FILTERWAVE);
+
+    setSync(!!data.FILTERSYNC);
+
+    if (Number.isInteger(data.FILTERSYNCCHOICE))
+      setSyncedRate(data.FILTERSYNCCHOICE);
+    else setSyncedRate(Math.ceil(data.FILTERSYNCCHOICE * NoteTypes.length - 1));
+
+    setUnsyncedRate(data.FILTERRATE);
+
+    setCutoff(data.FILTERCUTOFF);
+
+    setResonance(data.FILTERRES / 10);
+
+    setModDepth(data.FILTERMODLEVEL);
+  };
+
   //Initial data loading
   useEffect(() => {
     if (!initialData) {
@@ -73,45 +95,13 @@ export default function FilterSection({
       return;
     }
 
-    setFilterType(initialData.FILTERTYPE);
-
-    setFilterWaveType(WaveTypes[initialData.FILTERWAVE] ?? WaveTypes[0]);
-
-    setSync(!!initialData.FILTERSYNC);
-
-    setSyncedRate(
-      Math.round(initialData.FILTERSYNCCHOICE * (NoteTypes.length - 1)),
-    );
-
-    setUnsyncedRate(initialData.FILTERRATE);
-
-    setCutoff(initialData.FILTERCUTOFF);
-
-    setResonance(initialData.FILTERRES / 10);
-
-    setModDepth(initialData.FILTERMODLEVEL);
+    applyState(initialData);
   }, [initialData]);
 
   //updateUI event listener
   useEffect(() => {
     const handler = (data) => {
-      console.log("Applied a preset/updated ui. State provided:", data);
-
-      setFilterType(data.FILTERTYPE);
-
-      setFilterWaveType(WaveTypes[data.FILTERWAVE] ?? WaveTypes[0]);
-
-      setSync(!!data.FILTERSYNC);
-
-      setSyncedRate(data.FILTERSYNCCHOICE);
-
-      setUnsyncedRate(data.FILTERRATE);
-
-      setCutoff(data.FILTERCUTOFF);
-
-      setResonance(data.FILTERRES / 10);
-
-      setModDepth(data.FILTERMODLEVEL);
+      applyState(data);
     };
 
     window.__JUCE__.backend.addEventListener("UpdateUI", handler);
@@ -514,10 +504,10 @@ export default function FilterSection({
                         ? ParameterID.FILTERSYNCCHOICE
                         : ParameterID.FILTERRATE
                     }
-                    defaultValue={sync ? 3 : 1 / 5}
-                    max={sync ? NoteTypes.length - 1 : 1}
+                    defaultValue={sync ? 3 : 2}
+                    max={sync ? NoteTypes.length - 1 : 10}
                     step={sync ? 1 : 0.00001}
-                    skew={sync ? 0 : 0.5}
+                    skew={0}
                     value={activeRate}
                     onChange={handleRateChange}
                     style={{
@@ -525,9 +515,7 @@ export default function FilterSection({
                     }}
                     tooltip="enabled"
                     tooltipMap={
-                      sync
-                        ? (v) => NoteTypes[v]
-                        : (v) => `${(v * 10).toFixed(2)} Hz`
+                      sync ? (v) => NoteTypes[v] : (v) => `${v.toFixed(2)} Hz`
                     }
                   />
 
@@ -569,7 +557,7 @@ export default function FilterSection({
               >
                 <WaveSelector
                   id={ParameterID.FILTERWAVE}
-                  value={String(WaveTypes.indexOf(filterWaveType))}
+                  value={String(filterWaveType)}
                   onChange={setFilterWaveType}
                   vertical={false}
                   style={{ width: "110px", "--item-size": "25px" }}
