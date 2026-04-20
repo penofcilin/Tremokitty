@@ -174,8 +174,6 @@ namespace kitty_editor
 
         for (const auto& u : paramUpdates)
             obj->setProperty(u.id, u.value);
-
-        emitFrontendEvent( "ParamsUpdate", juce::var(obj.get()));
     }
 
     void TremoKittyAudioProcessorEditor::emitFrontendEvent(const juce::String& identifier, juce::var value)
@@ -208,10 +206,15 @@ namespace kitty_editor
         return presetVars;
     }
 
+    //Called from the initializer list
     void TremoKittyAudioProcessorEditor::prepareAPVTSState(
         juce::WebBrowserComponent::NativeFunctionCompletion completion)
     {
         auto* obj = new juce::DynamicObject();
+
+        DBG("Providing initial state");
+
+        audioProcessor.getPresetManager().loadPreset("Default"); //Set preset to default
 
         for (const auto& id : parameterIDs)
         {
@@ -322,6 +325,8 @@ namespace kitty_editor
         const int newIndex =
             (int)info.getProperty("newValue", -1);
 
+        DBG("Selected from dropdown " << dropdownID << " New value (index) = " << newIndex);
+
         if (auto* param = audioProcessor.apvts.getParameter(dropdownID))
         {
             if (auto* choice =
@@ -341,9 +346,17 @@ namespace kitty_editor
                 DBG("ERROR: " << dropdownID << " is not an AudioParameterChoice");
             }
         }
-        else
+        else // If it's not a specific parameter dropdown ie. preset menu
         {
-            DBG("ERROR: Parameter not found: " << dropdownID);
+            if (dropdownID == "presetDropdown")
+            {
+                audioProcessor.getPresetManager().loadPreset(newIndex);
+                updateUI();
+            }
+            else
+            {
+                DBG("ERROR: Parameter not found: " << dropdownID);
+            }
         }
     }
 
@@ -387,7 +400,18 @@ namespace kitty_editor
         else
         {
             DBG("clicked " + buttonID);
-            // momentary buttons can stay UI-only for now
+            if (buttonID == "RESETPRESETBUTTON") {
+                audioProcessor.getPresetManager().loadPreset("Default");
+                updateUI();
+            }
+            else if (buttonID == "NEXTPRESETBUTTON") {
+                audioProcessor.getPresetManager().loadNextPreset();
+                updateUI();
+            }
+            else if (buttonID == "PREVIOUSPRESETBUTTON") {
+                audioProcessor.getPresetManager().loadPreviousPreset();
+                updateUI();
+            }
         }
     }
 
@@ -421,8 +445,7 @@ namespace kitty_editor
         //Store value. In theory, pass an integer index reflecting choice. For instance click on sine in react -> 0 is passed, apvts gets the tremwave parameter, and sets it to the same index, which should be the same. Later on may need to change this, if miscellaneous togglegroups are incorporated (misc meaning the group does not reflect the state of some parameter).
         audioProcessor.apvts.getRawParameterValue(groupID)->store(newVal);
         audioProcessor.parameterChanged(groupID, newVal);
-       DBG("Currenrtly stored in " + groupID + juce::String(audioProcessor.apvts.getRawParameterValue(groupID)->load())) ;
-
+       DBG("Currenrtly stored in " + groupID + " " + juce::String(audioProcessor.apvts.getRawParameterValue(groupID)->load()));
     }
 
     //DISGUSTING, ABSOLUTELY DISGUSTING, might have to do this for the rest of the modules as well if its' still broken

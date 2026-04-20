@@ -26,6 +26,7 @@ namespace Service
         void savePreset(const juce::String& presetName);
         void deletePreset(const juce::String& presetName);
         void loadPreset(const juce::String& presetName);
+        void loadPreset(const int index);
         int loadNextPreset();
         int loadPreviousPreset();
         void updateAPVTS(const int index);

@@ -105,7 +105,38 @@ namespace Service
         currentPreset.setValue(presetName);
         const auto presets = getAllPresets();
         updateAPVTS(presets.indexOf(presetName));
+    }
 
+    void Service::PresetManager::loadPreset(const int index)
+    {
+        const auto& presetList = getAllPresets();
+        juce::String presetName("");
+
+        if(index < presetList.size())
+           presetName = presetList[index];
+        else
+        {
+            return;
+        }
+
+        DBG("Loading preset " << presetName);
+
+        const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+
+        if (!presetFile.existsAsFile())
+        {
+            DBG("Preset file " + presetFile.getFullPathName() + " does not exist.");
+            jassertfalse;
+            return;
+        }
+
+        juce::XmlDocument xmlDocument{ presetFile };
+        const auto valueTreeToLoad = juce::ValueTree::fromXml(*xmlDocument.getDocumentElement());
+
+        valueTreeState.replaceState(valueTreeToLoad);
+        currentPreset.setValue(presetName);
+        const auto presets = getAllPresets();
+        updateAPVTS(presets.indexOf(presetName));
     }
 
     int Service::PresetManager::loadNextPreset()

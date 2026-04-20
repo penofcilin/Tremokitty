@@ -82,7 +82,9 @@ export default function FilterSection({
 
     setSync(!!initialData.FILTERSYNC);
 
-    setSyncedRate(Math.round(initialData.FILTERSYNCCHOICE * NoteTypes.length));
+    setSyncedRate(
+      Math.round(initialData.FILTERSYNCCHOICE * (NoteTypes.length - 1)),
+    );
 
     setUnsyncedRate(initialData.FILTERRATE);
 
@@ -96,6 +98,8 @@ export default function FilterSection({
   //updateUI event listener
   useEffect(() => {
     const handler = (data) => {
+      console.log("Applied a preset/updated ui. State provided:", data);
+      console.log("Updating UI");
       setFilterType(data.FILTERTYPE);
 
       setFilterWaveType(WaveTypes[data.FILTERWAVE] ?? WaveTypes[0]);
@@ -103,7 +107,7 @@ export default function FilterSection({
       setSync(!!data.FILTERSYNC);
 
       setSyncedRate(
-        Math.round(initialData.FILTERSYNCCHOICE * NoteTypes.length),
+        Math.round(initialData.FILTERSYNCCHOICE * (NoteTypes.length - 1)),
       );
 
       setUnsyncedRate(data.FILTERRATE);
