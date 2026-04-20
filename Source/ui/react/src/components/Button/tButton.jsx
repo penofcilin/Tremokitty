@@ -9,11 +9,8 @@ export default function TButton({
   variant = "solid",
   emitEvent = true,
   radius = "medium",
-
-  // NEW: controlled toggle support
-  value, // boolean | undefined
-  onChange, // (nextBool) => void
-
+  value,
+  onChange,
   clickEvent,
   style,
   icon = null,
@@ -40,12 +37,10 @@ export default function TButton({
         if (isToggle) {
           const next = !toggled;
 
-          // update internal only if uncontrolled
           if (!isControlled) {
             setInternalToggled(next);
           }
 
-          // notify parent in controlled mode (and also useful in uncontrolled)
           onChange?.(next);
         }
 

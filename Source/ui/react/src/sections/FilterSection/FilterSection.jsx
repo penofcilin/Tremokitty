@@ -72,10 +72,7 @@ export default function FilterSection({
       console.log("Nobject");
       return;
     }
-    console.log(
-      "init data in filtereffect: ",
-      JSON.stringify(initialData, null, 2),
-    );
+
     setFilterType(initialData.FILTERTYPE);
 
     setFilterWaveType(WaveTypes[initialData.FILTERWAVE] ?? WaveTypes[0]);
@@ -90,7 +87,7 @@ export default function FilterSection({
 
     setCutoff(initialData.FILTERCUTOFF);
 
-    setResonance(initialData.FILTERRES);
+    setResonance(initialData.FILTERRES / 10);
 
     setModDepth(initialData.FILTERMODLEVEL);
   }, [initialData]);
@@ -99,22 +96,20 @@ export default function FilterSection({
   useEffect(() => {
     const handler = (data) => {
       console.log("Applied a preset/updated ui. State provided:", data);
-      console.log("Updating UI");
+
       setFilterType(data.FILTERTYPE);
 
       setFilterWaveType(WaveTypes[data.FILTERWAVE] ?? WaveTypes[0]);
 
       setSync(!!data.FILTERSYNC);
 
-      setSyncedRate(
-        Math.round(initialData.FILTERSYNCCHOICE * (NoteTypes.length - 1)),
-      );
+      setSyncedRate(data.FILTERSYNCCHOICE);
 
       setUnsyncedRate(data.FILTERRATE);
 
       setCutoff(data.FILTERCUTOFF);
 
-      setResonance(data.FILTERRES);
+      setResonance(data.FILTERRES / 10);
 
       setModDepth(data.FILTERMODLEVEL);
     };
@@ -151,9 +146,7 @@ export default function FilterSection({
   };
 
   const cutoffTooltip = (n) => {
-    const min = 20;
-    const max = 20000;
-    const hz = normToSkewed(n, min, max, 0.35);
+    const hz = 20 + n * (20000 - 20);
 
     return hz >= 1000
       ? `${(hz / 1000).toFixed(2)} kHz`
@@ -320,7 +313,7 @@ export default function FilterSection({
               </div>
               <TToggleGroup
                 id={ParameterID.FILTERTYPE}
-                value={filterType}
+                value={String(filterType)}
                 onChange={(v) => setFilterType(v)}
                 vertical={true}
                 style={{ marginTop: "0px", transform: "translateY(-2px)" }}
@@ -521,7 +514,7 @@ export default function FilterSection({
                         ? ParameterID.FILTERSYNCCHOICE
                         : ParameterID.FILTERRATE
                     }
-                    defaultValue={sync ? 1 / (NoteTypes.length - 1) : 1 / 5}
+                    defaultValue={sync ? 3 : 1 / 5}
                     max={sync ? NoteTypes.length - 1 : 1}
                     step={sync ? 1 : 0.00001}
                     skew={sync ? 0 : 0.5}
@@ -576,7 +569,7 @@ export default function FilterSection({
               >
                 <WaveSelector
                   id={ParameterID.FILTERWAVE}
-                  value={filterWaveType}
+                  value={String(WaveTypes.indexOf(filterWaveType))}
                   onChange={setFilterWaveType}
                   vertical={false}
                   style={{ width: "110px", "--item-size": "25px" }}

@@ -11,8 +11,6 @@ export default function TDialog({
   description,
   fields = [],
   buttonStyle,
-
-  // NEW
   icon = null,
   children,
 }) {

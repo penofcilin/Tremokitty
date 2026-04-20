@@ -421,18 +421,22 @@ namespace kitty_editor
         juce::var dataVar = info.getProperty("data", "null");
         auto* dataObj = dataVar.getDynamicObject();
 
+        DBG("Submitted a form: " << formID);
+       
 
-        if (formID == "savePresetForm") {
+
+        if (formID == "SAVEPRESETBUTTON") {
             for (const auto& entry : dataObj->getProperties())
             {
                 juce::String key = entry.name.toString();
                 juce::String value = entry.value.toString();
 
+                if(key == "PresetName")
+                    audioProcessor.getPresetManager().savePreset(value);
+           
                 DBG(key + " = " + value);
             }
-
         }
-            
     }
 
     void TremoKittyAudioProcessorEditor::toggleGroupChanged(juce::var info)

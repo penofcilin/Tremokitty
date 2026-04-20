@@ -10,16 +10,10 @@ export default function PresetPanel({ style }) {
 
   const presetContext = useContext(PresetsContext);
   const presets = presetContext.presets[0];
-  const initPresetIndex = presetContext.initPresetIndex;
-  console.log("INIT PRESET INDEX", initPresetIndex);
 
   //updateUI event listener
   useEffect(() => {
     const handler = (data) => {
-      console.log(
-        "Applied a preset/updated ui, in PRESETPANEL. State provided:",
-        data,
-      );
       setSelectedPresetIndex(data.PRESETINDEX);
     };
 

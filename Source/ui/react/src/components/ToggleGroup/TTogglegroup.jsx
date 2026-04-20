@@ -3,6 +3,7 @@ import { emitTogglegroupEvent } from "../../utilities/juceBridge.js";
 import TTooltip from "../Tooltip/TTooltip.jsx";
 import "./TToggleGroup.css";
 
+//NOTE: VALUE MUST BE PASSED AS A STRING
 export default function TToggleGroup({
   id,
   value,

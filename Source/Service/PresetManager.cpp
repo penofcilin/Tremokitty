@@ -9,6 +9,8 @@
 */
 
 #include "PresetManager.h"
+#include <cstdlib>
+
 namespace Service
 {
     const juce::File PresetManager::defaultDirectory{ juce::File::getSpecialLocation(juce::File::SpecialLocationType::userApplicationDataDirectory).getChildFile(ProjectInfo::projectName).getChildFile("Presets")};
@@ -38,9 +40,12 @@ namespace Service
         {
             return;
         }
+
         currentPreset.setValue(presetName);
+
         const auto xml = valueTreeState.copyState().createXml();
         const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+
         if (!xml->writeTo(presetFile))
         {
             DBG("Could Not Create Preset File + " + presetFile.getFullPathName());
