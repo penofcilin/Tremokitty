@@ -19,6 +19,11 @@ const data = window.__JUCE__.initialisationData;
 
 function App() {
   const [initialState, setInitialState] = useState(null);
+  const [bypassed, setBypassed] = useState({
+    tremolo: false,
+    pan: false,
+    filter: false,
+  });
 
   useEffect(() => {
     const getState = Juce.getNativeFunction("ProvideState");
@@ -28,6 +33,16 @@ function App() {
     });
     return () => {};
   }, []);
+
+  useEffect(() => {
+    if (!initialState) return;
+
+    setBypassed({
+      tremolo: Boolean(initialState.TREMBP),
+      pan: Boolean(initialState.PANBP),
+      filter: Boolean(initialState.FILTERBP),
+    });
+  }, [initialState]);
 
   const presetIndex = Math.ceil(initialState?.PRESETINDEX) ?? 0;
 
@@ -64,6 +79,10 @@ function App() {
           <div className="tremolo">
             <TremoloSection
               initialData={initialState}
+              bypassed={bypassed.tremolo}
+              toggleBypass={() =>
+                setBypassed((prev) => ({ ...prev, tremolo: !prev.tremolo }))
+              }
               style={{ marginLeft: "10px", marginTop: "5px" }}
             />
           </div>
@@ -71,6 +90,10 @@ function App() {
           <div className="pan">
             <PanSection
               initialData={initialState}
+              bypassed={bypassed.pan}
+              toggleBypass={() =>
+                setBypassed((prev) => ({ ...prev, pan: !prev.pan }))
+              }
               style={{ marginRight: "5px", marginTop: "5px" }}
             />
           </div>
@@ -79,7 +102,13 @@ function App() {
             className="filter"
             style={{ gridColumn: "span 2", marginLeft: "10px" }}
           >
-            <FilterSection initialData={initialState} />
+            <FilterSection
+              bypassed={bypassed.filter}
+              toggleBypass={() =>
+                setBypassed((prev) => ({ ...prev, filter: !prev.filter }))
+              }
+              initialData={initialState}
+            />
           </div>
 
           <div

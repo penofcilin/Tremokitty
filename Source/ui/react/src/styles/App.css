@@ -35,7 +35,6 @@ body {
 }
 
 .bypassable[data-bypassed] {
-  opacity: 0.45;
   filter: grayscale(1);
 }
 
