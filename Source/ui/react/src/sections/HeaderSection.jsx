@@ -2,7 +2,7 @@ import { Box, IconButton } from "@radix-ui/themes";
 import { GearIcon } from "@radix-ui/react-icons";
 import PresetPanel from "./PresetPanel";
 
-export default function HeaderSection() {
+export default function HeaderSection({ currentState }) {
   return (
     <Box
       style={{
@@ -55,7 +55,7 @@ export default function HeaderSection() {
           Tremokitty!
         </div>
         <div style={{ marginLeft: "auto", marginRight: "105px" }}>
-          <PresetPanel />
+          <PresetPanel currentState={currentState} />
         </div>
       </Box>
     </Box>

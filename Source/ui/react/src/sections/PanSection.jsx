@@ -215,6 +215,7 @@ export default function PanSection({
                 lfoValue={lfoPosition}
                 rate={rate}
                 depth={depth}
+                bypassed={bypassed}
               ></Oscilloscope>
 
               <div style={{ display: "flex", flexDirection: "row" }}>

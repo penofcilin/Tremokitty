@@ -212,9 +212,18 @@ namespace kitty_editor
     {
         auto* obj = new juce::DynamicObject();
 
-        DBG("Providing initial state");
-
-        audioProcessor.getPresetManager().loadPreset("Default"); //Set preset to default
+        if (audioProcessor.initialized == false) {
+            //Massive potential issue if user deletes "default" preset. Ideally they would be able to decide which startup preset is default
+            try
+            {
+                audioProcessor.getPresetManager().loadPreset("Default");
+                audioProcessor.initialized = true;
+            }
+            catch (const std::exception&)
+            {
+                audioProcessor.initialized = true;
+            }
+        }
 
         for (const auto& id : parameterIDs)
         {
@@ -409,6 +418,7 @@ namespace kitty_editor
         {
             DBG("clicked " + buttonID);
             if (buttonID == "RESETPRESETBUTTON") {
+                //Again potential issue
                 audioProcessor.getPresetManager().loadPreset("Default");
                 updateUI();
             }
@@ -431,8 +441,6 @@ namespace kitty_editor
 
         DBG("Submitted a form: " << formID);
        
-
-
         if (formID == "SAVEPRESETBUTTON") {
             for (const auto& entry : dataObj->getProperties())
             {

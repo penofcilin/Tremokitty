@@ -33,6 +33,7 @@ function App() {
       const init = typeof result === "string" ? JSON.parse(result) : result;
       setInitialState(init);
       setCurrentState(init);
+      console.log("Initial state received from backend:", init);
     });
     return () => {};
   }, []);
@@ -51,6 +52,7 @@ function App() {
   //UI State update listener
   useEffect(() => {
     const handler = (state) => {
+      console.log("Updating ui from parent component, currentstate:", state);
       setCurrentState(state);
     };
 
@@ -88,7 +90,7 @@ function App() {
             initPresetIndex: presetIndex,
           }}
         >
-          <HeaderSection />
+          <HeaderSection currentState={currentState} />
         </PresetsContext.Provider>
 
         {/* Main UI */}

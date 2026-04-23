@@ -21,6 +21,10 @@ export default function Oscilloscope({
   const currentDepthRef = useRef(1);
   const currentRateRef = useRef(1);
 
+  if (bypassed) {
+    lfoValue = 0;
+  }
+
   // update current LFO value, depth, and rate when they change
   useEffect(() => {
     currentLfoRef.current = lfoValue;

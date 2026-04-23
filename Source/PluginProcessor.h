@@ -92,8 +92,10 @@ public:
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
     juce::StringArray WaveTypes{ WAVE_TYPES };
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
-    
 
+    //Keeps track of if the plugin has been "initialized" (built for the first time) vs the gui being built
+    bool initialized{ false };
+    
     juce::StringArray PresetNames;
     enum class modules { tremolo, pan, filter, mod, master };
 

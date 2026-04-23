@@ -44,8 +44,6 @@ export default function TremoloSection({
   }, []);
 
   const applyState = (data) => {
-    console.log("Applied a preset/updated ui. State provided:", data);
-
     setWaveType(data.TREMWAVE);
 
     setTremDepth(data.TREMDEPTH);
@@ -209,6 +207,7 @@ export default function TremoloSection({
               <Oscilloscope
                 width={110}
                 height={90}
+                bypassed={bypassed}
                 lfoValue={lfoPosition}
                 depth={tremDepth}
                 rate={rate}

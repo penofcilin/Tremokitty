@@ -5,51 +5,49 @@ import { TDialog, TDropdown, TButton } from "../components";
 import { ElementID } from "../utilities/juceBridge";
 import { FileIcon, CaretUpIcon, CaretDownIcon } from "@radix-ui/react-icons";
 
-export default function PresetPanel({ style }) {
+export default function PresetPanel({ style, currentState }) {
   const [selectedPresetIndex, setSelectedPresetIndex] = useState(1);
 
   const presetContext = useContext(PresetsContext);
   const presets = presetContext.presets[0];
 
-  //updateUI event listener
   useEffect(() => {
-    const handler = (data) => {
-      setSelectedPresetIndex(data.PRESETINDEX);
-    };
-
-    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
-
-    return () => {
-      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
-    };
-  }, []);
+    if (currentState?.PRESETINDEX)
+      setSelectedPresetIndex(Math.ceil(currentState.PRESETINDEX));
+    else setSelectedPresetIndex(1);
+    console.log("selected preset index:", selectedPresetIndex);
+  }, [currentState]);
 
   const fieldFormat = [
     {
-      name: "PresetName", // REQUIRED (form key)
-      label: "Name", // REQUIRED (visible label)
-      type: "text", // optional (default: "text")
+      name: "PresetName",
+      label: "Name",
+      type: "text",
       placeholder: "",
       defaultValue: "",
       description: "Shown publicly",
       required: false,
     },
     {
-      name: "Category", // REQUIRED (form key)
-      label: "Category", // REQUIRED (visible label)
-      type: "text", // optional (default: "text")
+      name: "Category",
+      label: "Category",
+      type: "text",
       placeholder: "",
       defaultValue: "",
       description: "Shown publicly",
       required: false,
     },
   ];
+
+  console.log("presets are:", presets);
+  console.log("selected preset index:", selectedPresetIndex);
+
   return (
     <Flex
       style={{
-        display: "inline-flex", // keep it tight around contents
-        padding: "4px", // space between border and controls
-        border: "2px solid white", // the white box outline
+        display: "inline-flex",
+        padding: "4px",
+        border: "2px solid white",
         borderRadius: "10px",
         alignItems: "center",
         transform: "translateX(90px)",
