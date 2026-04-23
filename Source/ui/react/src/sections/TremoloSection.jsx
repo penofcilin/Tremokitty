@@ -21,6 +21,7 @@ export default function TremoloSection({
   bypassed,
   toggleBypass,
   initialData,
+  currentState,
 }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [tremDepth, setTremDepth] = useState(0.7);
@@ -60,16 +61,8 @@ export default function TremoloSection({
 
   //Manual UI updates
   useEffect(() => {
-    const handler = (data) => {
-      applyState(data);
-    };
-
-    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
-
-    return () => {
-      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
-    };
-  }, []);
+    if (currentState) applyState(currentState);
+  }, [currentState]);
 
   //initial ui updates
   useEffect(() => {

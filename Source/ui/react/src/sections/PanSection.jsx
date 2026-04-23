@@ -20,6 +20,7 @@ export default function PanSection({
   bypassed,
   toggleBypass,
   initialData,
+  currentState,
 }) {
   const [waveType, setWaveType] = useState(WaveTypes[0]);
   const [depth, setDepth] = useState(0.7);
@@ -34,6 +35,7 @@ export default function PanSection({
     bypassedRef.current = bypassed;
   }, [bypassed]);
 
+  //LFO updates for oscilloscope
   useEffect(() => {
     const handler = (v) => {
       if (bypassedRef.current) return;
@@ -48,8 +50,6 @@ export default function PanSection({
   }, []);
 
   const applyState = (data) => {
-    console.log("Applied a preset/updated ui. State provided:", data);
-
     setWaveType(data.PANWAVE);
 
     setDepth(data.PANDEPTH);
@@ -62,24 +62,16 @@ export default function PanSection({
     else setSyncChoice(Math.ceil(data.PANSYNCCHOICE * NoteTypes.length - 1));
   };
 
-  //Manual UI updates
-  useEffect(() => {
-    const handler = (data) => {
-      applyState(data);
-    };
-
-    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
-
-    return () => {
-      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
-    };
-  }, []);
-
   //initial ui updates
   useEffect(() => {
     if (!initialData) return;
     applyState(initialData);
   }, [initialData]);
+
+  //Manual UI updates
+  useEffect(() => {
+    if (currentState) applyState(currentState);
+  }, [currentState]);
 
   return (
     <Flex

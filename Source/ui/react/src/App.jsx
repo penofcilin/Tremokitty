@@ -19,21 +19,25 @@ const data = window.__JUCE__.initialisationData;
 
 function App() {
   const [initialState, setInitialState] = useState(null);
+  const [currentState, setCurrentState] = useState(null);
   const [bypassed, setBypassed] = useState({
     tremolo: false,
     pan: false,
     filter: false,
   });
 
+  //Get initial data
   useEffect(() => {
     const getState = Juce.getNativeFunction("ProvideState");
     getState().then((result) => {
       const init = typeof result === "string" ? JSON.parse(result) : result;
       setInitialState(init);
+      setCurrentState(init);
     });
     return () => {};
   }, []);
 
+  //Bypassing
   useEffect(() => {
     if (!initialState) return;
 
@@ -43,6 +47,19 @@ function App() {
       filter: Boolean(initialState.FILTERBP),
     });
   }, [initialState]);
+
+  //UI State update listener
+  useEffect(() => {
+    const handler = (state) => {
+      setCurrentState(state);
+    };
+
+    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
+    };
+  }, []);
 
   const presetIndex = Math.ceil(initialState?.PRESETINDEX) ?? 0;
 
@@ -80,6 +97,7 @@ function App() {
             <TremoloSection
               initialData={initialState}
               bypassed={bypassed.tremolo}
+              currentState={currentState}
               toggleBypass={() =>
                 setBypassed((prev) => ({ ...prev, tremolo: !prev.tremolo }))
               }
@@ -91,6 +109,7 @@ function App() {
             <PanSection
               initialData={initialState}
               bypassed={bypassed.pan}
+              currentState={currentState}
               toggleBypass={() =>
                 setBypassed((prev) => ({ ...prev, pan: !prev.pan }))
               }
@@ -104,6 +123,7 @@ function App() {
           >
             <FilterSection
               bypassed={bypassed.filter}
+              currentState={currentState}
               toggleBypass={() =>
                 setBypassed((prev) => ({ ...prev, filter: !prev.filter }))
               }

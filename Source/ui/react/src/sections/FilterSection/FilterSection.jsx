@@ -25,6 +25,7 @@ export default function FilterSection({
   bypassed,
   toggleBypass,
   initialData,
+  currentState,
 }) {
   const [filterType, setFilterType] = useState(0);
   const [filterWaveType, setFilterWaveType] = useState(WaveTypes[0]);
@@ -63,8 +64,6 @@ export default function FilterSection({
   };
 
   const applyState = (data) => {
-    console.log("Applied a preset/updated ui. State provided:", data);
-
     setFilterType(data.FILTERTYPE);
 
     setFilterWaveType(data.FILTERWAVE);
@@ -100,16 +99,8 @@ export default function FilterSection({
 
   //updateUI event listener
   useEffect(() => {
-    const handler = (data) => {
-      applyState(data);
-    };
-
-    window.__JUCE__.backend.addEventListener("UpdateUI", handler);
-
-    return () => {
-      window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
-    };
-  }, []);
+    if (currentState) applyState(currentState);
+  }, [currentState]);
 
   const activeRate = sync ? syncedRate : unsyncedRate;
 

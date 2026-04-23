@@ -7,6 +7,7 @@ export default function Oscilloscope({
   style,
   width = 100,
   height = 100,
+  bypassed = false,
 }) {
   const canvasRef = useRef(null);
 
@@ -117,7 +118,7 @@ export default function Oscilloscope({
       animationId = requestAnimationFrame(render);
     };
 
-    render(performance.now());
+    if (!bypassed) render(performance.now());
 
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
