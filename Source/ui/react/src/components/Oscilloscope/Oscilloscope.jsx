@@ -8,6 +8,7 @@ export default function Oscilloscope({
   width = 100,
   height = 100,
   bypassed = false,
+  reverse = false,
 }) {
   const canvasRef = useRef(null);
 
@@ -27,7 +28,7 @@ export default function Oscilloscope({
 
   // update current LFO value, depth, and rate when they change
   useEffect(() => {
-    currentLfoRef.current = lfoValue;
+    currentLfoRef.current = reverse ? lfoValue * -1 : lfoValue;
   }, [lfoValue]);
 
   useEffect(() => {

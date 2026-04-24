@@ -216,6 +216,8 @@ export default function PanSection({
                 rate={rate}
                 depth={depth}
                 bypassed={bypassed}
+                style={{ transform: "rotate(-90deg)" }}
+                reverse={true}
               ></Oscilloscope>
 
               <div style={{ display: "flex", flexDirection: "row" }}>
