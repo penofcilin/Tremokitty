@@ -18,13 +18,32 @@
 #define modules TremoKittyAudioProcessor::modules
 
 namespace kitty_editor {
-    class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Timer
+    //Forward declare editor
+    class TremoKittyAudioProcessorEditor;
+
+    //Parameter Update timer helper class
+    class ParameterUpdateTimer : public juce::Timer
+    {
+    public:
+        ParameterUpdateTimer(TremoKittyAudioProcessorEditor& editorRef)
+            : editor(editorRef) {
+        }
+        void timerCallback() override;
+          
+    private:
+        TremoKittyAudioProcessorEditor& editor;
+    };
+
+    //Editor
+    class TremoKittyAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Timer, private juce::AudioProcessorValueTreeState::Listener
     {
     public:
         TremoKittyAudioProcessorEditor(TremoKittyAudioProcessor&);
         ~TremoKittyAudioProcessorEditor() override;
 
         void resized() override;
+
+        void processParamUpdates();
 
     private:
         //webviews Testing section
@@ -42,7 +61,14 @@ namespace kitty_editor {
 
         //Events to frontend
         void timerCallback() override;
+        void parameterChanged(const juce::String& parameterID, float newValue) override;
         void emitFrontendEvent(const juce::String& identifier, juce::var value);
+
+        //UI Timer/listener updates stuff
+        ParameterUpdateTimer parameterUpdateTimer;
+
+        juce::CriticalSection pendingLock;
+        juce::NamedValueSet pendingUpdates;
 
         //AUGHHH
         const std::vector<juce::String> parameterIDs{
@@ -102,4 +128,5 @@ namespace kitty_editor {
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TremoKittyAudioProcessorEditor)
     };
+
 } // nameSpace End

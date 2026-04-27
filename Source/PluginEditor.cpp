@@ -55,6 +55,7 @@ namespace kitty_editor
     TremoKittyAudioProcessorEditor::TremoKittyAudioProcessorEditor(TremoKittyAudioProcessor& p)
         : AudioProcessorEditor(&p),
         audioProcessor(p),
+        parameterUpdateTimer(*this),
         webView(juce::WebBrowserComponent::Options{}
                 .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
                 .withWinWebView2Options(juce::WebBrowserComponent::Options::WinWebView2{}
@@ -95,11 +96,14 @@ namespace kitty_editor
                             )
     {
         juce::ignoreUnused(audioProcessor);
+        for (auto& id : parameterIDs)
+            audioProcessor.apvts.addParameterListener(id, this);
 
+        //Timers
         startTimer(5);
-        addAndMakeVisible(webView);
-       
+        parameterUpdateTimer.startTimerHz(30);
 
+        addAndMakeVisible(webView);
 
         #if TREMOKITTY_DEV_UI
             webView.goToURL("http://localhost:5173");
@@ -154,6 +158,7 @@ namespace kitty_editor
         return std::nullopt;
     }
 
+    //Main timer, currently for lfo updates. 5 ms timer
     void TremoKittyAudioProcessorEditor::timerCallback()
     {
         float filterLFOValue = audioProcessor.filterLFOCurrentPosition.load();
@@ -165,15 +170,32 @@ namespace kitty_editor
         emitFrontendEvent("TremLFOUpdate", juce::var(tremLFOValue));
         emitFrontendEvent("PanLFOUpdate", juce::var(panLFOValue));
         emitFrontendEvent("ModLFOUpdate", juce::var(modLFOValue));
+    }
 
-        auto paramUpdates = audioProcessor.getChangedParameters();
-        if (paramUpdates.empty())
+    //Parameter changes section, 30 hz timer:
+    void TremoKittyAudioProcessorEditor::processParamUpdates()
+    {
+        juce::NamedValueSet updates;
+
+        const juce::ScopedLock lock(pendingLock);
+        if (pendingUpdates.isEmpty())
             return;
 
-        juce::DynamicObject::Ptr obj = new juce::DynamicObject();
+        updates = pendingUpdates;
+        pendingUpdates.clear();
 
-        for (const auto& u : paramUpdates)
-            obj->setProperty(u.id, u.value);
+        auto* obj = new juce::DynamicObject();
+
+        for (int i = 0; i < updates.size(); ++i)
+            obj->setProperty(updates.getName(i), updates.getValueAt(i));
+
+        emitFrontendEvent("ParametersChanged", juce::var(obj));
+    }
+
+    void TremoKittyAudioProcessorEditor::parameterChanged(const juce::String& parameterID, float newValue)
+    {
+        const juce::ScopedLock lock(pendingLock);
+        pendingUpdates.set(parameterID, newValue);
     }
 
     void TremoKittyAudioProcessorEditor::emitFrontendEvent(const juce::String& identifier, juce::var value)
@@ -237,7 +259,7 @@ namespace kitty_editor
         completion(juce::var(obj));
     }
 
-    //Called from cpp
+    //Called from anywhere besides initializer list
     juce::var TremoKittyAudioProcessorEditor::prepareAPVTSState()
     {
         auto* obj = new juce::DynamicObject();
@@ -468,17 +490,10 @@ namespace kitty_editor
        DBG("Currenrtly stored in " + groupID + " " + juce::String(audioProcessor.apvts.getRawParameterValue(groupID)->load()));
     }
 
-    //DISGUSTING, ABSOLUTELY DISGUSTING, might have to do this for the rest of the modules as well if its' still broken
-    /*void TremoKittyAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
-    {
-        float index = comboBoxThatHasChanged->getSelectedItemIndex();
-        if (index == 5 || index == 6)
-            audioProcessor.changeTremWaveManually(index);
-    }*/
-
-
     TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()
     {
+        for (auto& id : parameterIDs)
+            audioProcessor.apvts.removeParameterListener(id, this);
         stopTimer();
     }
 
@@ -486,5 +501,10 @@ namespace kitty_editor
     {
         auto bounds = getLocalBounds();
         webView.setBounds(bounds);
+    }
+
+    void ParameterUpdateTimer::timerCallback()
+    {
+        editor.processParamUpdates();
     }
 } //namespace

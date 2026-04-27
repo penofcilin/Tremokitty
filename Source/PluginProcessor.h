@@ -48,8 +48,6 @@ public:
 
     void processBlockBypassed(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages) override; // doesnt seem to work
 
-    bool validatePosition(); //If the current playhead position is not equal to the next expected position of the playhead, either from the plugin being put to sleep and then woken up later, or from the playhead being manually moved, recalculate the phase of each LFO.
-
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -84,9 +82,6 @@ public:
     std::atomic<float> tremLFOCurrentPosition{ 0.0f };
     std::atomic<float> panLFOCurrentPosition{ 0.0f };
     std::atomic<float> modLFOCurrentPosition{ 0.0f };
-
-    //Vector to hold all changed parameters that haven't been sent to the react frontend
-    std::vector<ParamUpdate> getChangedParameters();
 
     //Some Information Structures
     juce::StringArray ModParams{"None", "TREMRATE", "TREMDEPTH", "PANRATE", "PANDEPTH", "FILTERRATE", "FILTERMODLEVEL"};
@@ -133,9 +128,6 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
     void addListenersToAllParameters();
     juce::StringArray registeredParamIDs;
-
-    std::mutex paramUpdateMutex;
-    std::vector<ParamUpdate> paramUpdates;
 
     //Our presetManager Instance
     std::unique_ptr<Service::PresetManager> presetManager;

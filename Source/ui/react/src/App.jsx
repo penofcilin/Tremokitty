@@ -40,19 +40,19 @@ function App() {
 
   //Bypassing
   useEffect(() => {
-    if (!initialState) return;
+    if (!currentState) return;
 
     setBypassed({
-      tremolo: Boolean(initialState.TREMBP),
-      pan: Boolean(initialState.PANBP),
-      filter: Boolean(initialState.FILTERBP),
+      tremolo: Boolean(currentState.TREMBP),
+      pan: Boolean(currentState.PANBP),
+      filter: Boolean(currentState.FILTERBP),
     });
-  }, [initialState]);
+  }, [currentState]);
 
   //UI State update listener
   useEffect(() => {
     const handler = (state) => {
-      console.log("Updating ui from parent component, currentstate:", state);
+      console.log("Updating ui from parent component, currentState:", state);
       setCurrentState(state);
     };
 
@@ -60,6 +60,24 @@ function App() {
 
     return () => {
       window.__JUCE__.backend.removeEventListener("UpdateUI", handler);
+    };
+  }, []);
+
+  //UI State update listener
+  useEffect(() => {
+    const handler = (updates) => {
+      console.log("Received parameter updates:", updates);
+
+      setCurrentState((prev) => ({
+        ...(prev ?? {}),
+        ...updates,
+      }));
+    };
+
+    window.__JUCE__.backend.addEventListener("ParametersChanged", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("ParametersChanged", handler);
     };
   }, []);
 

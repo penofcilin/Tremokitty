@@ -89,11 +89,6 @@ void TremoKittyAudioProcessor::addListenersToAllParameters()
     }
 }
 
-std::vector<ParamUpdate> TremoKittyAudioProcessor::getChangedParameters()
-{
-    return paramUpdates;
-}
-
 //When a parameter changes, this one will run, figure out which parameter was changed, and do something accordingly.
 void TremoKittyAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
 {
@@ -347,7 +342,6 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         if (currentPosition.isPlaying && currentPosition.timeInSamples != nextExpectedPlaybackSample)
         {
             resetAllLFOPhases();
-            DBG("Detected an unexpected time thing, resetingg lFOS");
         }
          nextExpectedPlaybackSample = currentPosition.timeInSamples + buffer.getNumSamples();
     }
