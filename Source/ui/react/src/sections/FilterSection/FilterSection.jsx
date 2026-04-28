@@ -33,7 +33,7 @@ export default function FilterSection({
   const [syncedRate, setSyncedRate] = useState(10);
   const [unsyncedRate, setUnsyncedRate] = useState(0);
   const [cutoff, setCutoff] = useState(1);
-  const [resonance, setResonance] = useState(0);
+  const [resonance, setResonance] = useState(0.7);
   const [modDepth, setModDepth] = useState(0);
   const [modBypassed, setModBypassed] = useState(false);
   const [xyCursorPx, setXyCursorPx] = useState(null);
@@ -70,15 +70,13 @@ export default function FilterSection({
 
     setSync(!!data.FILTERSYNC);
 
-    if (Number.isInteger(data.FILTERSYNCCHOICE))
-      setSyncedRate(data.FILTERSYNCCHOICE);
-    else setSyncedRate(Math.ceil(data.FILTERSYNCCHOICE * NoteTypes.length - 1));
+    setSyncedRate(data.FILTERSYNCCHOICE);
 
     setUnsyncedRate(data.FILTERRATE);
 
     setCutoff(data.FILTERCUTOFF);
 
-    setResonance(data.FILTERRES / 10);
+    setResonance(data.FILTERRES);
 
     setModDepth(data.FILTERMODLEVEL);
   };
@@ -148,11 +146,13 @@ export default function FilterSection({
       y: e.clientY - rect.top,
     });
 
+    const res = 0.7 + y * (10 - 0.7);
+
     setCutoff(x);
-    setResonance(y);
+    setResonance(res);
 
     emitSliderEvent(ParameterID.FILTERCUTOFF, x);
-    emitSliderEvent(ParameterID.FILTERRES, y);
+    emitSliderEvent(ParameterID.FILTERRES, res);
   };
 
   const onXYPointerDown = (e) => {
@@ -258,7 +258,7 @@ export default function FilterSection({
                 {/* SVG graphic */}
                 <FilterGraphic
                   cutoff={cutoff}
-                  resonance={resonance * 8}
+                  resonance={resonance}
                   modDepth={modBypassed ? 0 : modDepth}
                   modRate={sync ? syncedRate : unsyncedRate}
                   filterType={filterType}
@@ -274,7 +274,7 @@ export default function FilterSection({
                     content={
                       <div>
                         <div>Cutoff: {cutoffTooltip(cutoff)}</div>
-                        <div>Resy res: {(resonance * 10).toFixed(2)}</div>
+                        <div>Resy res: {resonance.toFixed(2)}</div>
                       </div>
                     }
                   >
@@ -339,15 +339,15 @@ export default function FilterSection({
                 id={ParameterID.FILTERRES}
                 tooltip={"enabled"}
                 tooltipMap={(v) => {
-                  return (v * 10).toFixed(2);
+                  return v.toFixed(2);
                 }}
                 value={resonance}
                 className="resonanceKnob"
                 onChange={(v) => setResonance(v)}
-                min={0}
-                max={1}
-                step={0.00005}
-                defaultValue={0}
+                min={0.7}
+                max={10}
+                step={0.05}
+                defaultValue={0.707}
                 style={{
                   "--knob-size": "26px",
                   transform: "translateX(3px)",

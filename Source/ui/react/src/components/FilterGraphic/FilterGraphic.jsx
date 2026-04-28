@@ -22,7 +22,7 @@ export default function FilterGraphic({
   const sweepWidth = modDepth * WIDTH;
   const sweepX = Math.max(
     0,
-    Math.min(WIDTH - sweepWidth, cutoffX - sweepWidth / 2)
+    Math.min(WIDTH - sweepWidth, cutoffX - sweepWidth / 2),
   );
 
   // Vertical positions - high at middle, low extends off screen
@@ -43,12 +43,12 @@ export default function FilterGraphic({
     L ${Math.max(0, cutoffX - TRANSITION / 2)},${TOP}
     Q ${cutoffX - TRANSITION / 4},${LP_PEAK} ${cutoffX},${LP_PEAK}
     Q ${cutoffX + TRANSITION / 4},${LP_PEAK} ${
-    cutoffX + TRANSITION / 2
-  },${MID_Y}
+      cutoffX + TRANSITION / 2
+    },${MID_Y}
     Q ${cutoffX + TRANSITION * 2},${BOTTOM * 0.9} ${Math.min(
-    WIDTH,
-    cutoffX + TRANSITION * 2.5
-  )},${BOTTOM}
+      WIDTH,
+      cutoffX + TRANSITION * 2.5,
+    )},${BOTTOM}
     L ${WIDTH},${BOTTOM}
   `;
 
@@ -58,13 +58,13 @@ export default function FilterGraphic({
     M 0,${BOTTOM}
     L ${Math.max(0, cutoffX - TRANSITION * 2.5)},${BOTTOM}
     Q ${cutoffX - TRANSITION * 2},${BOTTOM * 0.9} ${
-    cutoffX - TRANSITION / 2
-  },${MID_Y}
+      cutoffX - TRANSITION / 2
+    },${MID_Y}
     Q ${cutoffX - TRANSITION / 4},${HP_PEAK} ${cutoffX},${HP_PEAK}
     Q ${cutoffX + TRANSITION / 4},${HP_PEAK} ${Math.min(
-    WIDTH,
-    cutoffX + TRANSITION / 2
-  )},${TOP}
+      WIDTH,
+      cutoffX + TRANSITION / 2,
+    )},${TOP}
     L ${WIDTH},${TOP}
   `;
 
@@ -76,9 +76,9 @@ export default function FilterGraphic({
     L ${Math.max(0, cutoffX - BP_WIDTH)},${BOTTOM}
     Q ${cutoffX - BP_WIDTH / 2},${BP_PEAK} ${cutoffX},${BP_PEAK}
     Q ${cutoffX + BP_WIDTH / 2},${BP_PEAK} ${Math.min(
-    WIDTH,
-    cutoffX + BP_WIDTH
-  )},${BOTTOM}
+      WIDTH,
+      cutoffX + BP_WIDTH,
+    )},${BOTTOM}
     L ${WIDTH},${BOTTOM}
   `;
 
@@ -109,7 +109,7 @@ export default function FilterGraphic({
   const rectX = Math.min(cutoffX, lfoX);
   const rectWidth = modRate > 0 ? Math.abs(lfoX - cutoffX) : 0;
   const rectY = TOP - resBoost - 3; // Just above the curve
-  const rectHeight = 2; // Thin line
+  const rectHeight = 2;
 
   return (
     <svg

@@ -58,8 +58,7 @@ export default function PanSection({
 
     setSync(data.PANSYNC);
 
-    if (Number.isInteger(data.PANSYNCCHOICE)) setSyncChoice(data.PANSYNCCHOICE);
-    else setSyncChoice(Math.ceil(data.PANSYNCCHOICE * NoteTypes.length - 1));
+    setSyncChoice(data.PANSYNCCHOICE);
   };
 
   //initial ui updates

@@ -52,9 +52,7 @@ export default function TremoloSection({
 
     setSync(data.TREMSYNC);
 
-    if (Number.isInteger(data.TREMSYNCCHOICE))
-      setSyncChoice(data.TREMSYNCCHOICE);
-    else setSyncChoice(Math.ceil(data.TREMSYNCCHOICE * NoteTypes.length - 1));
+    setSyncChoice(data.TREMSYNCCHOICE);
   };
 
   //Manual UI updates

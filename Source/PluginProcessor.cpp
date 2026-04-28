@@ -893,7 +893,6 @@ TremoKittyAudioProcessor::createParameters()
     return layout;
 }
 
-
 //Sets the appropriate wave form for the modulation of the given module.
 void TremoKittyAudioProcessor::getWave(modules module)
 {

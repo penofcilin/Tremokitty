@@ -232,20 +232,8 @@ namespace kitty_editor
     void TremoKittyAudioProcessorEditor::prepareAPVTSState(
         juce::WebBrowserComponent::NativeFunctionCompletion completion)
     {
-        auto* obj = new juce::DynamicObject();
 
-        for (const auto& id : parameterIDs)
-        {
-            if (auto* param = audioProcessor.apvts.getParameter(id))
-            {
-                // ALWAYS normalized [0..1]
-                obj->setProperty(id, param->getValue());
-            }
-        }
-        //Manually set presetindex to current preset index from presetmanager
-        obj->setProperty("INITPRESETINDEX", audioProcessor.getPresetManager().getCurrentPresetIndex());
-
-        completion(juce::var(obj));
+        completion(prepareAPVTSState());
     }
 
     //Called from anywhere besides initializer list
@@ -255,7 +243,8 @@ namespace kitty_editor
 
         for (const auto& id : parameterIDs)
         {
-            obj->setProperty(id, audioProcessor.apvts.getRawParameterValue(id)->load());
+            if (auto* raw = audioProcessor.apvts.getRawParameterValue(id))
+                obj->setProperty(id, raw->load());
         }
 
         obj->setProperty("INITPRESETINDEX", audioProcessor.getPresetManager().getCurrentPresetIndex());
