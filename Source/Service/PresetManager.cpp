@@ -173,7 +173,14 @@ namespace Service
 
     void PresetManager::updateAPVTS(const int index)
     {
-        valueTreeState.getRawParameterValue("PRESETINDEX")->store(index);
+        auto* param = valueTreeState.getParameter("PRESETINDEX");
+
+        if (param != nullptr)
+        {
+            param->beginChangeGesture();
+            param->setValueNotifyingHost(param->convertTo0to1((float)index));
+            param->endChangeGesture();
+        }
     }
 
     juce::StringArray Service::PresetManager::getAllPresets() const
@@ -191,6 +198,16 @@ namespace Service
     juce::String Service::PresetManager::getCurrentPreset() const
     {
         return currentPreset.toString();
+    }
+
+    int PresetManager::getCurrentPresetIndex() const
+    {
+        const auto presets = getAllPresets();
+        if (presets.isEmpty())
+            return -1;
+        const auto currentIndex = presets.indexOf(currentPreset.toString());
+
+        return currentIndex;
     }
 
     void PresetManager::valueTreeRedirected(juce::ValueTree& treeWhichHasBeenChanged)

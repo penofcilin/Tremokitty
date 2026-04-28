@@ -716,8 +716,14 @@ TremoKittyAudioProcessor::createParameters()
         false));
 
     layout.add(std::make_unique<juce::AudioParameterInt>(
-        juce::ParameterID("PRESETINDEX", 1), "Preset Index",
-        0, 100000, 0));
+        juce::ParameterID("PRESETINDEX", 1),
+        "Preset Index",
+        0,
+        100000,
+        0,
+        juce::AudioParameterIntAttributes()
+        .withAutomatable(false)
+    ));
 
     // =====================
     // Tremolo Section

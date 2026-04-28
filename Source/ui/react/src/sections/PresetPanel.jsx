@@ -12,10 +12,11 @@ export default function PresetPanel({ style, currentState }) {
   const presets = presetContext.presets[0];
 
   useEffect(() => {
-    if (currentState?.PRESETINDEX)
-      setSelectedPresetIndex(Math.ceil(currentState.PRESETINDEX));
-    else setSelectedPresetIndex(1);
-    console.log("selected preset index:", selectedPresetIndex);
+    if (!currentState) return;
+
+    const index = currentState.INITPRESETINDEX;
+
+    setSelectedPresetIndex(Number(index));
   }, [currentState]);
 
   const fieldFormat = [
@@ -39,7 +40,6 @@ export default function PresetPanel({ style, currentState }) {
     },
   ];
 
-  console.log("presets are:", presets);
   console.log("selected preset index:", selectedPresetIndex);
 
   return (

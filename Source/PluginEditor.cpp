@@ -255,6 +255,8 @@ namespace kitty_editor
                 obj->setProperty(id, param->getValue());
             }
         }
+        //Manually set presetindex to current preset index from presetmanager
+        obj->setProperty("INITPRESETINDEX", audioProcessor.getPresetManager().getCurrentPresetIndex());
 
         completion(juce::var(obj));
     }
@@ -268,6 +270,9 @@ namespace kitty_editor
         {
             obj->setProperty(id, audioProcessor.apvts.getRawParameterValue(id)->load());
         }
+
+        obj->setProperty("INITPRESETINDEX", audioProcessor.getPresetManager().getCurrentPresetIndex());
+
         return obj;
     }
 

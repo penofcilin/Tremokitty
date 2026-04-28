@@ -33,6 +33,7 @@ namespace Service
 
         juce::StringArray getAllPresets() const;
         juce::String getCurrentPreset() const;
+        int getCurrentPresetIndex() const;
 
     private:
         void valueTreeRedirected(juce::ValueTree& treeWhichHasBeenChanged) override;

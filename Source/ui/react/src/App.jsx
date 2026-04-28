@@ -81,7 +81,7 @@ function App() {
     };
   }, []);
 
-  const presetIndex = Math.ceil(initialState?.PRESETINDEX) ?? 0;
+  const presetIndex = initialState?.INITPRESETINDEX ?? 0;
 
   return (
     <Theme
