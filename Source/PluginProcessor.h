@@ -89,7 +89,8 @@ public:
     juce::StringArray FilterTypes{ "Low Pass", "High Pass", "Band Pass" };
 
     //Keeps track of if the plugin has been "initialized" (built for the first time) vs the gui being built
-    bool initialized{ false };
+    bool hasRestoredState = false;
+    bool hasLoadedInitialPreset = false;
     
     juce::StringArray PresetNames;
     enum class modules { tremolo, pan, filter, mod, master };

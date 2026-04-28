@@ -234,19 +234,6 @@ namespace kitty_editor
     {
         auto* obj = new juce::DynamicObject();
 
-        if (audioProcessor.initialized == false) {
-            //Massive potential issue if user deletes "default" preset. Ideally they would be able to decide which startup preset is default
-            try
-            {
-                audioProcessor.getPresetManager().loadPreset("Default");
-                audioProcessor.initialized = true;
-            }
-            catch (const std::exception&)
-            {
-                audioProcessor.initialized = true;
-            }
-        }
-
         for (const auto& id : parameterIDs)
         {
             if (auto* param = audioProcessor.apvts.getParameter(id))

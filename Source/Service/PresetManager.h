@@ -31,6 +31,8 @@ namespace Service
         int loadPreviousPreset();
         void updateAPVTS(const int index);
 
+        void setCurrentPresetName(juce::String newName);
+
         juce::StringArray getAllPresets() const;
         juce::String getCurrentPreset() const;
         int getCurrentPresetIndex() const;

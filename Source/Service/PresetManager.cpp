@@ -183,6 +183,11 @@ namespace Service
         }
     }
 
+    void PresetManager::setCurrentPresetName(juce::String newName)
+    {
+        currentPreset.setValue(newName);
+    }
+
     juce::StringArray Service::PresetManager::getAllPresets() const
     {
         juce::StringArray presets;

@@ -46,7 +46,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     getFilterType(false);
     shouldPrepare = false;
     presetManager = std::make_unique<Service::PresetManager>(apvts);
-    apvts.state = juce::ValueTree("SavedParams");
+
 
     auto options = juce::PropertiesFile::Options();
     options.applicationName = ProjectInfo::projectName;
@@ -235,6 +235,12 @@ void TremoKittyAudioProcessor::changeProgramName (int index, const juce::String&
 //==============================================================================
 void TremoKittyAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    if (!hasRestoredState && !hasLoadedInitialPreset && presetManager != nullptr)
+    {
+        presetManager->loadPreset("Default");
+        hasLoadedInitialPreset = true;
+    }
+
     //Set up spec
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
@@ -664,24 +670,32 @@ juce::AudioProcessorEditor* TremoKittyAudioProcessor::createEditor()
 
 void TremoKittyAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    auto state = apvts.copyState();
 
-    std::unique_ptr<juce::XmlElement> xml(apvts.state.createXml());
+    if (presetManager != nullptr)
+        state.setProperty("presetName", presetManager->getCurrentPreset(), nullptr);
+
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
     copyXmlToBinary(*xml, destData);
 }
 
 void TremoKittyAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-    std::unique_ptr<juce::XmlElement> xmlParams(getXmlFromBinary(data, sizeInBytes));
-    if (xmlParams != nullptr)
+    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+
+    if (xml != nullptr)
     {
-        if (xmlParams->hasTagName(apvts.state.getType()))
+        auto state = juce::ValueTree::fromXml(*xml);
+
+        if (state.isValid())
         {
-            apvts.state = juce::ValueTree::fromXml(*xmlParams);
+            apvts.replaceState(state);
+            auto presetName = state.getProperty("presetName").toString();
+
+            if (presetManager != nullptr)
+                presetManager->setCurrentPresetName(presetName);
+
+            hasRestoredState = true;
         }
     }
 }
