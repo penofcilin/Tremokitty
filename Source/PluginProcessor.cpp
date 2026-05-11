@@ -322,6 +322,9 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     {
         bypassed = false;
     }
+    
+    //get master mix
+    const float mix = apvts.getRawParameterValue("MIX")->load();
 
     //Set up the Tempo obj, will only get set up when playhead is available ie in a daw
     playHead = this->getPlayHead();
@@ -362,6 +365,8 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     if ((!apvts.getRawParameterValue("TREMBP")->load()))
     {
         float tremDepth = apvts.getRawParameterValue("TREMDEPTH")->load();
+        tremDepth = tremDepth * mix;
+
         float tremRate;
         if (apvts.getRawParameterValue("TREMSYNC")->load())
         {
@@ -411,6 +416,8 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     //==Panning section==
     //Setting the pan rate
     float panDepth = apvts.getRawParameterValue("PANDEPTH")->load();
+    panDepth = panDepth * mix;
+
     float panRate = 1;
     if (apvts.getRawParameterValue("PANSYNC")->load())
     {
@@ -484,8 +491,26 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         {
             filter.setCutoffFrequency(filterCutoffInHertz);
         }
+
+        juce::AudioBuffer<float> dryBuffer;
+        dryBuffer.makeCopyOf(buffer);
+
         filter.process(juce::dsp::ProcessContextReplacing<float>(block));
+
+        // blend
+        for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+        {
+            auto* wet = buffer.getWritePointer(ch);
+            auto* dry = dryBuffer.getReadPointer(ch);
+
+            for (int i = 0; i < buffer.getNumSamples(); ++i)
+                wet[i] = dry[i] * (1.0f - mix) + wet[i] * mix;
+        }
     }
+
+    //final gain mod
+    const float gain = apvts.getRawParameterValue("GAIN")->load();
+    buffer.applyGain(gain);
 }
 
 void TremoKittyAudioProcessor::processBlockBypassed(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages)
@@ -713,15 +738,15 @@ TremoKittyAudioProcessor::createParameters()
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
     // =====================
-    // Misc
+    // Master
     // =====================
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("GAIN", 1), "Gain",
-        0.f, 1.f, 1.f));
+        0.f, 2.f, 1.f));
 
-    layout.add(std::make_unique<juce::AudioParameterBool>(
-        juce::ParameterID("MASTERBP", 1), "Master Bypass",
-        false));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID("MIX", 1), "Mix",
+        0.f, 1.f, 1.f));
 
     layout.add(std::make_unique<juce::AudioParameterInt>(
         juce::ParameterID("PRESETINDEX", 1),
@@ -856,12 +881,14 @@ TremoKittyAudioProcessor::createParameters()
         0));
 
     layout.add(std::make_unique<juce::AudioParameterChoice>(
-        juce::ParameterID("LASTMODDEDPARAM", 1),
-        "The String Name of the last parameter that was modded",
-        juce::StringArray("None", "Trem Rate", "Trem Depth",
-                          "Pan Rate", "Pan Depth",
-                          "Filter Mod Rate", "Filter Mod Depth"),
-        0));
+    juce::ParameterID("LASTMODDEDPARAM", 1),
+    "The String Name of the last parameter that was modded",
+    juce::StringArray("None", "Trem Rate", "Trem Depth",
+                      "Pan Rate", "Pan Depth",
+                      "Filter Mod Rate", "Filter Mod Depth"),
+    0,
+    juce::AudioParameterChoiceAttributes()
+        .withAutomatable(false)));
 
     layout.add(std::make_unique<juce::AudioParameterChoice>(
         juce::ParameterID("MODSYNCCHOICE", 1), "Mod Sync Rate Choice",
@@ -870,11 +897,17 @@ TremoKittyAudioProcessor::createParameters()
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("MODPARAMPRIORVALUE", 1),
         "Modded Parameter Pre-modded Value",
-        0.f, 10.f, 0.f));
+        juce::NormalisableRange<float>(0.f, 10.f),
+        0.f,
+        juce::AudioParameterFloatAttributes()
+        .withAutomatable(false)));
 
     layout.add(std::make_unique<juce::AudioParameterBool>(
-        juce::ParameterID("MODRESETSWITCH", 1), "Modded Param Reset Switch",
-        true));
+        juce::ParameterID("MODRESETSWITCH", 1),
+        "Modded Param Reset Switch",
+        true,
+        juce::AudioParameterBoolAttributes()
+        .withAutomatable(false)));
 
     layout.add(std::make_unique<juce::AudioParameterBool>(
         juce::ParameterID("MODBP", 1), "Mod LFO Bypass",

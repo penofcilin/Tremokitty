@@ -4,6 +4,7 @@ import {
   HeaderSection,
   FilterSection,
   ModSection,
+  MasterSection,
 } from "./sections";
 import { useEffect, useState } from "react";
 import { Flex, Theme } from "@radix-ui/themes";
@@ -20,6 +21,7 @@ const data = window.__JUCE__.initialisationData;
 function App() {
   const [initialState, setInitialState] = useState(null);
   const [currentState, setCurrentState] = useState(null);
+  const [presets, setPresets] = useState([]);
   const [bypassed, setBypassed] = useState({
     tremolo: false,
     pan: false,
@@ -33,6 +35,7 @@ function App() {
       const init = typeof result === "string" ? JSON.parse(result) : result;
       setInitialState(init);
       setCurrentState(init);
+      setPresets(data.Presets);
       console.log("Initial state received from backend:", init);
     });
     return () => {};
@@ -81,6 +84,20 @@ function App() {
     };
   }, []);
 
+  //Preset update listener
+  useEffect(() => {
+    const handler = (presets) => {
+      console.log("Received new presets:", presets);
+      setPresets(presets);
+    };
+
+    window.__JUCE__.backend.addEventListener("PresetsChanged", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("PresetsChanged", handler);
+    };
+  }, []);
+
   const presetIndex = initialState?.INITPRESETINDEX ?? 0;
 
   return (
@@ -104,11 +121,11 @@ function App() {
         {/* Presets */}
         <PresetsContext.Provider
           value={{
-            presets: data.Presets,
+            presets: presets ?? [],
             initPresetIndex: presetIndex,
           }}
         >
-          <HeaderSection currentState={currentState} />
+          <HeaderSection currentState={currentState} presets={presets} />
         </PresetsContext.Provider>
 
         {/* Main UI */}
@@ -160,6 +177,19 @@ function App() {
             }}
           >
             <ModSection />
+          </div>
+
+          <div
+            className="master"
+            style={{
+              gridColumn: "3",
+              gridRow: "2",
+            }}
+          >
+            <MasterSection
+              initialData={initialState}
+              currentState={currentState}
+            />
           </div>
         </div>
       </Flex>

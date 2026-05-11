@@ -73,7 +73,7 @@ namespace kitty_editor {
         //AUGHHH
         const std::vector<juce::String> parameterIDs{
        "GAIN",
-       "MASTERBP",
+       "MIX",
        "PRESETINDEX",
 
        "TREMRATE",

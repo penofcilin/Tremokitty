@@ -6,7 +6,7 @@ import * as Juce from "../../juce/index.js";
 //Ex. emitSliderEvent(bridge.ParameterIDs.TREMRATE, 0.5);
 export const ParameterID = Object.freeze({
   GAIN: "GAIN",
-  MASTERBP: "MASTERBP",
+  MIX: "MIX",
   PRESETINDEX: "PRESETINDEX",
 
   TREMRATE: "TREMRATE",

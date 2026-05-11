@@ -19,6 +19,7 @@ export default function TDropdown({
     setValue(valueFromParent);
   }, [setValue, valueFromParent]);
 
+  console.log("dropdown options are:", options);
   return (
     <div>
       <DropdownMenu.Root className="dropdownRoot">
@@ -33,18 +34,22 @@ export default function TDropdown({
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content size={size} variant={variant}>
-          {options.map((choice, index) => (
-            <DropdownMenu.Item
-              className="dropdownItem"
-              key={choice}
-              onSelect={() => {
-                setValue(choice);
-                emitDropdownEvent(id, index);
-              }}
-            >
-              {choice}
-            </DropdownMenu.Item>
-          ))}
+          {Array.isArray(options) && options.length > 0 ? (
+            options.map((choice, index) => (
+              <DropdownMenu.Item
+                className="dropdownItem"
+                key={choice}
+                onSelect={() => {
+                  setValue(choice);
+                  emitDropdownEvent(id, index);
+                }}
+              >
+                {choice}
+              </DropdownMenu.Item>
+            ))
+          ) : (
+            <DropdownMenu.Item disabled>No options</DropdownMenu.Item>
+          )}
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </div>

@@ -47,7 +47,7 @@ export default function ModSection({ style, bypassed, toggleBypass }) {
 
       emitSliderEvent(
         sync ? ParameterID.MODSYNCCHOICE : ParameterID.MODLFORATE,
-        next ? syncedRate : unsyncedRate
+        next ? syncedRate : unsyncedRate,
       );
 
       return next;
@@ -67,8 +67,8 @@ export default function ModSection({ style, bypassed, toggleBypass }) {
   return (
     <Flex
       width="170px"
-      height="360px" //"521px"
-      style={{ style }}
+      height="300px"
+      style={{ ...style, alignItems: "center" }}
       data-bypassed={bypassed ? "" : undefined}
       className="modSection bypassable"
       direction="column"
@@ -124,17 +124,21 @@ export default function ModSection({ style, bypassed, toggleBypass }) {
         </Flex>
       </div>
 
-      <div className="oscilloscopeDiv">
+      <div
+        className="oscilloscopeDiv"
+        style={{ transform: "translateY(-5px)" }}
+      >
         <Oscilloscope
           lfoValue={lfoPosition}
           depth={depth}
           rate={sync ? syncedRate : unsyncedRate}
+          style={{ height: "100px" }}
         ></Oscilloscope>
       </div>
       {/* CONTROLS */}
       <div className="controls">
         <TButton
-          style={{ padding: "5px", width: "40px", height: "30px" }}
+          style={{ padding: "5px", width: "40px", height: "25px" }}
           id={ParameterID.MODSYNC}
           clickEvent={syncButtonClicked}
           isToggle={1}
@@ -158,7 +162,7 @@ export default function ModSection({ style, bypassed, toggleBypass }) {
               value={activeRate}
               onChange={handleRateChange}
               style={{
-                "--knob-size": "50px",
+                "--knob-size": "45px",
               }}
               tooltip="enabled"
               tooltipMap={
@@ -184,7 +188,8 @@ export default function ModSection({ style, bypassed, toggleBypass }) {
                 return toPercentage(v);
               }}
               style={{
-                "--knob-size": "50px",
+                "--knob-size": "45px",
+                marginLeft: "5px",
               }}
               tooltip={"enabled"}
             ></TKnob>
@@ -200,8 +205,11 @@ export default function ModSection({ style, bypassed, toggleBypass }) {
             border: "2px solid white",
             borderRadius: "10px",
             alignItems: "center",
-            marginLeft: "6px",
+            alignContent: "center",
+            alignSelf: "center",
+            justifyContent: "center",
             marginTop: "5px",
+            transform: "translateY(-5px)",
           }}
         >
           <WaveSelector
@@ -209,7 +217,7 @@ export default function ModSection({ style, bypassed, toggleBypass }) {
             value={waveType}
             onChange={setWaveType}
             vertical={false}
-            style={{ width: "149px", "--item-size": "35px" }}
+            style={{ width: "110px", "--item-size": "25px", height: "100%" }}
           ></WaveSelector>
         </Flex>
       </div>

@@ -63,7 +63,7 @@ namespace kitty_editor
                                         .withBackgroundColour(juce::Colours::white))
                 .withResourceProvider([this](const auto& url) {return getResource(url); })
                 .withNativeIntegrationEnabled()
-                .withInitialisationData("Presets", convertPresetNames(p.PresetNames))
+                .withInitialisationData("Presets", p.getPresetManager().getAllPresets())
                 .withNativeFunction(
                     juce::Identifier{ "testNativeFunction" },
                     [this](const juce::Array<juce::var>& args,
@@ -99,7 +99,6 @@ namespace kitty_editor
         for (auto& id : parameterIDs)
             audioProcessor.apvts.addParameterListener(id, this);
 
-        audioProcessor.apvts.addParameterListener("TREMWAVE", this);
         //Timers
         startTimer(5);
         parameterUpdateTimer.startTimerHz(30);
@@ -457,6 +456,7 @@ namespace kitty_editor
            
                 DBG(key + " = " + value);
             }
+            emitFrontendEvent("PresetsChanged", audioProcessor.getPresetManager().getAllPresets());
         }
     }
 

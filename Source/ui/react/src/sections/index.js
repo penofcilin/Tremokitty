@@ -5,3 +5,4 @@ export { default as HeaderSection } from "./HeaderSection";
 export { default as PresetPanel } from "./PresetPanel";
 export { default as FilterSection } from "./FilterSection/FilterSection";
 export { default as ModSection } from "./ModSection/ModSection";
+export { default as MasterSection } from "./MasterSection";

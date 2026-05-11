@@ -5,11 +5,10 @@ import { TDialog, TDropdown, TButton } from "../components";
 import { ElementID } from "../utilities/juceBridge";
 import { FileIcon, CaretUpIcon, CaretDownIcon } from "@radix-ui/react-icons";
 
-export default function PresetPanel({ style, currentState }) {
+export default function PresetPanel({ style, currentState, providedPresets }) {
   const [selectedPresetIndex, setSelectedPresetIndex] = useState(1);
-
+  const [presets, setPresets] = useState([]);
   const presetContext = useContext(PresetsContext);
-  const presets = presetContext.presets[0];
 
   useEffect(() => {
     if (!currentState) return;
@@ -18,6 +17,17 @@ export default function PresetPanel({ style, currentState }) {
 
     setSelectedPresetIndex(Number(index));
   }, [currentState]);
+
+  useEffect(() => {
+    if (providedPresets) {
+      console.log("Updating Presets:", providedPresets);
+      if (Array.isArray(providedPresets[0])) {
+        setPresets(providedPresets[0]);
+      } else {
+        setPresets(providedPresets);
+      }
+    }
+  }, [providedPresets]);
 
   const fieldFormat = [
     {
@@ -39,6 +49,7 @@ export default function PresetPanel({ style, currentState }) {
       required: false,
     },
   ];
+  console.log("presets in preset panel:", presets);
 
   return (
     <Flex

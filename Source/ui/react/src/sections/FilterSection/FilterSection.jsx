@@ -502,7 +502,7 @@ export default function FilterSection({
                     value={activeRate}
                     onChange={handleRateChange}
                     style={{
-                      "--knob-size": "50px",
+                      "--knob-size": "45px",
                     }}
                     tooltip="enabled"
                     tooltipMap={
@@ -527,7 +527,8 @@ export default function FilterSection({
                       return toPercentage(v);
                     }}
                     style={{
-                      "--knob-size": "50px",
+                      "--knob-size": "45px",
+                      marginLeft: "5px",
                     }}
                     tooltip={"enabled"}
                   ></TKnob>
