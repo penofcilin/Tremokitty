@@ -40,8 +40,6 @@ export default function PresetPanel({ style, currentState }) {
     },
   ];
 
-  console.log("selected preset index:", selectedPresetIndex);
-
   return (
     <Flex
       style={{

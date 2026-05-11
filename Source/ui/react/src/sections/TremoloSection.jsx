@@ -44,6 +44,7 @@ export default function TremoloSection({
   }, []);
 
   const applyState = (data) => {
+    console.log("applying state:", data);
     setWaveType(data.TREMWAVE);
 
     setTremDepth(data.TREMDEPTH);

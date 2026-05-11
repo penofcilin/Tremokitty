@@ -99,6 +99,7 @@ namespace kitty_editor
         for (auto& id : parameterIDs)
             audioProcessor.apvts.addParameterListener(id, this);
 
+        audioProcessor.apvts.addParameterListener("TREMWAVE", this);
         //Timers
         startTimer(5);
         parameterUpdateTimer.startTimerHz(30);
@@ -196,6 +197,7 @@ namespace kitty_editor
     {
         const juce::ScopedLock lock(pendingLock);
         pendingUpdates.set(parameterID, newValue);
+        DBG("Changed: " << parameterID << " TO " << newValue);
     }
 
     void TremoKittyAudioProcessorEditor::emitFrontendEvent(const juce::String& identifier, juce::var value)
@@ -466,8 +468,16 @@ namespace kitty_editor
 
 
         //Store value. In theory, pass an integer index reflecting choice. For instance click on sine in react -> 0 is passed, apvts gets the tremwave parameter, and sets it to the same index, which should be the same. Later on may need to change this, if miscellaneous togglegroups are incorporated (misc meaning the group does not reflect the state of some parameter).
-        audioProcessor.apvts.getRawParameterValue(groupID)->store(newVal);
-        audioProcessor.parameterChanged(groupID, newVal);
+        if (auto* param = audioProcessor.apvts.getParameter(groupID))
+        {
+            param->beginChangeGesture();
+
+            param->setValueNotifyingHost(
+                param->convertTo0to1(newVal)
+            );
+
+            param->endChangeGesture();
+        }
        DBG("Currenrtly stored in " + groupID + " " + juce::String(audioProcessor.apvts.getRawParameterValue(groupID)->load()));
     }
 
