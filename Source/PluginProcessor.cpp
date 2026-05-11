@@ -33,13 +33,7 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     LFOList.push_back(panLFO);
     LFOList.push_back(filterLFO);
     LFOList.push_back(modLFO);
-    
-    //Adding listeners to each of the modable parameters- see the enumerator ModParams
-  /*  for (int i = 1; i < 7; i++)
-    {
-        juce::String paramID = ModParams[i];
-        apvts.addParameterListener(paramID, this);
-    }*/
+   
 
     addListenersToAllParameters();
 
@@ -321,9 +315,9 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         buffer.clear(i, 0, buffer.getNumSamples());
 
 
-    /*My Stuff Starts Here*/
     juce::dsp::AudioBlock<float> block(buffer);
 
+    //If we're in this process block, bypassed should be false
     if (bypassed)
     {
         bypassed = false;
@@ -431,7 +425,7 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     float newPanVal = 0;
 
     //Add panning functionality
-    if (panDepth != 0.f)
+    if (panDepth != 0.f && panRate != 0.f)
     {
         panLFOCurrentPosition.store( panLFO.peekNextValue(block.getNumSamples()));
         newPanVal = panLFO.getNextValue(block.getNumSamples());
