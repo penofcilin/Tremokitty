@@ -56,44 +56,51 @@ namespace kitty_editor
         : AudioProcessorEditor(&p),
         audioProcessor(p),
         parameterUpdateTimer(*this),
-        webView(juce::WebBrowserComponent::Options{}
+        webView([]( TremoKittyAudioProcessor& p, TremoKittyAudioProcessorEditor* self){
+            auto options = juce::WebBrowserComponent::Options{}
+        #if JUCE_WINDOWS
                 .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
                 .withWinWebView2Options(juce::WebBrowserComponent::Options::WinWebView2{}
                                         .withUserDataFolder(juce::File::getSpecialLocation(juce::File::tempDirectory))
                                         .withBackgroundColour(juce::Colours::white))
-                .withResourceProvider([this](const auto& url) {return getResource(url); })
+        #endif
+                .withResourceProvider([self](const auto& url) { return self->getResource(url); })
                 .withNativeIntegrationEnabled()
                 .withInitialisationData("Presets", p.getPresetManager().getAllPresets())
                 .withNativeFunction(
                     juce::Identifier{ "testNativeFunction" },
-                    [this](const juce::Array<juce::var>& args,
+                    [self](const juce::Array<juce::var>& args,
                            juce::WebBrowserComponent::NativeFunctionCompletion completion) {
-                               testNativeFunction(args, std::move(completion)); }
+                               self->testNativeFunction(args, std::move(completion)); }
                 )
-                .withNativeFunction("ProvideState", [this](const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion) {
-                    prepareAPVTSState(std::move(completion)); }
+                .withNativeFunction("ProvideState", [self](const juce::Array<juce::var>& args, juce::WebBrowserComponent::NativeFunctionCompletion completion) {
+                    self->prepareAPVTSState(std::move(completion)); }
                 )
+                .withEventListener("FrontendReady", [self](juce::var info) {
+                    self->frontendReady = true;
+                })
                 .withEventListener("SliderChanged",
-                                   [this](juce::var info) {
-                                       sliderChanged(info);
+                                   [self](juce::var info) {
+                                       self->sliderChanged(info);
                                    })
                 .withEventListener("DropdownCommit",
-                                    [this](juce::var info) {
-                                        dropdownCommit(info);
+                                    [self](juce::var info) {
+                                        self->dropdownCommit(info);
                                     })
                 .withEventListener("ButtonClicked",
-                                    [this](juce::var info) {
-                                        buttonClicked(info);
+                                    [self](juce::var info) {
+                                        self->buttonClicked(info);
                                     })
                 .withEventListener("FormSubmitted",
-                                    [this](juce::var info) {
-                                        formSubmitted(info);
+                                    [self](juce::var info) {
+                                        self->formSubmitted(info);
                                    })
                 .withEventListener("TogglegroupChanged",
-                                    [this](juce::var info) {
-                                        toggleGroupChanged(info);
-                                    })
-                            )
+                                    [self](juce::var info) {
+                                        self->toggleGroupChanged(info);
+                                    });
+            return options;
+        }(p, this))
     {
         juce::ignoreUnused(audioProcessor);
         for (auto& id : parameterIDs)
@@ -161,6 +168,9 @@ namespace kitty_editor
     //Main timer, currently for lfo updates. 5 ms timer
     void TremoKittyAudioProcessorEditor::timerCallback()
     {
+        if(!frontendReady)
+            return;
+        
         float filterLFOValue = audioProcessor.filterLFOCurrentPosition.load();
         float tremLFOValue = audioProcessor.tremLFOCurrentPosition.load();
         float panLFOValue = audioProcessor.panLFOCurrentPosition.load();

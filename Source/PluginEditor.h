@@ -121,6 +121,7 @@ namespace kitty_editor {
         void updateUI();
 
         //Member Variable
+        bool frontendReady {false};
         bool shouldNotDisplayKitty{ false };
         int currentDefaultSkin{ 0 };
         //Processor

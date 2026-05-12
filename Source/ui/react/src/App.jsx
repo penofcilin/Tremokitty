@@ -37,6 +37,7 @@ function App() {
       setCurrentState(init);
       setPresets(data.Presets);
       console.log("Initial state received from backend:", init);
+      window.__JUCE__.backend.emitEvent("FrontendReady", {});
     });
     return () => {};
   }, []);
