@@ -5,6 +5,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 .mainGrid {
@@ -32,6 +33,8 @@ body,
 body {
   margin: 0;
   padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .bypassable[data-bypassed] {

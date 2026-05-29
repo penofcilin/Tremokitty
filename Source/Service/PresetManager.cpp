@@ -21,7 +21,7 @@ namespace Service
     //Constructah
     Service::PresetManager::PresetManager(juce::AudioProcessorValueTreeState& valueTreeState) : valueTreeState(valueTreeState)
     {
-        //Create a default preset Directory if it doesn't exist
+        //Create a default preset Directory if it doesn't exist, also should create a default preset if it dont exist
         if (!defaultDirectory.exists())
         {
             const auto result = defaultDirectory.createDirectory();
