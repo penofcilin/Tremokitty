@@ -23,7 +23,7 @@ namespace Service
 
         PresetManager(juce::AudioProcessorValueTreeState& valueTreeState);
 
-        void savePreset(const juce::String& presetName);
+        void savePreset(const juce::String& presetName, const juce::String& categoryName);
         void deletePreset(const juce::String& presetName);
         void loadPreset(const juce::String& presetName);
         void loadPreset(const int index);
@@ -41,6 +41,8 @@ namespace Service
         void valueTreeRedirected(juce::ValueTree& treeWhichHasBeenChanged) override;
         juce::Value currentPreset;
         juce::AudioProcessorValueTreeState& valueTreeState;
+
+        juce::File getPresetFile(const juce::String& presetPath) const;
 
     };
 }

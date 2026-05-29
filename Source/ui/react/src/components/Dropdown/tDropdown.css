@@ -3,13 +3,24 @@
   background: var(--accent-primary);
 }
 
+.subFolder:hover {
+  background: var(--accent-primary);
+  cursor: pointer;
+}
+
+.subFolder[data-state="open"] {
+  background: var(--accent-primary);
+}
+
 .triggerButton {
   cursor: pointer;
   background: var(--accent-primary);
   color: white;
   border-radius: 5px;
 
-  transition: transform 120ms ease-out, filter 120ms ease-out;
+  transition:
+    transform 120ms ease-out,
+    filter 120ms ease-out;
 }
 
 .triggerButton:hover {

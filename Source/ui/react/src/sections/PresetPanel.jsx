@@ -54,7 +54,7 @@ export default function PresetPanel({ style, currentState, providedPresets }) {
       required: false,
     },
     {
-      name: "Category",
+      name: "PresetCategory",
       label: "Category",
       type: "text",
       placeholder: "",

@@ -456,16 +456,24 @@ namespace kitty_editor
         DBG("Submitted a form: " << formID);
        
         if (formID == "SAVEPRESETBUTTON") {
+            juce::String presetName;
+            juce::String presetCategory;
+
             for (const auto& entry : dataObj->getProperties())
             {
                 juce::String key = entry.name.toString();
                 juce::String value = entry.value.toString();
 
-                if(key == "PresetName")
-                    audioProcessor.getPresetManager().savePreset(value);
+                if (key == "PresetName")
+                    presetName = value;
+                else if (key == "PresetCategory")
+                    presetCategory = value;
            
-                DBG(key + " = " + value);
+                
             }
+            DBG("Saving preset " << presetName << " With category " << presetCategory);
+            audioProcessor.getPresetManager().savePreset(presetName, presetCategory);
+
             emitFrontendEvent("PresetsChanged", audioProcessor.getPresetManager().getAllPresets());
             emitFrontendEvent("PresetIndexUpdate", audioProcessor.getPresetManager().getCurrentPresetIndex());
         }

@@ -34,23 +34,61 @@ namespace Service
         valueTreeState.state.addListener(this);
     }
 
-    void Service::PresetManager::savePreset(const juce::String& presetName)
+    juce::File PresetManager::getPresetFile(const juce::String& presetPath) const
+    {
+        auto cleanedPath = presetPath.replaceCharacter('\\', '/');
+
+        if (cleanedPath.endsWith("." + extension))
+            cleanedPath = cleanedPath.dropLastCharacters(extension.length() + 1);
+
+        return defaultDirectory.getChildFile(cleanedPath + "." + extension);
+    }
+
+    void Service::PresetManager::savePreset(const juce::String& presetName, const juce::String& categoryName)
     {
         if(presetName.isEmpty())
         {
             return;
         }
 
-        currentPreset.setValue(presetName);
+        const auto categoryDirectory = categoryName.isEmpty()
+            ? defaultDirectory
+            : defaultDirectory.getChildFile(categoryName);
+
+        if (!categoryDirectory.exists())
+        {
+            const auto result = categoryDirectory.createDirectory();
+
+            if (result.failed())
+            {
+                DBG("Could not create preset category directory: "
+                    + categoryDirectory.getFullPathName()
+                    + " - "
+                    + result.getErrorMessage());
+
+                jassertfalse;
+                return;
+            }
+        }
 
         const auto xml = valueTreeState.copyState().createXml();
-        const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+
+        const auto presetFile = categoryDirectory.getChildFile(presetName + "." + extension);
 
         if (!xml->writeTo(presetFile))
         {
             DBG("Could Not Create Preset File + " + presetFile.getFullPathName());
             jassertfalse;
         }
+
+        const auto savedPresetPath = categoryName.isEmpty()
+            ? presetName
+            : categoryName + "/" + presetName;
+
+        currentPreset.setValue(savedPresetPath);
+
+        const auto presets = getAllPresets();
+        updateAPVTS(presets.indexOf(savedPresetPath));
     }
 
     void Service::PresetManager::deletePreset(const juce::String& presetName)
@@ -60,7 +98,7 @@ namespace Service
             return;
         }
 
-        const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+        const auto presetFile = getPresetFile(presetName);
         if (!presetFile.existsAsFile())
         {
             DBG("Preset file " + presetFile.getFullPathName() + " does not exist.");
@@ -74,17 +112,6 @@ namespace Service
             jassertfalse;
             return;
         }
-
-        try
-        {
-            loadPreset("Default");
-            updateAPVTS(0);
-        }
-        catch (const std::exception& e)
-        {
-            DBG("Failed to load default preset. Could be that there is no preset named 'Default'.");
-            currentPreset.setValue("");
-        }
     }
 
     void Service::PresetManager::loadPreset(const juce::String& presetName)
@@ -94,7 +121,7 @@ namespace Service
             return; 
         }
 
-        const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
+        const auto presetFile = getPresetFile(presetName);
 
         if (!presetFile.existsAsFile())
         {
@@ -114,34 +141,12 @@ namespace Service
 
     void Service::PresetManager::loadPreset(const int index)
     {
-        const auto& presetList = getAllPresets();
-        juce::String presetName("");
+        const auto presetList = getAllPresets();
 
-        if(index < presetList.size())
-           presetName = presetList[index];
-        else
-        {
+        if (index < 0 || index >= presetList.size())
             return;
-        }
 
-        DBG("Loading preset " << presetName);
-
-        const auto presetFile = defaultDirectory.getChildFile(presetName + "." + extension);
-
-        if (!presetFile.existsAsFile())
-        {
-            DBG("Preset file " + presetFile.getFullPathName() + " does not exist.");
-            jassertfalse;
-            return;
-        }
-
-        juce::XmlDocument xmlDocument{ presetFile };
-        const auto valueTreeToLoad = juce::ValueTree::fromXml(*xmlDocument.getDocumentElement());
-
-        valueTreeState.replaceState(valueTreeToLoad);
-        currentPreset.setValue(presetName);
-        const auto presets = getAllPresets();
-        updateAPVTS(presets.indexOf(presetName));
+        loadPreset(presetList[index]);
     }
 
     int Service::PresetManager::loadNextPreset()
@@ -191,12 +196,28 @@ namespace Service
     juce::StringArray Service::PresetManager::getAllPresets() const
     {
         juce::StringArray presets;
-        const auto fileArray = defaultDirectory.findChildFiles(juce::File::TypesOfFileToFind::findFiles, false, "*." + extension);
+
+        const auto fileArray = defaultDirectory.findChildFiles(
+            juce::File::findFiles,
+            true,
+            "*." + extension
+        );
+
         for (const auto& file : fileArray)
         {
-            presets.add(file.getFileNameWithoutExtension());
+            auto relativePath = file.getRelativePathFrom(defaultDirectory)
+                .replaceCharacter('\\', '/');
+
+            relativePath = relativePath.upToLastOccurrenceOf(
+                "." + extension,
+                false,
+                false
+            );
+
+            presets.add(relativePath);
         }
 
+        presets.sort(true);
         return presets;
     }
 

@@ -11,8 +11,6 @@
 #include <JuceHeader.h>
 #include <juce_gui_extra/juce_gui_extra.h>
 #include "PluginProcessor.h"
-#include "PresetPanel.h"
-#include "MyLNF.h"
 
 
 #define modules TremoKittyAudioProcessor::modules
