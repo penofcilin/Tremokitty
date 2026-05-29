@@ -19,7 +19,6 @@ export default function TDropdown({
     setValue(valueFromParent);
   }, [setValue, valueFromParent]);
 
-  console.log("dropdown options are:", options);
   return (
     <div>
       <DropdownMenu.Root className="dropdownRoot">

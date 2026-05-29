@@ -467,6 +467,7 @@ namespace kitty_editor
                 DBG(key + " = " + value);
             }
             emitFrontendEvent("PresetsChanged", audioProcessor.getPresetManager().getAllPresets());
+            emitFrontendEvent("PresetIndexUpdate", audioProcessor.getPresetManager().getCurrentPresetIndex());
         }
     }
 

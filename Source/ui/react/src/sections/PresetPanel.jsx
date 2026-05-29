@@ -8,8 +8,8 @@ import { FileIcon, CaretUpIcon, CaretDownIcon } from "@radix-ui/react-icons";
 export default function PresetPanel({ style, currentState, providedPresets }) {
   const [selectedPresetIndex, setSelectedPresetIndex] = useState(1);
   const [presets, setPresets] = useState([]);
-  const presetContext = useContext(PresetsContext);
 
+  //Obtaining initial preset index
   useEffect(() => {
     if (!currentState) return;
 
@@ -18,6 +18,7 @@ export default function PresetPanel({ style, currentState, providedPresets }) {
     setSelectedPresetIndex(Number(index));
   }, [currentState]);
 
+  //Obtaining updated list of presets
   useEffect(() => {
     if (providedPresets) {
       console.log("Updating Presets:", providedPresets);
@@ -28,6 +29,19 @@ export default function PresetPanel({ style, currentState, providedPresets }) {
       }
     }
   }, [providedPresets]);
+
+  //Preset changing listener, for updating preset after saving
+  useEffect(() => {
+    const handler = (newPresetIndex) => {
+      setSelectedPresetIndex(newPresetIndex);
+    };
+
+    window.__JUCE__.backend.addEventListener("PresetIndexUpdate", handler);
+
+    return () => {
+      window.__JUCE__.backend.removeEventListener("PresetIndexUpdate", handler);
+    };
+  }, []);
 
   const fieldFormat = [
     {
@@ -49,7 +63,6 @@ export default function PresetPanel({ style, currentState, providedPresets }) {
       required: false,
     },
   ];
-  console.log("presets in preset panel:", presets);
 
   return (
     <Flex
