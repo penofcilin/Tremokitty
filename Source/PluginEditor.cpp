@@ -444,6 +444,14 @@ namespace kitty_editor
                 audioProcessor.getPresetManager().loadPreviousPreset();
                 updateUI();
             }
+            else if (buttonID == "OPENPRESETFOLDERBUTTON") {
+                auto dir = Service::PresetManager::defaultDirectory;
+
+                if (!dir.exists())
+                    dir.createDirectory();
+
+                dir.startAsProcess();
+            }
         }
     }
 
@@ -474,8 +482,14 @@ namespace kitty_editor
             DBG("Saving preset " << presetName << " With category " << presetCategory);
             audioProcessor.getPresetManager().savePreset(presetName, presetCategory);
 
-            emitFrontendEvent("PresetsChanged", audioProcessor.getPresetManager().getAllPresets());
-            emitFrontendEvent("PresetIndexUpdate", audioProcessor.getPresetManager().getCurrentPresetIndex());
+            auto presets = audioProcessor.getPresetManager().getAllPresets();
+            auto index = audioProcessor.getPresetManager().getCurrentPresetIndex();
+
+            auto* obj = new juce::DynamicObject();
+            obj->setProperty("presets", presets);
+            obj->setProperty("presetIndex", index);
+
+            emitFrontendEvent("PresetsChanged", juce::var(obj));
         }
     }
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { emitFormEvent } from "../../utilities/juceBridge";
 import { Box, Button } from "@radix-ui/themes";
 import { Cross2Icon } from "@radix-ui/react-icons";
@@ -13,6 +14,7 @@ export default function TDialog({
   buttonStyle,
   icon = null,
   children,
+  triggerTooltip,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -26,15 +28,39 @@ export default function TDialog({
     setOpen(false);
   };
 
+  const triggerButton = (
+    <Button style={buttonStyle} className="Button">
+      {icon && <span className="tDialogIcon">{icon}</span>}
+      {children && <span className="tDialogText">{children}</span>}
+    </Button>
+  );
+
+  const trigger = triggerTooltip ? (
+    <Tooltip.Provider delayDuration={triggerTooltip?.delay ?? 15}>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <Dialog.Trigger asChild>{triggerButton}</Dialog.Trigger>
+        </Tooltip.Trigger>
+
+        <Tooltip.Portal>
+          <Tooltip.Content
+            className="TooltipContent"
+            side={triggerTooltip?.side ?? "top"}
+            sideOffset={8}
+          >
+            {triggerTooltip?.content ?? triggerTooltip}
+            <Tooltip.Arrow className="TooltipArrow" />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+  ) : (
+    <Dialog.Trigger asChild>{triggerButton}</Dialog.Trigger>
+  );
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      {/* Trigger */}
-      <Dialog.Trigger asChild>
-        <Button style={buttonStyle} className="Button">
-          {icon && <span className="tDialogIcon">{icon}</span>}
-          {children && <span className="tDialogText">{children}</span>}
-        </Button>
-      </Dialog.Trigger>
+      {trigger}
 
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay" />

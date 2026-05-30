@@ -21,6 +21,7 @@ const data = window.__JUCE__.initialisationData;
 function App() {
   const [initialState, setInitialState] = useState(null);
   const [currentState, setCurrentState] = useState(null);
+  const [selectedPresetIndex, setSelectedPresetIndex] = useState(1);
   const [presets, setPresets] = useState([]);
   const [bypassed, setBypassed] = useState({
     tremolo: false,
@@ -87,9 +88,14 @@ function App() {
 
   //Preset update listener
   useEffect(() => {
-    const handler = (presets) => {
-      console.log("Received new presets:", presets);
-      setPresets(presets);
+    const handler = (data) => {
+      console.log("Received presets update:", data);
+
+      setPresets(data.presets ?? []);
+
+      if (data.presetIndex !== undefined) {
+        setSelectedPresetIndex(data.presetIndex);
+      }
     };
 
     window.__JUCE__.backend.addEventListener("PresetsChanged", handler);
@@ -126,7 +132,12 @@ function App() {
             initPresetIndex: presetIndex,
           }}
         >
-          <HeaderSection currentState={currentState} presets={presets} />
+          <HeaderSection
+            currentState={currentState}
+            presets={presets}
+            selectedPresetIndex={selectedPresetIndex}
+            setSelectedPresetIndex={setSelectedPresetIndex}
+          />
         </PresetsContext.Provider>
 
         {/* Main UI */}

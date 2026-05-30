@@ -9,7 +9,6 @@
 */
 
 #include "PresetManager.h"
-#include <cstdlib>
 
 namespace Service
 {

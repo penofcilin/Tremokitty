@@ -1,47 +1,28 @@
-import { useContext, useState, useEffect } from "react";
-import { PresetsContext } from "../utilities/PresetsContext";
+import { useEffect } from "react";
 import { Flex } from "@radix-ui/themes";
 import { TDialog, TDropdown, TButton } from "../components";
 import { ElementID } from "../utilities/juceBridge";
 import { FileIcon, CaretUpIcon, CaretDownIcon } from "@radix-ui/react-icons";
+import { Folder } from "lucide-react";
 
-export default function PresetPanel({ style, currentState, providedPresets }) {
-  const [selectedPresetIndex, setSelectedPresetIndex] = useState(1);
-  const [presets, setPresets] = useState([]);
+export default function PresetPanel({
+  style,
+  currentState,
+  providedPresets,
+  selectedPresetIndex,
+  setSelectedPresetIndex,
+}) {
+  const presets = Array.isArray(providedPresets?.[0])
+    ? providedPresets[0]
+    : (providedPresets ?? []);
 
-  //Obtaining initial preset index
+  // Obtaining initial preset index
   useEffect(() => {
     if (!currentState) return;
 
     const index = currentState.INITPRESETINDEX;
-
     setSelectedPresetIndex(Number(index));
-  }, [currentState]);
-
-  //Obtaining updated list of presets
-  useEffect(() => {
-    if (providedPresets) {
-      console.log("Updating Presets:", providedPresets);
-      if (Array.isArray(providedPresets[0])) {
-        setPresets(providedPresets[0]);
-      } else {
-        setPresets(providedPresets);
-      }
-    }
-  }, [providedPresets]);
-
-  //Preset changing listener, for updating preset after saving
-  useEffect(() => {
-    const handler = (newPresetIndex) => {
-      setSelectedPresetIndex(newPresetIndex);
-    };
-
-    window.__JUCE__.backend.addEventListener("PresetIndexUpdate", handler);
-
-    return () => {
-      window.__JUCE__.backend.removeEventListener("PresetIndexUpdate", handler);
-    };
-  }, []);
+  }, [currentState, setSelectedPresetIndex]);
 
   const fieldFormat = [
     {
@@ -79,9 +60,9 @@ export default function PresetPanel({ style, currentState, providedPresets }) {
       <Flex direction="row" align="center" gap={0}>
         <TDropdown
           id="presetDropdown"
-          defaultValue={"Default"}
+          defaultValue="Default"
           options={presets}
-          valueFromParent={presets[selectedPresetIndex]}
+          valueFromParent={presets[selectedPresetIndex] ?? "Default"}
           buttonStyle={{ height: "40px" }}
         />
 
@@ -98,15 +79,18 @@ export default function PresetPanel({ style, currentState, providedPresets }) {
               height: "20px",
               padding: 0,
             }}
+            tooltip="Previous Preset"
             icon={<CaretUpIcon width={20} height={20} />}
             id={ElementID.PREVIOUSPRESETBUTTON}
           />
+
           <TButton
             style={{
               width: "20px",
               height: "20px",
               padding: 0,
             }}
+            tooltip="Next Preset"
             icon={<CaretDownIcon width={20} height={20} />}
             id={ElementID.NEXTPRESETBUTTON}
           />
@@ -117,15 +101,35 @@ export default function PresetPanel({ style, currentState, providedPresets }) {
           header="Save Preset"
           description=""
           fields={fieldFormat}
+          triggerTooltip="Save Preset"
           buttonText="Save"
-          buttonStyle={{ height: "40px", width: "40px", marginLeft: "3px" }}
+          buttonStyle={{
+            height: "40px",
+            width: "40px",
+            marginLeft: "3px",
+          }}
           icon={<FileIcon width={25} height={25} stroke={5} />}
-        ></TDialog>
+        />
+
+        <TButton
+          id={ElementID.OPENPRESETFOLDERBUTTON}
+          style={{
+            height: "40px",
+            width: "40px",
+            marginLeft: "3px",
+          }}
+          tooltip="Open Preset Folder"
+        >
+          <Folder />
+        </TButton>
 
         <TButton
           id={ElementID.RESETPRESETBUTTON}
-          style={{ height: "40px", width: "50px", marginLeft: "3px" }}
-          text="Reset"
+          style={{
+            height: "40px",
+            width: "50px",
+            marginLeft: "3px",
+          }}
         >
           Reset
         </TButton>
