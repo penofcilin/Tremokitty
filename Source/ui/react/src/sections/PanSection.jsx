@@ -220,38 +220,34 @@ export default function PanSection({
               ></Oscilloscope>
 
               <div style={{ display: "flex", flexDirection: "row" }}>
-                {!!sync && (
-                  <TDropdown
-                    id={ParameterID.PANSYNCCHOICE}
-                    defaultValue={NoteTypes[0]}
-                    buttonStyle={{ width: "130px" }}
-                    valueFromParent={NoteTypes[syncChoice]}
-                    disabled={!sync}
-                    options={NoteTypes}
-                  ></TDropdown>
-                )}
-
-                {!sync && (
-                  <TSlider
-                    id={ParameterID.PANRATE}
-                    min={0}
-                    max={10}
-                    skew={0.5}
-                    defaultValue={0.5}
-                    value={rate}
-                    onChange={(v) => {
+                <TSlider
+                  key={sync ? "sync" : "rate"}
+                  id={sync ? ParameterID.PANSYNCCHOICE : ParameterID.PANRATE}
+                  min={0}
+                  max={sync ? NoteTypes.length - 1 : 10}
+                  skew={sync ? 1 : 0.5}
+                  step={sync ? 1 : 0.00001}
+                  defaultValue={sync ? 0 : 0.5}
+                  value={sync ? (syncChoice ?? 0) : rate}
+                  onChange={(v) => {
+                    if (sync) {
+                      setSyncChoice(Math.round(v));
+                    } else {
                       setRate(v);
-                    }}
-                    size="3"
-                    variant="soft"
-                    tooltip={{ enabled: true }}
-                    tooltipMap={(v) => {
-                      return v.toFixed(2) + " hz";
-                    }}
-                    disabled={sync}
-                    style={{ width: "130px", marginTop: "3px" }}
-                  />
-                )}
+                    }
+                  }}
+                  size="3"
+                  variant="soft"
+                  tooltip={{ enabled: true }}
+                  tooltipMap={(v) => {
+                    if (sync) {
+                      return NoteTypes[Math.round(v)] ?? "";
+                    }
+
+                    return `${v.toFixed(2)} hz`;
+                  }}
+                  style={{ width: "130px", marginTop: "3px" }}
+                />
 
                 <TButton
                   style={{ width: "40px", height: "25px", align: "center" }}

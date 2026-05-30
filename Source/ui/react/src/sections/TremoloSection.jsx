@@ -213,39 +213,34 @@ export default function TremoloSection({
               ></Oscilloscope>
 
               <div style={{ display: "flex", flexDirection: "row" }}>
-                {!!sync && (
-                  <TDropdown
-                    id={ParameterID.TREMSYNCCHOICE}
-                    defaultValue={NoteTypes[0]}
-                    buttonStyle={{ width: "130px" }}
-                    valueFromParent={NoteTypes[syncChoice]}
-                    disabled={!sync}
-                    options={NoteTypes}
-                  ></TDropdown>
-                )}
-
-                {!sync && (
-                  <TSlider
-                    id={ParameterID.TREMRATE}
-                    min={0}
-                    max={20}
-                    skew={0.5}
-                    step={0.00001}
-                    defaultValue={5}
-                    size="3"
-                    variant="soft"
-                    value={rate}
-                    onChange={(v) => {
+                <TSlider
+                  key={sync ? "sync" : "rate"}
+                  id={sync ? ParameterID.TREMSYNCCHOICE : ParameterID.TREMRATE}
+                  min={0}
+                  max={sync ? NoteTypes.length - 1 : 20}
+                  skew={sync ? 1 : 0.5}
+                  step={sync ? 1 : 0.00001}
+                  defaultValue={sync ? 0 : 5}
+                  size="3"
+                  variant="soft"
+                  value={sync ? (syncChoice ?? 0) : rate}
+                  onChange={(v) => {
+                    if (sync) {
+                      setSyncChoice(Math.round(v));
+                    } else {
                       setRate(v);
-                    }}
-                    tooltip={{ enabled: true }}
-                    tooltipMap={(v) => {
-                      return `${v.toFixed(2)} hz`;
-                    }}
-                    disabled={sync}
-                    style={{ width: "130px", marginTop: "3px" }}
-                  />
-                )}
+                    }
+                  }}
+                  tooltip={{ enabled: true }}
+                  tooltipMap={(v) => {
+                    if (sync) {
+                      return NoteTypes[Math.round(v)] ?? "";
+                    }
+
+                    return `${v.toFixed(2)} hz`;
+                  }}
+                  style={{ width: "130px", marginTop: "3px" }}
+                />
 
                 <TButton
                   style={{ width: "40px", height: "25px", align: "center" }}
