@@ -450,20 +450,32 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     if (!apvts.getRawParameterValue("FILTERBP")->load())
     {
         float filterResonance = apvts.getRawParameterValue("FILTERRES")->load();
-        float filterModLevel = apvts.getRawParameterValue("FILTERMODLEVEL")->load();
         float filterCutoff = apvts.getRawParameterValue("FILTERCUTOFF")->load();
         float filterCutoffInHertz = juce::jmap(filterCutoff, 20.f, 20000.f);
 
         filter.setResonance(filterResonance);
 
-        float filterModRate = 1;
-        if (apvts.getRawParameterValue("FILTERSYNC")->load())
+        float filterModLevel = 1.f;
+        float filterModRate = 1.f;
+
+        if (apvts.getRawParameterValue("FILTERMODBP")->load()) 
         {
-            int option = apvts.getRawParameterValue("FILTERSYNCCHOICE")->load();
-            filterModRate = tempo.getNoteLengthHertz(static_cast<KOTempo::NoteTypes>(option));
+            filterModRate = 0.f;
+            filterModLevel = 0.f;
         }
+        
         else
-            filterModRate = apvts.getRawParameterValue("FILTERRATE")->load();
+        {
+            filterModLevel =  apvts.getRawParameterValue("FILTERMODLEVEL")->load();
+
+            if (apvts.getRawParameterValue("FILTERSYNC")->load())
+            {
+                int option = apvts.getRawParameterValue("FILTERSYNCCHOICE")->load();
+                filterModRate = tempo.getNoteLengthHertz(static_cast<KOTempo::NoteTypes>(option));
+            }
+            else
+                filterModRate = apvts.getRawParameterValue("FILTERRATE")->load();
+        }
 
         filterLFO.setFrequency(filterModRate);
 
@@ -851,6 +863,10 @@ TremoKittyAudioProcessor::createParameters()
 
     layout.add(std::make_unique<juce::AudioParameterBool>(
         juce::ParameterID("FILTERBP", 1), "Filter Bypass",
+        false));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("FILTERMODBP", 1), "Filter Modulation Bypass",
         false));
 
     layout.add(std::make_unique<juce::AudioParameterBool>(

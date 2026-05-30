@@ -54,13 +54,9 @@ export default function FilterSection({
 
   //Mod Bypass
   const toggleModulationBypass = () => {
-    if (modBypassed) {
-      emitSliderEvent(ParameterID.FILTERMODLEVEL, modDepth);
-      setModBypassed(false);
-    } else {
-      emitSliderEvent(ParameterID.FILTERMODLEVEL, 0);
-      setModBypassed(true);
-    }
+    emitButtonEvent(ParameterID.FILTERMODBP, true);
+
+    console.log("clicked FILTERMODBP");
   };
 
   const applyState = (data) => {
@@ -75,6 +71,8 @@ export default function FilterSection({
     setUnsyncedRate(data.FILTERRATE);
 
     setCutoff(data.FILTERCUTOFF);
+
+    setModBypassed(!!data.FILTERMODBP);
 
     setResonance(data.FILTERRES);
 
@@ -420,13 +418,19 @@ export default function FilterSection({
               borderRadius: "10px",
               alignItems: "center",
               marginTop: "5px",
+              backgroundColor: "var(--bg-secondary)",
             }}
             direction="column"
             gap={0}
           >
             <div className="rightPanelComponents">
               {/* header*/}
-              <Flex direction="row" align="center" width="100%">
+              <Flex
+                className="bypassableHeaderWrapper"
+                direction="row"
+                align="center"
+                width="100%"
+              >
                 <div
                   className="modulationHeader bypassableHeader"
                   onClick={() => {

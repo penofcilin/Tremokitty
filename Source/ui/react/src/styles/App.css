@@ -48,7 +48,8 @@ body {
 
 /* Re-enable header interaction + visuals */
 .bypassable[data-bypassed] .bypassableHeader,
-.bypassable[data-bypassed] .bypassableHeader * {
+.bypassable[data-bypassed] .bypassableHeader *,
+.bypassable[data-bypassed] .bypassableHeaderWrapper {
   pointer-events: auto;
   opacity: 1;
   filter: none;

@@ -96,6 +96,7 @@ namespace kitty_editor {
        "FILTERTYPE",
        "FILTERSYNCCHOICE",
        "FILTERBP",
+       "FILTERMODBP",
        "FILTERSYNC",
 
        "MODLFORATE",

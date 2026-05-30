@@ -220,7 +220,7 @@ export default function TremoloSection({
                   max={sync ? NoteTypes.length - 1 : 20}
                   skew={sync ? 1 : 0.5}
                   step={sync ? 1 : 0.00001}
-                  defaultValue={sync ? 0 : 5}
+                  defaultValue={sync ? 0 : (1 / NoteTypes.length) * 3}
                   size="3"
                   variant="soft"
                   value={sync ? (syncChoice ?? 0) : rate}
