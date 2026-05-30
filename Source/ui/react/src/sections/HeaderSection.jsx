@@ -8,6 +8,18 @@ export default function HeaderSection({
   selectedPresetIndex,
   setSelectedPresetIndex,
 }) {
+  const settingsFieldFormat = [
+    {
+      name: "ShowAnimations",
+      label: "Show Animations",
+      type: "toggle",
+      placeholder: "",
+      defaultValue: "",
+      description: "Shown publicly",
+      required: true,
+    },
+  ];
+
   return (
     <Box
       style={{

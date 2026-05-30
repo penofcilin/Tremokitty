@@ -51,8 +51,8 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     globalProperties.setStorageParameters(options);
 
     auto userSettings = globalProperties.getUserSettings();
-    auto display =  userSettings->getBoolValue("DONTDISPLAYKITTY");
-    auto skin = userSettings->getIntValue("DEFAULTSKIN");
+    auto showAnimations =  userSettings->getBoolValue("SHOWANIMATIONS");
+    auto palletteChoice = userSettings->getIntValue("PALLETTECHOICE");
 
     PresetNames = presetManager->getAllPresets();
 }
