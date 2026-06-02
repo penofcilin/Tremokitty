@@ -5,6 +5,7 @@ import * as Juce from "../../juce/index.js";
 //Use this enum type thing for references, so you don't have to remember the codes
 //Ex. emitSliderEvent(bridge.ParameterIDs.TREMRATE, 0.5);
 export const ParameterID = Object.freeze({
+  SETTINGS: "SETTINGS",
   GAIN: "GAIN",
   MIX: "MIX",
   PRESETINDEX: "PRESETINDEX",
@@ -153,10 +154,11 @@ export function emitDropdownEvent(dropdownID, newValue) {
 }
 
 //Passes button id, and an integer(bool) for checking if it's a checkbox. CPP should handle toggling.
-export function emitButtonEvent(buttonID, isCheckBox) {
+export function emitButtonEvent(buttonID, isCheckBox, newValue) {
   window.__JUCE__.backend.emitEvent("ButtonClicked", {
     buttonID: buttonID,
     isCheckBox: isCheckBox,
+    newValue: newValue,
   });
 }
 

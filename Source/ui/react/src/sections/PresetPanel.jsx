@@ -107,6 +107,7 @@ export default function PresetPanel({
             height: "40px",
             width: "40px",
             marginLeft: "3px",
+            backgroundColor: "var(--accent-primary)",
           }}
           icon={<FileIcon width={25} height={25} stroke={5} />}
         />
@@ -130,6 +131,7 @@ export default function PresetPanel({
             width: "50px",
             marginLeft: "3px",
           }}
+          tooltip="Reset to Default Preset"
         >
           Reset
         </TButton>

@@ -23,7 +23,8 @@ input {
 .DialogContent {
   background-color: var(--mauve-1);
   border-radius: 6px;
-  box-shadow: 0 10px 38px -10px var(--black-a9),
+  box-shadow:
+    0 10px 38px -10px var(--black-a9),
     0 10px 20px -15px var(--black-a9);
   position: fixed;
   top: 50%;
@@ -115,17 +116,11 @@ input {
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  padding: 0 15px;
-  font-size: 15px;
-  line-height: 1;
-  font-weight: 500;
-  height: 35px;
   user-select: none;
   cursor: pointer;
-  background: var(--accent-primary);
-  color: white;
-
-  transition: transform 40ms ease-out, filter 120ms ease-out;
+  transition:
+    transform 40ms ease-out,
+    filter 120ms ease-out;
 }
 
 .Button:active {
@@ -136,6 +131,7 @@ input {
 .Button:hover:not(:active) {
   filter: brightness(0.8);
   transform: scale(0.95);
+  background-color: var(--accent-hover);
 }
 
 .Button.save {
@@ -169,11 +165,11 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-primary);
+  color: white;
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: var(--bg-primary);
+  background-color: var(--accent-primary);
   cursor: pointer;
 }
 
@@ -204,4 +200,32 @@ input {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
+}
+
+/* Settings dialog specific stuff */
+.PaletteGroup {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.PaletteOption {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.PaletteOption.selected {
+  border-color: var(--palette-color);
+}
+
+.PaletteSwatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
 }

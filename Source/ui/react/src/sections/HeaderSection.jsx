@@ -1,5 +1,7 @@
 import { Box, IconButton } from "@radix-ui/themes";
+import { SettingsDialog } from "../components";
 import { GearIcon } from "@radix-ui/react-icons";
+import { ElementID } from "../utilities/juceBridge";
 import PresetPanel from "./PresetPanel";
 
 export default function HeaderSection({
@@ -8,21 +10,10 @@ export default function HeaderSection({
   selectedPresetIndex,
   setSelectedPresetIndex,
 }) {
-  const settingsFieldFormat = [
-    {
-      name: "ShowAnimations",
-      label: "Show Animations",
-      type: "toggle",
-      placeholder: "",
-      defaultValue: "",
-      description: "Shown publicly",
-      required: true,
-    },
-  ];
-
   return (
-    <Box
+    <div
       style={{
+        display: "flex",
         position: "relative",
         backgroundColor: "var(--bg-dark)",
         width: "100%",
@@ -34,44 +25,56 @@ export default function HeaderSection({
         justifyContent: "center",
       }}
     >
-      {/* Left icon */}
-      <IconButton
-        onClick={() => {
-          console.log("Penis");
-        }}
-        size="1"
-        variant="ghost"
-        style={{
-          width: "35px",
-          height: "35px",
-          position: "absolute",
-          left: 4,
-          top: "50%",
-          transform: "translateY(-50%)",
+      {/* Settings dialog */}
+      <SettingsDialog
+        currentState={currentState}
+        header="Settings"
+        description=""
+        buttonText="Accept"
+        submitButtonText="Exit"
+        triggerTooltip=""
+        buttonStyle={{
+          width: "25px",
+          height: "25px",
+          marginRight: "auto",
+          marginLeft: "15px",
           color: "white",
-          display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          marginTop: "0.25px",
+          padding: "6px 6px",
         }}
-      >
-        <GearIcon style={{ width: "25px", height: "25px" }} />
-      </IconButton>
+        buttonVariant={"ghost"}
+        icon={
+          <GearIcon
+            style={{
+              width: "25px",
+              height: "25px",
+              transform: "translateY(2px)",
+            }}
+          />
+        }
+      />
 
       {}
-      <Box
+      <div
         style={{
           position: "absolute",
           inset: 0,
           display: "flex",
           alignItems: "center",
           justifyContent: "end",
+          pointerEvents: "none",
         }}
       >
         <div style={{ paddingRight: "5px", transform: "translateX(155px)" }}>
           Tremokitty!
         </div>
-        <div style={{ marginLeft: "auto", marginRight: "105px" }}>
+        <div
+          style={{
+            marginLeft: "auto",
+            marginRight: "105px",
+            pointerEvents: "auto",
+          }}
+        >
           <PresetPanel
             currentState={currentState}
             providedPresets={presets}
@@ -79,7 +82,7 @@ export default function HeaderSection({
             setSelectedPresetIndex={setSelectedPresetIndex}
           />
         </div>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

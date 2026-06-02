@@ -50,6 +50,11 @@ TremoKittyAudioProcessor::TremoKittyAudioProcessor()
     options.osxLibrarySubFolder = "Application Support";
     globalProperties.setStorageParameters(options);
 
+    if (auto* settings = globalProperties.getUserSettings())
+    {
+        DBG("Settings file: " + settings->getFile().getFullPathName());
+    }
+
     auto userSettings = globalProperties.getUserSettings();
     auto showAnimations =  userSettings->getBoolValue("SHOWANIMATIONS");
     auto palletteChoice = userSettings->getIntValue("PALLETTECHOICE");
@@ -65,6 +70,41 @@ TremoKittyAudioProcessor::~TremoKittyAudioProcessor()
     }
 
     registeredParamIDs.clear();
+}
+
+void TremoKittyAudioProcessor::setGlobalSetting(const juce::String& id, juce::var value)
+{
+    if (auto* userSettings = globalProperties.getUserSettings())
+    {
+        if (id == "SHOWANIMATIONS")
+        {
+            userSettings->setValue(id, value);
+        }
+        else if (id == "PALLETTECHOICE")
+            userSettings->setValue(id, (int)value);
+
+        userSettings->saveIfNeeded();
+    }
+}
+
+juce::var TremoKittyAudioProcessor::getGlobalSettings()
+{
+    auto* obj = new juce::DynamicObject();
+
+    if (auto* userSettings = globalProperties.getUserSettings())
+    {
+        obj->setProperty(
+            "SHOWANIMATIONS",
+            userSettings->getBoolValue("SHOWANIMATIONS", true)
+        );
+
+        obj->setProperty(
+            "PALLETTECHOICE",
+            userSettings->getIntValue("PALLETTECHOICE", 0)
+        );
+    }
+
+    return juce::var(obj);
 }
 
 void TremoKittyAudioProcessor::addListenersToAllParameters()
@@ -163,6 +203,7 @@ void TremoKittyAudioProcessor::parameterChanged(const juce::String& parameterID,
         }
     }
 }
+
 
 //==============================================================================
 const juce::String TremoKittyAudioProcessor::getName() const

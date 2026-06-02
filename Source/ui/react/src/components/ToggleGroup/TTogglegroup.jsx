@@ -11,6 +11,7 @@ export default function TToggleGroup({
   ariaLabel = "Toggle group",
   onChange,
   vertical = false,
+  showTooltips = true,
   style,
 }) {
   const safeValue = options.some((opt) => opt.value === value)
@@ -45,7 +46,7 @@ export default function TToggleGroup({
           disabled={opt.disabled}
         >
           <TTooltip
-            content={opt.label}
+            content={showTooltips ? opt.label : ""}
             side={vertical ? "right" : "top"}
             delay={400}
           >

@@ -123,7 +123,6 @@ namespace kitty_editor
     }
 
     //Webview changes
-
     auto TremoKittyAudioProcessorEditor::getResource(const juce::String& url) -> std::optional<Resource>
     {
         juce::String dir;
@@ -257,6 +256,11 @@ namespace kitty_editor
             if (auto* raw = audioProcessor.apvts.getRawParameterValue(id))
                 obj->setProperty(id, raw->load());
         }
+
+        obj->setProperty(
+            "GLOBALSETTINGS",
+            audioProcessor.getGlobalSettings()
+        );
 
         obj->setProperty("INITPRESETINDEX", audioProcessor.getPresetManager().getCurrentPresetIndex());
 
@@ -400,9 +404,17 @@ namespace kitty_editor
         const bool isCheckBox =
             (bool)info.getProperty("isCheckBox", false);
 
+        const int newValue =
+            (int)info.getProperty("newValue", 0);
+
+
+
         if (isCheckBox)
         {
-            if (auto* param = audioProcessor.apvts.getParameter(buttonID))
+            if (buttonID == "SHOWANIMATIONS") {
+                audioProcessor.setGlobalSetting("SHOWANIMATIONS", newValue);
+            }
+            else if (auto* param = audioProcessor.apvts.getParameter(buttonID))
             {
                 if (auto* boolParam =
                     dynamic_cast<juce::AudioParameterBool*>(param))
@@ -497,11 +509,14 @@ namespace kitty_editor
     {
         const auto& groupID = info.getProperty("togglegroupID", "null").toString();
         juce::var newVal = info.getProperty("newValue", "null");
+
         DBG("Togled: " + groupID + ", new value: " + juce::String(newVal.toString()));
 
-
+        if (groupID == "SELECTEDPALLETTE") {
+            audioProcessor.setGlobalSetting("PALLETTECHOICE", static_cast<int>(newVal));
+        }
         //Store value. In theory, pass an integer index reflecting choice. For instance click on sine in react -> 0 is passed, apvts gets the tremwave parameter, and sets it to the same index, which should be the same. Later on may need to change this, if miscellaneous togglegroups are incorporated (misc meaning the group does not reflect the state of some parameter).
-        if (auto* param = audioProcessor.apvts.getParameter(groupID))
+        else if (auto* param = audioProcessor.apvts.getParameter(groupID))
         {
             param->beginChangeGesture();
 
@@ -510,8 +525,8 @@ namespace kitty_editor
             );
 
             param->endChangeGesture();
+            DBG("Currenrtly stored in " + groupID + " " + juce::String(audioProcessor.apvts.getRawParameterValue(groupID)->load()));
         }
-       DBG("Currenrtly stored in " + groupID + " " + juce::String(audioProcessor.apvts.getRawParameterValue(groupID)->load()));
     }
 
     TremoKittyAudioProcessorEditor::~TremoKittyAudioProcessorEditor()

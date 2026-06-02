@@ -4,6 +4,7 @@ export { default as TDropdown } from "./Dropdown/TDropdown";
 export { default as TButton } from "./Button/TButton";
 export { default as TCheckbox } from "./Checkbox/TCheckbox";
 export { default as TDialog } from "./Dialog/TDialog";
+export { default as SettingsDialog } from "./Dialog/settingsDialog";
 export { default as TTooltip } from "./Tooltip/TTooltip";
 export { default as TToggleGroup } from "./ToggleGroup/TTogglegroup";
 export { default as WaveSelector } from "./WaveSelector/WaveSelector";

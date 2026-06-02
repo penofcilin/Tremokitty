@@ -6,9 +6,11 @@ import "./TCheckbox.css";
 export default function TCheckbox({
   label,
   id,
-  icon,
-  size = 2, // you can map this to CSS if you want
-  weight = "medium",
+  name,
+  checked,
+  defaultChecked,
+  onCheckedChange,
+  Icon = CheckIcon,
 }) {
   return (
     <div className="tCheckboxWrapper">
@@ -16,16 +18,21 @@ export default function TCheckbox({
         <Checkbox.Root
           className="tCheckboxRoot"
           id={id}
-          onCheckedChange={(checked) => {
-            emitButtonEvent(id, checked ? 1 : 0);
+          name={name}
+          checked={checked}
+          defaultChecked={defaultChecked}
+          onCheckedChange={(checkedValue) => {
+            const isChecked = checkedValue === true;
+
+            onCheckedChange?.(isChecked);
+
+            emitButtonEvent(id, 1, isChecked);
           }}
         >
           <Checkbox.Indicator className="tCheckboxIndicator">
-            <CheckIcon />
+            <Icon style={{ color: "white" }} />
           </Checkbox.Indicator>
         </Checkbox.Root>
-
-        <span className="tCheckboxText">{label}</span>
       </label>
     </div>
   );

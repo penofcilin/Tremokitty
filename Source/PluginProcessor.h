@@ -97,6 +97,10 @@ public:
 
     void parameterChanged(const juce::String& parameterID, float newValue) override;
 
+    juce::var getGlobalSettings();
+
+    void setGlobalSetting(const juce::String& id, juce::var value);
+
 private:
     //LFOlookuptable holds the values that our LFO processes so it can be checked in the processing period.
     std::vector<float> lfoLookupTable;
