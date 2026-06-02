@@ -686,6 +686,7 @@ void TremoKittyAudioProcessor::processMod(const juce::String& parameterID, float
     
     //Mod scaler is a value between 1 and 0, times the modDepth of 0 to 1.
     float modScaler = ((modLFO.getNextValue(bufferSize) + 1) * 0.5);
+    modLFOCurrentPosition.store(modLFO.peekNextValue(bufferSize));
     auto oldValue = apvts.getRawParameterValue("MODPARAMPRIORVALUE")->load();
     if (paramMaxValue > 5.f)
     {

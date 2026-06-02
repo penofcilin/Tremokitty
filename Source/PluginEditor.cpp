@@ -175,6 +175,8 @@ namespace kitty_editor
         float panLFOValue = audioProcessor.panLFOCurrentPosition.load();
         float modLFOValue = audioProcessor.modLFOCurrentPosition.load();
 
+        DBG("ModLFOCValue: " << modLFOValue);
+
         emitFrontendEvent("FilterLFOUpdate", juce::var(filterLFOValue));
         emitFrontendEvent("TremLFOUpdate", juce::var(tremLFOValue));
         emitFrontendEvent("PanLFOUpdate", juce::var(panLFOValue));

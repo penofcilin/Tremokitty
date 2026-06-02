@@ -52,6 +52,7 @@ function App() {
       tremolo: Boolean(currentState.TREMBP),
       pan: Boolean(currentState.PANBP),
       filter: Boolean(currentState.FILTERBP),
+      mod: Boolean(currentState.MODBP),
     });
   }, [currentState]);
 

@@ -37,6 +37,7 @@ export default function ModSection({
   //LFO Updates
   useEffect(() => {
     const handler = (v) => {
+      console.log("Mod LFO update:", v);
       setLfoPosition(v);
     };
 
@@ -160,8 +161,9 @@ export default function ModSection({
           lfoValue={lfoPosition}
           depth={depth}
           rate={sync ? syncedRate : unsyncedRate}
+          bypassed={bypassed}
           style={{ height: "100px" }}
-        ></Oscilloscope>
+        />
       </div>
       {/* CONTROLS */}
       <div className="controls">
