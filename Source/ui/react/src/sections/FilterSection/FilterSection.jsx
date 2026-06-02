@@ -8,6 +8,7 @@ import {
   NoteTypes,
 } from "../../utilities/juceBridge.js";
 import { LowPassIcon, HighPassIcon, BandPassIcon } from "../../assets/icons";
+import { Link } from "lucide-react";
 import {
   TSlider,
   WaveSelector,
@@ -17,7 +18,7 @@ import {
   TTooltip,
   FilterGraphic,
 } from "../../components";
-import { normToSkewed, toPercentage } from "../../Utilities/General.js";
+import { toPercentage } from "../../Utilities/General.js";
 import "./FilterSection.css";
 
 export default function FilterSection({
@@ -476,13 +477,18 @@ export default function FilterSection({
                 </div>
               </Flex>
               <TButton
-                style={{ padding: "5px" }}
+                style={{ width: "30px", height: "27px", padding: "5px" }}
                 id={ParameterID.FILTERSYNC}
                 clickEvent={syncButtonClicked}
                 isToggle={1}
                 value={sync}
+                tooltip="Sync"
               >
-                Sync
+                <Link
+                  style={{ strokeWidth: "2.25px" }}
+                  width={18}
+                  height={18}
+                />
               </TButton>
 
               {/*Knobs*/}

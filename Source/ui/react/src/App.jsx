@@ -27,6 +27,7 @@ function App() {
     tremolo: false,
     pan: false,
     filter: false,
+    mod: false,
   });
 
   //Get initial data
@@ -188,7 +189,14 @@ function App() {
               gridRow: "1 / -1",
             }}
           >
-            <ModSection />
+            <ModSection
+              currentState={currentState}
+              initialData={initialState}
+              bypassed={bypassed.mod}
+              toggleBypass={() =>
+                setBypassed((prev) => ({ ...prev, mod: !prev.mod }))
+              }
+            />
           </div>
 
           <div

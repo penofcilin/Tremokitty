@@ -15,6 +15,7 @@ import {
   Oscilloscope,
 } from "../components";
 import { toPercentage } from "../Utilities/General.js";
+import { Link } from "lucide-react";
 
 export default function TremoloSection({
   style,
@@ -243,13 +244,24 @@ export default function TremoloSection({
                 />
 
                 <TButton
-                  style={{ width: "40px", height: "25px", align: "center" }}
+                  style={{
+                    width: "30px",
+                    height: "27px",
+                    marginLeft: "5px",
+                    marginBottom: "1px",
+                    align: "center",
+                  }}
                   id={ParameterID.TREMSYNC}
                   clickEvent={() => setSync((prev) => !prev)}
                   isToggle={1}
                   value={sync}
+                  tooltip="Sync"
                 >
-                  Sync
+                  <Link
+                    style={{ strokeWidth: "2.25px" }}
+                    width={18}
+                    height={18}
+                  />
                 </TButton>
               </div>
             </Flex>

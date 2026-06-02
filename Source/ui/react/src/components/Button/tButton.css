@@ -15,7 +15,9 @@
   align-items: center;
   justify-content: center;
 
-  transition: transform 30ms ease-out, filter 120ms ease-out;
+  transition:
+    transform 30ms ease-out,
+    filter 120ms ease-out;
 }
 
 .tButton:hover {
@@ -30,9 +32,10 @@
 
 .tButton.Toggled {
   filter: brightness(0.65);
-  transform: scale(0.85);
+  transform: scale(0.9);
   background-color: var(--accent-toggled);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35),
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.35),
     inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
