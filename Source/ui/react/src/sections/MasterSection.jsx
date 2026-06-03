@@ -18,7 +18,13 @@ import {
 import { Box, Flex, Heading, Separator } from "@radix-ui/themes";
 import { toPercentage } from "../Utilities/General.js";
 
-export default function MasterSection({ style, initialData, currentState }) {
+export default function MasterSection({
+  style,
+  initialData,
+  currentState,
+  bypassed,
+  toggleBypass,
+}) {
   const [gain, setGain] = useState(1);
   const [mix, setMix] = useState(1);
 
@@ -49,14 +55,67 @@ export default function MasterSection({ style, initialData, currentState }) {
           borderRadius: "14px",
           overflow: "hidden",
           border: "2px solid black",
-          padding: "10px",
+          padding: "0px",
           width: "173px",
           alignItems: "center",
           transform: "translateX(-6px)",
+          marginBottom: "5px",
         }}
+        className="bypassable"
+        data-bypassed={bypassed ? true : undefined}
       >
+        {/* ================= HEADER BOX ================= */}
+        <div
+          className="bypassableHeader masterHeader"
+          onClick={() => {
+            emitButtonEvent(ParameterID.MASTERBP, 1);
+            toggleBypass();
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.filter = "brightness(1.3)")
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.filter = "brightness(1)")}
+          style={{
+            backgroundColor: "var(--bg-darkish)",
+            height: "35px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "7px",
+          }}
+        >
+          <Flex
+            direction="row"
+            align="center"
+            width="100%"
+            style={{ transform: "translateX(2px)" }}
+          >
+            <Separator
+              style={{
+                width: "36px",
+                height: "2px",
+                backgroundColor: "white",
+                marginLeft: "7px",
+                marginRight: "4px",
+              }}
+            />
+
+            <Heading size="5" className="Heading" style={{ color: "white" }}>
+              Master
+            </Heading>
+
+            <Separator
+              style={{
+                width: "36px",
+                height: "2px",
+                backgroundColor: "white",
+                marginLeft: "4px",
+              }}
+            />
+          </Flex>
+        </div>
         {/* CONTROLS */}
-        <div className="controls">
+        <div className="controls" style={{ marginBottom: "5px" }}>
           {/*Knobs*/}
           <Flex
             style={{

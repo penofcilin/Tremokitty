@@ -101,6 +101,8 @@ public:
 
     void setGlobalSetting(const juce::String& id, juce::var value);
 
+    bool bypassed{ false };
+
 private:
     //LFOlookuptable holds the values that our LFO processes so it can be checked in the processing period.
     std::vector<float> lfoLookupTable;
@@ -152,8 +154,10 @@ private:
 
     //Used for preparing the filter module.
     bool shouldPrepare;
+
+    //Bypassing stuff
     bool playbackStopped{ true };
-    bool bypassed{ false };
+    
 
     int64_t nextExpectedPlaybackSample;
 

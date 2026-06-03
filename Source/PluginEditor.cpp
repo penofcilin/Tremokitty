@@ -445,7 +445,10 @@ namespace kitty_editor
         else
         {
             DBG("clicked " + buttonID);
-            if (buttonID == "RESETPRESETBUTTON") {
+            if (buttonID == "MASTERBP") {
+                audioProcessor.bypassed = !audioProcessor.bypassed;
+            }
+            else if (buttonID == "RESETPRESETBUTTON") {
                 //Again potential issue
                 audioProcessor.getPresetManager().loadPreset("Default");
                 updateUI();

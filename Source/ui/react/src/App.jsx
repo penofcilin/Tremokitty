@@ -28,6 +28,7 @@ function App() {
     pan: false,
     filter: false,
     mod: false,
+    master: false,
   });
 
   //Get initial data
@@ -53,6 +54,7 @@ function App() {
       pan: Boolean(currentState.PANBP),
       filter: Boolean(currentState.FILTERBP),
       mod: Boolean(currentState.MODBP),
+      master: Boolean(currentState.MASTERBP),
     });
   }, [currentState]);
 
@@ -210,6 +212,10 @@ function App() {
             <MasterSection
               initialData={initialState}
               currentState={currentState}
+              bypassed={bypassed.master}
+              toggleBypass={() =>
+                setBypassed((prev) => ({ ...prev, master: !prev.master }))
+              }
             />
           </div>
         </div>

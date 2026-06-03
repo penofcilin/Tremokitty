@@ -9,6 +9,7 @@ export const ParameterID = Object.freeze({
   GAIN: "GAIN",
   MIX: "MIX",
   PRESETINDEX: "PRESETINDEX",
+  MASTERBP: "MASTERBP",
 
   TREMRATE: "TREMRATE",
   TREMDEPTH: "TREMDEPTH",

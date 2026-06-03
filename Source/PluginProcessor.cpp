@@ -359,9 +359,9 @@ void TremoKittyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     juce::dsp::AudioBlock<float> block(buffer);
 
     //If we're in this process block, bypassed should be false
-    if (bypassed)
+    if (apvts.getRawParameterValue("MASTERBP")->load())
     {
-        bypassed = false;
+        apvts.getRawParameterValue("MASTERBP")->store(0);
     }
     
     //get master mix
@@ -745,6 +745,7 @@ void TremoKittyAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
     auto state = apvts.copyState();
 
+
     if (presetManager != nullptr)
         state.setProperty("presetName", presetManager->getCurrentPreset(), nullptr);
 
@@ -759,6 +760,7 @@ void TremoKittyAudioProcessor::setStateInformation(const void* data, int sizeInB
     if (xml != nullptr)
     {
         auto state = juce::ValueTree::fromXml(*xml);
+        
 
         if (state.isValid())
         {
@@ -794,6 +796,14 @@ TremoKittyAudioProcessor::createParameters()
     // =====================
     // Master
     // =====================
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("MASTERBP", 1),
+        "Master Bypass",
+        false,
+        juce::AudioParameterBoolAttributes()
+            .withAutomatable(false)
+    ));
+
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID("GAIN", 1), "Gain",
         0.f, 2.f, 1.f));
